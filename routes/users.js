@@ -4,12 +4,13 @@ var router = express.Router();
 const db = require('../db/index');
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  // res.send('respond with a resource');
-  db.any('SELECT * FROM Users')
-    .then(data => {
-      res.send(data);
-    })
+router.get('/', async (_req, res, next) => {
+  try {
+    const users = await db.any('SELECT * FROM Users');
+    res.render('showUsers', {title: 'Users', users: users.map(user => user.name)})
+  } catch (e) {
+    next(e);
+  }
 });
 
 module.exports = router;
