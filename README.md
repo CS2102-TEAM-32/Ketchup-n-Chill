@@ -1,5 +1,4 @@
-# REServe
-REStaurant REServation
+# Ketchup & Chill!
 
 ## Setup
 1. Run `npm install`
