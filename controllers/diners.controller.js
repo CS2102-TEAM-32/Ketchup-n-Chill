@@ -40,6 +40,7 @@ exports.createDiner = async (req, res, next) => {
       'INSERT INTO Diners (name, username, password) VALUES ($1, $2, $3) RETURNING *',
       [req.body.name, req.body.username, req.body.password]
     );
+    req.flash('success', 'You are now registered!');
     res.redirect('/diners/' + diner.username);
   } catch (e) {
     next(e);
