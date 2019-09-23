@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1 Register
+  form(method='POST', action='/diners/')
+    #form-group
+      label Name:
+      input.form-control(name='name', type='text')
+    #form-group
+      label Username:
+      input.form-control(name='username', type='text')
+    br
+    input(type='submit', value='Submit')
