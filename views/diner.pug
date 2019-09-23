@@ -4,3 +4,5 @@ block content
   h1= diner.username
   p name: #{diner.name}
   p points: #{diner.points}
+  br
+  a.btn.btn-danger.delete-diner(href="#" usr=diner.username) delete

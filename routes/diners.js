@@ -7,5 +7,6 @@ router.get('/', controller.showAllDiners);
 router.get('/register', controller.registerDiner);
 router.get('/:username', controller.showDinerParticulars);
 router.post('/', controller.createDiner);
+router.delete('/:username', controller.deleteDiner);
 
 module.exports = router;
