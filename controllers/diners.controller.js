@@ -1,5 +1,7 @@
 const db = require('../db/index');
 
+var bcrypt = require('bcryptjs');
+
 exports.showAllDiners = async (req, res, next) => {
   try {
     const diners = await db.any('SELECT * FROM Diners');
@@ -36,9 +38,10 @@ exports.createDiner = async (req, res, next) => {
   if (!req.body.username || !req.body.name || !req.body.password)
     return res.sendStatus(400);
   try {
+    const hash = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));
     const diner = await db.one(
       'INSERT INTO Diners (name, username, password) VALUES ($1, $2, $3) RETURNING *',
-      [req.body.name, req.body.username, req.body.password]
+      [req.body.name, req.body.username, hash]
     );
     req.flash('success', 'You are now registered!');
     res.redirect('/diners/' + diner.username);
