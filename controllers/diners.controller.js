@@ -33,11 +33,12 @@ exports.registerDiner = (req, res, next) => {
 };
 
 exports.createDiner = async (req, res, next) => {
-  if (!req.body.username || !req.body.name) return res.sendStatus(400);
+  if (!req.body.username || !req.body.name || !req.body.password)
+    return res.sendStatus(400);
   try {
     const diner = await db.one(
-      'INSERT INTO Diners (username, name) VALUES ($1, $2) RETURNING *',
-      [req.body.username, req.body.name]
+      'INSERT INTO Diners (name, username, password) VALUES ($1, $2, $3) RETURNING *',
+      [req.body.name, req.body.username, req.body.password]
     );
     res.redirect('/diners/' + diner.username);
   } catch (e) {
