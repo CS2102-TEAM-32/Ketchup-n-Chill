@@ -9,7 +9,7 @@ module.exports = passport => {
         .then(diner => {
           return new Promise((resolve, reject) => {
             bcrypt.compare(password, diner.password, (err, isMatch) => {
-              if (err) reject(err);
+              if (err) return reject(err);
               if (!isMatch) return resolve(null);
               return resolve(diner);
             });
