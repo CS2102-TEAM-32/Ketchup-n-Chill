@@ -1,6 +1,8 @@
 const db = require('../db/index');
 
 var bcrypt = require('bcryptjs');
+var { check, validationResult } = require('express-validator');
+var passport = require('passport');
 
 exports.showAllDiners = async (req, res, next) => {
   try {
@@ -34,7 +36,7 @@ exports.registerDiner = (req, res, next) => {
   });
 };
 
-exports.loginDiner = (req, res, next) => {
+exports.getLoginPage = (req, res, next) => {
   res.render('login', {
     title: 'Login'
   });
@@ -65,4 +67,46 @@ exports.deleteDiner = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
+};
+
+exports.registerValidations = [
+  check('name', 'Name must not be empty.')
+    .not()
+    .isEmpty(),
+  check('username', 'Username must be at least 5 characters.').isLength({
+    min: 5
+  }),
+  check('password', 'Password must be at least 8 characters.')
+    .isLength({ min: 8 })
+    .custom((value, { req }) => {
+      if (value !== req.body.password2)
+        throw new Error('Passwords do not match.');
+      return value;
+    }),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errors.array().map(error => req.flash('danger', error.msg));
+      return res.render('register');
+    }
+    return next();
+  }
+];
+
+exports.logDinerIn = (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    console.log(info);
+    if (!user) {
+      req.flash('danger', info.message);
+      return res.redirect('/diners/login');
+    }
+    req.flash('success', info.message);
+    res.redirect('/diners/' + req.body.username);
+  })(req, res, next);
+};
+
+exports.logDinerOut = (req, res, next) => {
+  req.logout();
+  req.flash('success', 'You have succesfully logged out.');
+  res.redirect('/diners/login');
 };
