@@ -5,4 +5,6 @@ block content
   p name: #{diner.name}
   p points: #{diner.points}
   br
-  a.btn.btn-danger.delete-diner(href="#" usr=diner.username) delete
+  if user.username === diner.name
+    a.btn.btn-primary(href='/diners/logout') logout
+    a.btn.btn-danger.delete-diner(href="#" usr=diner.username) delete
