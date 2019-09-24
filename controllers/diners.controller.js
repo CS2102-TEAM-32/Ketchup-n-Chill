@@ -34,6 +34,12 @@ exports.registerDiner = (req, res, next) => {
   });
 };
 
+exports.loginDiner = (req, res, next) => {
+  res.render('login', {
+    title: 'Login'
+  });
+};
+
 exports.createDiner = async (req, res, next) => {
   if (!req.body.username || !req.body.name || !req.body.password)
     return res.sendStatus(400);

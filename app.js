@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
 var flash = require('connect-flash');
+var passport = require('passport');
 
 var indexRouter = require('./routes/index');
 var dinersRouter = require('./routes/diners');
@@ -27,7 +28,7 @@ app.use(
     secret: 'my-secret',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
+    cookie: { maxAge: 60000 } // 1 minute
   })
 );
 app.use(flash());
@@ -35,6 +36,11 @@ app.use((req, res, next) => {
   res.locals.messages = require('express-messages')(req, res);
   next();
 });
+
+// Passport config and middleware
+require('./config/passport')(passport);
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', indexRouter);
 app.use('/diners', dinersRouter);
