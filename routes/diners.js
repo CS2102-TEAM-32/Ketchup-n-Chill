@@ -21,7 +21,7 @@ router.delete(
 router.get(
   '/:username',
   controller.ensureAuthenticated,
-  controller.showDinerParticulars
+  controller.showDinerProfile
 );
 
 module.exports = router;

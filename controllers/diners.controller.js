@@ -16,14 +16,19 @@ exports.showAllDiners = async (req, res, next) => {
   }
 };
 
-exports.showDinerParticulars = async (req, res, next) => {
+exports.showDinerProfile = async (req, res, next) => {
   try {
     const diner = await db.one('SELECT * FROM Diners WHERE username=$1', [
       req.params.username
     ]);
+    var points = await db.one('SELECT COUNT(*) FROM ReserveTimeslot WHERE did=$1', [
+        req.params.username
+    ]);
+      console.log(point);
     res.render('diner', {
       title: diner.username,
-      diner: diner
+      diner: diner,
+      points: points
     });
   } catch (e) {
     next(e);

@@ -3,7 +3,8 @@ extends layout
 block content
   h1= diner.username
   p name: #{diner.name}
-  p points: #{diner.points}
+  p points: #{points.count}
+  p most visited restaurants:
   br
   if user.username === diner.name
     a.btn.btn-primary(href='/diners/logout') logout
