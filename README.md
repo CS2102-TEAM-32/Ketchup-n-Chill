@@ -14,6 +14,7 @@
 3. Do `set PGUSER=yourusername`, `set PGPASSWORD=yourpassword`, `set PGDATABASE=yourdatabase`, `set PGHOST=localhost` individually
 4. Create the following table in your database:
 
+```
 CREATE TABLE "session" (
   "sid" varchar NOT NULL COLLATE "default",
  "sess" json NOT NULL,
@@ -22,6 +23,7 @@ CREATE TABLE "session" (
 WITH (OIDS=FALSE);
 ALTER TABLE "session" 
 ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
+```
 
 5. Run `npm start`
 6. Visit http://localhost:3000
