@@ -1,11 +1,46 @@
 extends layout
 
+block style
+  style(type="text/css").
+        nameplate {
+           float: left;
+           width: 35%;
+           height: 500px;
+           text-align: center;
+           border-style: solid;
+           border-width: 0.05px;
+           border-color: #EC3017;
+           padding: 20px;
+        }
+        information {
+           float: right;
+           padding: 20px;
+           width: 60%;
+           height: 500px;
+        }
+
 block content
-  h1= diner.username
-  p name: #{diner.name}
-  p points: #{points.count}
-  p most visited restaurants:
-  br
-  if user.username === diner.name
-    a.btn.btn-primary(href='/diners/logout') logout
-    a.btn.btn-danger.delete-diner(href="#" usr=diner.username) delete
+  <section>
+        <nameplate>
+            h4 Profile
+        </nameplate>
+        <information>
+            h2 Hello, #{diner.name}!
+            br
+            hr
+            img(src='../images/points_icon.png' style='width:25px; height:25px; float:left;')
+            p <b>Total Points </b> #{points.count}
+            p <b>Most Visited Restaurants</b>
+            br
+            hr
+            p <b>Past Reviews</b>
+            br
+            hr
+            p <b>Booking History</b>
+        </information>
+        br
+        if user.username === diner.username
+            a.btn.btn-primary(href='/diners/logout') logout
+            a.btn.btn-danger.delete-diner(href="#" usr=diner.username) delete
+        br
+  </section>
