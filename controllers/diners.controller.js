@@ -24,7 +24,6 @@ exports.showDinerProfile = async (req, res, next) => {
     var points = await db.one('SELECT COUNT(*) FROM ReserveTimeslot WHERE did=$1', [
         req.params.username
     ]);
-      console.log(point);
     res.render('diner', {
       title: diner.username,
       diner: diner,
