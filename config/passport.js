@@ -20,7 +20,7 @@ module.exports = passport => {
             });
           })
           .then(diner => {
-            if (!diner) return done(null, false, { message: 'Wrong pass' });
+            if (!diner) return done(null, false, { message: 'Wrong password' });
             return done(null, diner, { message: 'Successfully logged in.' });
           })
           .catch(e => done(null, false, { message: 'No such user.' }));
