@@ -79,14 +79,14 @@ exports.registerValidations = [
   check('name', 'Name must not be empty.')
     .not()
     .isEmpty(),
-  check('uname', 'uname must be at least 5 characters.').isLength({
+  check('uname', 'Username must be at least 5 characters.').isLength({
     min: 5
   }),
-  check('pass', 'pass must be at least 8 characters.')
+  check('pass', 'Password must be at least 8 characters.')
     .isLength({ min: 8 })
     .custom((value, { req }) => {
       if (value !== req.body.pass2)
-        throw new Error('passs do not match.');
+        throw new Error('Passwords do not match.');
       return value;
     }),
   (req, res, next) => {
