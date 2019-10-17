@@ -4,8 +4,8 @@ const db = require('../db/index');
 
 module.exports = passport => {
   passport.use(
-    new LocalStrategy((username, password, done) => {
-      db.one('SELECT * FROM Diners WHERE username=$1', [username])
+    new LocalStrategy((uname, password, done) => {
+      db.one('SELECT * FROM Diners WHERE uname=$1', [uname])
         .then(diner => {
           return new Promise((resolve, reject) => {
             bcrypt.compare(password, diner.password, (err, isMatch) => {
@@ -24,11 +24,11 @@ module.exports = passport => {
   );
 
   passport.serializeUser((user, done) => {
-    done(null, user.username);
+    done(null, user.uname);
   });
 
-  passport.deserializeUser((username, done) => {
-    db.one('SELECT * FROM Diners WHERE username=$1', [username])
+  passport.deserializeUser((uname, done) => {
+    db.one('SELECT * FROM Diners WHERE uname=$1', [uname])
       .then(diner => done(null, diner))
       .catch(e => done(e, null));
   });

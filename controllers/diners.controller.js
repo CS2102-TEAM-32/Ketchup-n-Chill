@@ -18,14 +18,14 @@ exports.showAllDiners = async (req, res, next) => {
 
 exports.showDinerProfile = async (req, res, next) => {
   try {
-    const diner = await db.one('SELECT * FROM Diners WHERE username=$1', [
-      req.params.username
+    const diner = await db.one('SELECT * FROM Diners WHERE uname=$1', [
+      req.params.uname
     ]);
     var points = await db.one('SELECT COUNT(*) FROM ReserveTimeslot WHERE did=$1', [
-        req.params.username
+        req.params.uname
     ]);
     res.render('diner', {
-      title: diner.username,
+      title: diner.uname,
       diner: diner,
       points: points
     });
@@ -47,16 +47,16 @@ exports.getLoginPage = (req, res, next) => {
 };
 
 exports.createDiner = async (req, res, next) => {
-  if (!req.body.username || !req.body.name || !req.body.password)
+  if (!req.body.uname || !req.body.name || !req.body.password)
     return res.sendStatus(400);
   try {
     const hash = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));
     const diner = await db.one(
-      'INSERT INTO Diners (name, username, password) VALUES ($1, $2, $3) RETURNING *',
-      [req.body.name, req.body.username, hash]
+      'INSERT INTO Diners (name, uname, password) VALUES ($1, $2, $3) RETURNING *',
+      [req.body.name, req.body.uname, hash]
     );
     req.flash('success', 'You are now registered!');
-    res.redirect('/diners/' + diner.username);
+    res.redirect('/diners/' + diner.uname);
   } catch (e) {
     next(e);
   }
@@ -64,8 +64,8 @@ exports.createDiner = async (req, res, next) => {
 
 exports.deleteDiner = async (req, res, next) => {
   try {
-    await db.one('DELETE FROM Diners WHERE username=$1 RETURNING *', [
-      req.params.username
+    await db.one('DELETE FROM Diners WHERE uname=$1 RETURNING *', [
+      req.params.uname
     ]);
     res.sendStatus(200);
   } catch (e) {
@@ -77,7 +77,7 @@ exports.registerValidations = [
   check('name', 'Name must not be empty.')
     .not()
     .isEmpty(),
-  check('username', 'Username must be at least 5 characters.').isLength({
+  check('uname', 'uname must be at least 5 characters.').isLength({
     min: 5
   }),
   check('password', 'Password must be at least 8 characters.')
@@ -107,7 +107,7 @@ exports.logDinerIn = (req, res, next) => {
     req.flash('success', info.message);
     req.logIn(user, err => {
       if (err) return next(err);
-      return res.redirect('/diners/' + user.username);
+      return res.redirect('/diners/' + user.uname);
     });
   })(req, res, next);
 };

@@ -39,8 +39,8 @@ block content
             p <b>Booking History</b>
         </information>
         br
-        if user.username === diner.username
+        if user.uname === diner.uname
             a.btn.btn-primary(href='/diners/logout') logout
-            a.btn.btn-danger.delete-diner(href="#" usr=diner.username) delete
+            a.btn.btn-danger.delete-diner(href="#" usr=diner.uname) delete
         br
   </section>
