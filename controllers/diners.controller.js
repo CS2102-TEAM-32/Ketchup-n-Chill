@@ -48,13 +48,13 @@ exports.getLoginPage = (req, res, next) => {
 };
 
 exports.createDiner = async (req, res, next) => {
-  if (!req.body.uname || !req.body.name || !req.body.password)
+  if (!req.body.uname || !req.body.name || !req.body.pass)
     return res.sendStatus(400);
   try {
-    const hash = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));
+    const hash = bcrypt.hashSync(req.body.pass, bcrypt.genSaltSync(10));
     await db.none('CALL add_diner($1, $2, $3)', [
-      req.body.name,
       req.body.uname,
+      req.body.name,
       hash
     ]);
     req.flash('success', 'You are now registered!');
@@ -82,11 +82,11 @@ exports.registerValidations = [
   check('uname', 'uname must be at least 5 characters.').isLength({
     min: 5
   }),
-  check('password', 'Password must be at least 8 characters.')
+  check('pass', 'pass must be at least 8 characters.')
     .isLength({ min: 8 })
     .custom((value, { req }) => {
-      if (value !== req.body.password2)
-        throw new Error('Passwords do not match.');
+      if (value !== req.body.pass2)
+        throw new Error('passs do not match.');
       return value;
     }),
   (req, res, next) => {
