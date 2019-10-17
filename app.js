@@ -28,7 +28,7 @@ app.use(
     secret: 'my-secret',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 9999999999999 } // 1 minute
+    cookie: { maxAge: 9999999999999 } // a long time
   })
 );
 app.use(flash());
