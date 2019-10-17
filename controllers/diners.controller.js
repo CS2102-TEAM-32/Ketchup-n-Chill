@@ -21,7 +21,7 @@ exports.showDinerProfile = async (req, res, next) => {
     const diner = await db.one('SELECT * FROM Diners WHERE uname=$1', [
       req.params.uname
     ]);
-    var points = await db.one('SELECT COUNT(*) FROM ReserveTimeslot WHERE did=$1', [
+    var points = await db.one('SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1', [
         req.params.uname
     ]);
     res.render('diner', {
