@@ -5,10 +5,10 @@ block content
   form(method='POST' action='/diners/register')
     #form-group
       label Name:
-      input.form-control(name='name' type='text')
+      input.form-control(name='name' type='text', value=prevName)
     #form-group
       label Username:
-      input.form-control(name='uname' type='text')
+      input.form-control(name='uname' type='text', value=prevUname)
     #form-group
       label Password:
       input.form-control(name='pass' type='password')

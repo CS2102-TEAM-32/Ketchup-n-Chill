@@ -93,7 +93,10 @@ exports.registerValidations = [
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       errors.array().map(error => req.flash('danger', error.msg));
-      return res.render('register');
+      return res.render('register', {
+        prevName: req.body.name,
+        prevUname: req.body.uname
+      });
     }
     return next();
   }
