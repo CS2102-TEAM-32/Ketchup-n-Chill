@@ -21,9 +21,10 @@ exports.showDinerProfile = async (req, res, next) => {
     const diner = await db.one('SELECT * FROM Diners WHERE uname=$1', [
       req.params.uname
     ]);
-    var points = await db.one('SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1', [
-        req.params.uname
-    ]);
+    var points = await db.one(
+      'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
+      [req.params.uname]
+    );
     res.render('diner', {
       title: diner.uname,
       diner: diner,
@@ -51,12 +52,13 @@ exports.createDiner = async (req, res, next) => {
     return res.sendStatus(400);
   try {
     const hash = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));
-    const diner = await db.one(
-      'INSERT INTO Diners (name, uname, password) VALUES ($1, $2, $3) RETURNING *',
-      [req.body.name, req.body.uname, hash]
-    );
+    await db.none('CALL add_diner($1, $2, $3)', [
+      req.body.name,
+      req.body.uname,
+      hash
+    ]);
     req.flash('success', 'You are now registered!');
-    res.redirect('/diners/' + diner.uname);
+    res.redirect('/diners/' + req.body.uname);
   } catch (e) {
     next(e);
   }
