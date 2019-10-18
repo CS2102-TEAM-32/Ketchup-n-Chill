@@ -26,6 +26,12 @@ block style
           clear: both;
           display: table;
         }
+        fineprint {
+          float: left;
+          color: grey;
+          font-size: 75%;
+          margin-left: 10px;
+        }
 
 block content
   <section>
@@ -53,7 +59,7 @@ block content
             p <b>Total Points </b> #{points.count}
             img(src='../images/restaurant_icon.png' style='width:25px; height:25px; float:left; margin-right: 10px;')
             p <b>Most Visited Restaurants</b>
-            if visited.length == 0
+            if visited.length === 0
                 p No reservations yet.
             else
             <clearfix>
@@ -67,11 +73,11 @@ block content
             hr
             img(src='../images/review_icon.png' style='width:25px; height:25px; float:left; margin-right: 10px;')
             p <b>Past Reviews</b>
-            if reviews.length == 0
+            if reviews.length === 0
                 p No reviews yet!
             else
                 each review in reviews
-                    if review.rating == null
+                    if review.rating === null
                         p No rating for this experience.
                     else
                         - for (var i = 0; i < review.rating; ++i) {
@@ -80,8 +86,12 @@ block content
                         - for (var i = 0; i < 5-review.rating; ++i) {
                             img(src='../images/emptystar_icon.png' style='width:10px; height:10px; float:left;')
                         - }
-                    br
-                    if review.review == null
+                        <clearfix>
+                        <fineprint>
+                        p #{review.rname}
+                        </fineprint>
+                        </clearfix>
+                    if review.review === null
                         p No review for this experience.
                     else
                         p #{review.review}
@@ -89,7 +99,7 @@ block content
             hr
             img(src='../images/history_icon.png' style='width:22px; height:22px; float:left; margin-right: 10px;')
             p <b>Booking History</b>
-            if history.length == 0
+            if history.length === 0
                 p No reservations yet.
             else
                 each reservation in history
