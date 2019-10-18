@@ -18,25 +18,25 @@ exports.showAllDiners = async (req, res, next) => {
 
 exports.showDinerProfile = async (req, res, next) => {
   try {
-      const diner = await db.one('SELECT * FROM Diners NATURAL JOIN Users WHERE uname=$1', [
-        req.params.uname
+    const diner = await db.one('SELECT * FROM Diners NATURAL JOIN Users WHERE uname=$1', [
+      req.params.uname
     ]);
-      const points = await db.one(
-        'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
+    const points = await db.one(
+      'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
+      [req.params.uname]
+    );
+    const mostVisited = await db.any(
+      'SELECT rname, raddress FROM ReserveTimeslots WHERE duname=$1 GROUP BY rname, raddress ORDER BY count(*) DESC LIMIT 3',
         [req.params.uname]
-      );
-      const mostVisited = await db.any(
-          'SELECT rname, raddress FROM ReserveTimeslots WHERE duname=$1 GROUP BY rname, raddress ORDER BY count(*) DESC LIMIT 3',
-          [req.params.uname]
-      );
-      const reviews = await db.any(
-          'SELECT rating, review FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3',
-          [req.params.uname]
-      );
-      const history = await db.any(
-          'SELECT r_date AS date, r_time AS time, rname, raddress FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3',
-          [req.params.uname]
-      );
+    );
+    const reviews = await db.any(
+      'SELECT rname, rating, review FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3',
+        [req.params.uname]
+    );
+    const history = await db.any(
+      'SELECT r_date AS date, r_time AS time, rname, raddress FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3',
+        [req.params.uname]
+    );
     res.render('diner', {
       title: diner.uname,
       diner: diner,
