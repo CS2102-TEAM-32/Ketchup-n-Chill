@@ -25,7 +25,7 @@ block content
             h4 Profile
         </nameplate>
         <information>
-            h2 Hello, #{diner.name}!
+            h2 Hello, #{diner.uname}!
             br
             hr
             img(src='../images/points_icon.png' style='width:25px; height:25px; float:left;')
@@ -39,8 +39,8 @@ block content
             p <b>Booking History</b>
         </information>
         br
-        if user.username === diner.username
+        if user.uname === diner.uname
             a.btn.btn-primary(href='/diners/logout') logout
-            a.btn.btn-danger.delete-diner(href="#" usr=diner.username) delete
+            a.btn.btn-danger.delete-diner(href="#" usr=diner.uname) delete
         br
   </section>

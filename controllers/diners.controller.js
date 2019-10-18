@@ -18,14 +18,15 @@ exports.showAllDiners = async (req, res, next) => {
 
 exports.showDinerProfile = async (req, res, next) => {
   try {
-    const diner = await db.one('SELECT * FROM Diners WHERE username=$1', [
-      req.params.username
+    const diner = await db.one('SELECT * FROM Diners WHERE uname=$1', [
+      req.params.uname
     ]);
-    var points = await db.one('SELECT COUNT(*) FROM ReserveTimeslot WHERE did=$1', [
-        req.params.username
-    ]);
+    var points = await db.one(
+      'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
+      [req.params.uname]
+    );
     res.render('diner', {
-      title: diner.username,
+      title: diner.uname,
       diner: diner,
       points: points
     });
@@ -47,16 +48,17 @@ exports.getLoginPage = (req, res, next) => {
 };
 
 exports.createDiner = async (req, res, next) => {
-  if (!req.body.username || !req.body.name || !req.body.password)
+  if (!req.body.uname || !req.body.name || !req.body.pass)
     return res.sendStatus(400);
   try {
-    const hash = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));
-    const diner = await db.one(
-      'INSERT INTO Diners (name, username, password) VALUES ($1, $2, $3) RETURNING *',
-      [req.body.name, req.body.username, hash]
-    );
+    const hash = bcrypt.hashSync(req.body.pass, bcrypt.genSaltSync(10));
+    await db.none('CALL add_diner($1, $2, $3)', [
+      req.body.uname,
+      req.body.name,
+      hash
+    ]);
     req.flash('success', 'You are now registered!');
-    res.redirect('/diners/' + diner.username);
+    res.redirect('/diners/' + req.body.uname);
   } catch (e) {
     next(e);
   }
@@ -64,8 +66,8 @@ exports.createDiner = async (req, res, next) => {
 
 exports.deleteDiner = async (req, res, next) => {
   try {
-    await db.one('DELETE FROM Diners WHERE username=$1 RETURNING *', [
-      req.params.username
+    await db.one('DELETE FROM Diners WHERE uname=$1 RETURNING *', [
+      req.params.uname
     ]);
     res.sendStatus(200);
   } catch (e) {
@@ -77,13 +79,13 @@ exports.registerValidations = [
   check('name', 'Name must not be empty.')
     .not()
     .isEmpty(),
-  check('username', 'Username must be at least 5 characters.').isLength({
+  check('uname', 'Username must be at least 5 characters.').isLength({
     min: 5
   }),
-  check('password', 'Password must be at least 8 characters.')
+  check('pass', 'Password must be at least 8 characters.')
     .isLength({ min: 8 })
     .custom((value, { req }) => {
-      if (value !== req.body.password2)
+      if (value !== req.body.pass2)
         throw new Error('Passwords do not match.');
       return value;
     }),
@@ -91,7 +93,10 @@ exports.registerValidations = [
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       errors.array().map(error => req.flash('danger', error.msg));
-      return res.render('register');
+      return res.render('register', {
+        prevName: req.body.name,
+        prevUname: req.body.uname
+      });
     }
     return next();
   }
@@ -107,7 +112,7 @@ exports.logDinerIn = (req, res, next) => {
     req.flash('success', info.message);
     req.logIn(user, err => {
       if (err) return next(err);
-      return res.redirect('/diners/' + user.username);
+      return res.redirect('/diners/' + user.uname);
     });
   })(req, res, next);
 };
