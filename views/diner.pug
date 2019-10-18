@@ -34,6 +34,7 @@ block content
             p <b>Most Visited Restaurants</b>
             br
             hr
+            img(src='../images/review_icon.png' style='width:25px; height:25px; float:left; margin-right: 10px;')
             p <b>Past Reviews</b>
             if reviews.length == 0
                 p No reviews yet!
@@ -55,7 +56,9 @@ block content
                         p #{review.review}
             br
             hr
+            img(src='../images/history_icon.png' style='width:25px; height:25px; float:left; margin-right: 10px;')
             p <b>Booking History</b>
+
         </information>
         br
         if user.uname === diner.uname
