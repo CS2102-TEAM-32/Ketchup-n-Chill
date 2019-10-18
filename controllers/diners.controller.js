@@ -21,14 +21,20 @@ exports.showDinerProfile = async (req, res, next) => {
     const diner = await db.one('SELECT * FROM Diners WHERE uname=$1', [
       req.params.uname
     ]);
-    var points = await db.one(
+    const points = await db.one(
       'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
       [req.params.uname]
-    );
+      );
+      const reviews = await db.any(
+          'SELECT rating, review FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time ASC LIMIT 3',
+          [req.params.uname]
+      );
+      console.log(reviews);
     res.render('diner', {
       title: diner.uname,
       diner: diner,
-      points: points
+      points: points,
+      reviews: reviews,
     });
   } catch (e) {
     next(e);
