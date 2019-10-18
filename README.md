@@ -25,7 +25,8 @@ ALTER TABLE "session"
 ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
 ```
 
-5. Run `CONNECTION_URL=postgres://YourUserName:YourPassword@YourHost:5432/YourDatabase npm start`
+5. Run `CONNECTION_URL=postgres://YourUserName:YourPassword@YourHost:5432/YourDatabase`
+6. Run `npm start`
 6. Visit http://localhost:3000
 
 ## Additional Information
