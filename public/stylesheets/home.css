@@ -1,0 +1,40 @@
+.search-box {
+  padding: 20px;
+  background-color: whitesmoke;
+  border-radius: 10px;
+  overflow: auto;
+  position: absolute;
+  left: 100px;
+  top: 200px;
+}
+
+.btn {
+  float: right;
+}
+
+#top-restaurants {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  border-spacing: 10px;
+}
+
+.container-fluid {
+  padding: 0px;
+  margin: 0px;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url(/images/bg.jpg);
+}
+
+#wrapper {
+  height: 100%;
+  width: 100%;
+}
+
+#rest {
+  padding: 20px 100px 20px 100px;
+}
