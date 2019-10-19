@@ -18,18 +18,35 @@ exports.showAllDiners = async (req, res, next) => {
 
 exports.showDinerProfile = async (req, res, next) => {
   try {
-    const diner = await db.one('SELECT * FROM Diners WHERE uname=$1', [
+    const diner = db.one('SELECT * FROM Diners NATURAL JOIN Users WHERE uname=$1', [
       req.params.uname
     ]);
-    var points = await db.one(
+    const points = db.one(
       'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
       [req.params.uname]
     );
+    const mostVisited = db.any(
+      'SELECT rname, raddress FROM ReserveTimeslots WHERE duname=$1 GROUP BY rname, raddress ORDER BY count(*) DESC LIMIT 3',
+        [req.params.uname]
+    );
+    const reviews = db.any(
+      'SELECT rname, rating, review FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3',
+        [req.params.uname]
+    );
+    const history = db.any(
+      'SELECT r_date AS date, r_time AS time, rname, raddress FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3',
+        [req.params.uname]
+    );
+	Promise.all([diner, points, mostVisited, reviews, history]).then(values => {
     res.render('diner', {
-      title: diner.uname,
-      diner: diner,
-      points: points
+      title: values[0].uname,
+      diner: values[0],
+      points: values[1],
+      visited: values[2],
+      reviews: values[3],
+      history: values[4]
     });
+	})
   } catch (e) {
     next(e);
   }

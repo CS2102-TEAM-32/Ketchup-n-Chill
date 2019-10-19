@@ -5,42 +5,107 @@ block style
         nameplate {
            float: left;
            width: 35%;
-           height: 500px;
            text-align: center;
            border-style: solid;
            border-width: 0.05px;
-           border-color: #EC3017;
+           border-color: #FECA1D;
            padding: 20px;
         }
         information {
            float: right;
            padding: 20px;
            width: 60%;
-           height: 500px;
+           height: 1000px;
+        }
+        divider {
+           float: left;
+           width: 33.33%;
+        }
+        clearfix:after {
+          content: "";
+          clear: both;
+          display: table;
+        }
+        fineprint {
+          float: left;
+          color: grey;
+          font-size: 75%;
+          margin-left: 10px;
         }
 
 block content
   <section>
         <nameplate>
-            h4 Profile
+            img(src='../images/logo.png' style='width:50px; height:50px;')  
+            br
+            br
+            h4 My Profile
+            br
+            p #{diner.name}
+            br
+            if user.uname === diner.uname
+                a.btn.btn-primary(href='/diners/logout') Log Out
+                br
+                br
+                a.btn.btn-danger.delete-diner(href="#" usr=diner.uname) Delete Account
+            br
         </nameplate>
+        <clearfix>
         <information>
             h2 Hello, #{diner.uname}!
             br
             hr
-            img(src='../images/points_icon.png' style='width:25px; height:25px; float:left;')
+            img(src='../images/points_icon.png' style='width:25px; height:25px; float:left; margin-right: 10px;')
             p <b>Total Points </b> #{points.count}
+            img(src='../images/restaurant_icon.png' style='width:25px; height:25px; float:left; margin-right: 10px;')
             p <b>Most Visited Restaurants</b>
+            if visited.length === 0
+                p No reservations yet.
+            else
+            <clearfix>
+                each visit in visited
+                    <divider>
+                    img(src='../images/restaurant1.jpeg' style='width:180px; height:115px; margin-right: 10px;')
+                    p #{visit.rname}, #{visit.raddress}
+                    </divider>   
+            </clearfix>
             br
             hr
+            img(src='../images/review_icon.png' style='width:25px; height:25px; float:left; margin-right: 10px;')
             p <b>Past Reviews</b>
+            if reviews.length === 0
+                p No reviews yet!
+            else
+                each review in reviews
+                    if review.rating === null
+                        p No rating for this experience.
+                    else
+                        - for (var i = 0; i < review.rating; ++i) {
+                            img(src='../images/star_icon.png' style='width:10px; height:10px; float:left;')
+                        - }
+                        - for (var i = 0; i < 5-review.rating; ++i) {
+                            img(src='../images/emptystar_icon.png' style='width:10px; height:10px; float:left;')
+                        - }
+                        <clearfix>
+                        <fineprint>
+                        p #{review.rname}
+                        </fineprint>
+                        </clearfix>
+                    if review.review === null
+                        p No review for this experience.
+                    else
+                        p #{review.review}
             br
             hr
+            img(src='../images/history_icon.png' style='width:22px; height:22px; float:left; margin-right: 10px;')
             p <b>Booking History</b>
+            if history.length === 0
+                p No reservations yet.
+            else
+                each reservation in history
+                    h10 #{reservation.rname}, #{reservation.raddress}
+                    p #{reservation.time} on #{reservation.date}
+                    br
         </information>
-        br
-        if user.uname === diner.uname
-            a.btn.btn-primary(href='/diners/logout') logout
-            a.btn.btn-danger.delete-diner(href="#" usr=diner.uname) delete
-        br
+        </clearfix>
   </section>
