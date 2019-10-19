@@ -14,14 +14,14 @@ router.get('/login', controller.getLoginPage);
 router.post('/login', controller.logDinerIn);
 router.get('/logout', controller.ensureAuthenticated, controller.logDinerOut);
 router.delete(
-  '/:username',
+  '/:uname',
   controller.ensureAuthenticated,
   controller.deleteDiner
 );
 router.get(
-  '/:username',
+  '/:uname',
   controller.ensureAuthenticated,
-  controller.showDinerParticulars
+  controller.showDinerProfile
 );
 
 module.exports = router;
