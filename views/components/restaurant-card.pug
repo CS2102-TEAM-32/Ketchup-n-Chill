@@ -1,8 +1,11 @@
-mixin restaurant-card
+mixin restaurant-card(rname, rating)
   div.card(style='width: 18rem; display: table-cell;')
     img.card-img-top(src='images/restaurant1.jpeg')
     div.card-body
-      h5.card-title restaurant name
+      - rname = rname || 'No restaurant to display at the moment'
+      h5.card-title #{rname}
+      h7.rating
+        |Rating: #{rating + '/5'|| 'NIL'}
       p.card-text
         | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore 
         |et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip 
