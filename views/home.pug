@@ -22,18 +22,17 @@ block content
         label Location
         input.form-control(name='location' type='text')
       div.form-group
-        label restaurant
+        label Restaurant
         input.form-control(name='restaurant' type='text')
       button.btn.btn-light(type='submit') Search
   div#rest
-    h1 #[strong Top restaurants]
+    h1 #[strong Top Restaurants]
     div#top-restaurants
-      // eventually fill the cards with data from model
       include ./components/restaurant-card.pug
-      + restaurant-card
-      + restaurant-card
-      + restaurant-card
-
+      each rest in restaurants
+        +restaurant-card(rest.rname, rest.avg)
+      else 
+        p No available top restaurants at the moment. Please check back later. 
 block style
   link(rel='stylesheet' href='/stylesheets/home.css')
     
