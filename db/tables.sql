@@ -122,3 +122,11 @@ CALL add_diner('jackbuibui', 'Jack Chen', '01234567');
 CALL add_rowner('Macdonalds', 'Ronald', 'abcdefgh');
 CALL add_rowner('KFC', 'Kentucky', 'kfckfckfc');
 CALL add_rowner('Dominoes', 'Domino', 'domiyess');
+
+-- Sample testing for Top 3 Restaurants --
+INSERT INTO Users(uname,name, pass) values  ('kh', 'kayheen', '123'), ('wy', 'wenyi', '456');
+INSERT INTO Diners values ('kh');
+INSERT INTO RestaurantOwners values ('wy');
+INSERT INTO OwnedRestaurants values ('wy', 'fudstreet', 'Popeyes'), ('wy', '1street', 'Bibimbap');
+INSERT INTO HasTimeslots values ('19/10/2019', '10:00', 'Popeyes', 'fudstreet', 10), ('19/10/2019', '12:00', 'Popeyes', 'fudstreet', 10), ('19/10/2019', '14:00', 'Bibimbap', '1street', 10);
+INSERT INTO ReserveTimeslots values ('19/10/2019', '10:00', 'Popeyes', 'fudstreet', 'kh', 'gr8', '3', '2', TRUE), ('19/10/2019', '12:00', 'Popeyes', 'fudstreet', 'kh', 'gr9', '4','3', TRUE), ('19/10/2019', '14:00', 'Bibimbap', '1street', 'kh', 'gr10', '5', '2', TRUE);

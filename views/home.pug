@@ -1,0 +1,38 @@
+extends layout
+
+block content
+  div#wrapper
+    div.search-box
+      form(method='GET' action='#')
+      h3 Book a restaurant
+      div.form-group
+        label Date
+        input.form-control(name='date' type='text')
+      div.form-group
+        label Time
+        input.form-control(name='time' type='text')
+      div.form-row
+        div.form-group.col-md-6
+          label Pax
+          input.form-control(name='pax' type='text')
+        div.form-group.col-md-6
+          label Cuisine
+          input.form-control(name='cuisine' type='text')
+      div.form-group
+        label Location
+        input.form-control(name='location' type='text')
+      div.form-group
+        label Restaurant
+        input.form-control(name='restaurant' type='text')
+      button.btn.btn-light(type='submit') Search
+  div#rest
+    h1 #[strong Top Restaurants]
+    div#top-restaurants
+      include ./components/restaurant-card.pug
+      each rest in restaurants
+        +restaurant-card(rest.rname, rest.avg)
+      else 
+        p No available top restaurants at the moment. Please check back later. 
+block style
+  link(rel='stylesheet' href='/stylesheets/home.css')
+    
