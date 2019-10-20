@@ -1,9 +1,5 @@
 const db = require('../db/index');
 
-var bcrypt = require('bcryptjs');
-var { check, validationResult } = require('express-validator');
-var passport = require('passport');
-
 exports.showAllRestaurants = async (req, res, next) => {
     try {
         const restaurants = await db.any('SELECT * FROM OwnedRestaurants');
