@@ -29,8 +29,12 @@ CREATE TABLE RestaurantOwners (
 
 CREATE TABLE OwnedRestaurants (
   uname varchar(50) REFERENCES RestaurantOwners(uname) ON DELETE SET NULL ON UPDATE CASCADE,
-  raddress varchar(50),
+  raddress varchar(1024),
   rname varchar(50),
+  cuisine varchar(50),
+  phone_num varchar(50),
+  opening_hr varchar(50),
+  closing_hr varchar(50),
   PRIMARY KEY (raddress, rname)
 );
 
@@ -124,9 +128,12 @@ CALL add_rowner('KFC', 'Kentucky', 'kfckfckfc');
 CALL add_rowner('Dominoes', 'Domino', 'domiyess');
 
 -- Sample testing for Top 3 Restaurants --
-INSERT INTO Users(uname,name, pass) values  ('kh', 'kayheen', '123'), ('wy', 'wenyi', '456');
+INSERT INTO Users(uname,name, pass) values  ('kh', 'kayheen', '123'), ('wy', 'wenyi', '456'), ('Twayne', 'Thomas Wayne', '123'), ('Bwayne', 'Bruce Wayne', '123');
 INSERT INTO Diners values ('kh');
-INSERT INTO RestaurantOwners values ('wy');
-INSERT INTO OwnedRestaurants values ('wy', 'fudstreet', 'Popeyes'), ('wy', '1street', 'Bibimbap');
+INSERT INTO RestaurantOwners values ('wy'), ('Twayne'), ('Bwayne');
+-- rname, address, uname, cuisine, phone_num, opening_hr, closing_hr
+INSERT INTO OwnedRestaurants values ('wy', 'fudstreet', 'Popeyes', 'Fast Food', '9111 0000', '0900', '2100'), ('wy', '1street', 'Bibimbap', 'Korean', '9123 4567', '0900', '2200');
+INSERT INTO OwnedRestaurants values('Twayne', '51 Ang Mo Kio Ave 3, #01-04 51@AMK, Singapore 569922', 'Bangkok Jam', 'Thai', '9114 4444', '0800', '2100');
+INSERT INTO OwnedRestaurants values('Bwayne', '#01, 490 Lor 6 Toa Payoh, 11, Singapore 310490', 'Mcdonalds', 'Fast Food', '9114 4445', '0800', '2100');
 INSERT INTO HasTimeslots values ('19/10/2019', '10:00', 'Popeyes', 'fudstreet', 10), ('19/10/2019', '12:00', 'Popeyes', 'fudstreet', 10), ('19/10/2019', '14:00', 'Bibimbap', '1street', 10);
 INSERT INTO ReserveTimeslots values ('19/10/2019', '10:00', 'Popeyes', 'fudstreet', 'kh', 'gr8', '3', '2', TRUE), ('19/10/2019', '12:00', 'Popeyes', 'fudstreet', 'kh', 'gr9', '4','3', TRUE), ('19/10/2019', '14:00', 'Bibimbap', '1street', 'kh', 'gr10', '5', '2', TRUE);
