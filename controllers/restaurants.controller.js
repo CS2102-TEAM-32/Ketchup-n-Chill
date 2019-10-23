@@ -2,7 +2,7 @@ const db = require('../db/index');
 
 exports.showAllRestaurants = async (req, res, next) => {
     try {
-        const restaurants = await db.any('SELECT * FROM OwnedRestaurants');
+        const restaurants = await db.any('SELECT * FROM OwnedRestaurants ORDER BY rname');
         res.render('restaurants', {
             title: 'All Restaurants',
             restaurants: restaurants
