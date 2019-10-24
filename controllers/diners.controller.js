@@ -52,6 +52,18 @@ exports.showDinerProfile = async (req, res, next) => {
   }
 };
 
+exports.showIncentives = async (req, res, next) => {
+  try {
+    const incentives = await db.any('SELECT * FROM Incentives');
+    res.render('incentives', {
+      title: 'Incentives',
+      incentives: incentives
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 exports.registerDiner = (req, res, next) => {
   res.render('register', {
     title: 'Register'
