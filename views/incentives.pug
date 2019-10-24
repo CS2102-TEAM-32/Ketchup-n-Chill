@@ -1,0 +1,41 @@
+extends layout
+
+block style
+  style(type="text/css").
+    incentiveBox {
+      display: inline-block;
+      margin-left: auto;
+      margin-right: auto;
+      width: 80%;
+      text-align: left;
+      border-style: solid;
+      border-width: 1px;
+      border-color: #FECA1D;
+      padding: 20px;
+    }
+    claimBox {
+      float: right;
+    }
+    clearfix:after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+
+block content
+    h4 You have __ points!
+    h4 Search box here
+    each incentive in incentives
+      <clearfix>
+      <incentiveBox>
+      h4 #{incentive.title}
+      li #{incentive.description}
+      li #{incentive.organisation}
+      p <b>To claim: </b> #{incentive.points}
+      </incentiveBox>
+      </clearfix>
+      <clearfix>
+      <claimBox>
+      a.btn.btn-primary(href='/diners/logout') Claim
+      </claimBox>
+      </clearfix>
