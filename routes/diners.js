@@ -14,7 +14,8 @@ router.get('/login', controller.getLoginPage);
 router.post('/login', controller.logDinerIn);
 router.get('/logout', controller.ensureAuthenticated, controller.logDinerOut);
 router.get(
-  '/incentives',
+  '/incentives/:uname',
+  controller.ensureAuthenticated,
   controller.showIncentives
 );
 router.delete(
