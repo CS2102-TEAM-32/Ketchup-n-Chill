@@ -52,6 +52,21 @@ exports.showDinerProfile = async (req, res, next) => {
   }
 };
 
+exports.showReservations = async (req, res, next) => {
+  try {
+    const reservations = await db.any(
+      'SELECT duname, r_date AS date, r_time AS time, rname, raddress, review, rating, num_diners, is_complete FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC',
+      [req.params.uname]
+    );
+    res.render('reservations', {
+      title: 'Reservations',
+      reservations: reservations
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 exports.showIncentives = async (req, res, next) => {
   try {
     const incentives = db.any('SELECT * FROM Incentives');
