@@ -59,11 +59,16 @@ exports.showIncentives = async (req, res, next) => {
       'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
       [req.params.uname]
     );
-    Promise.all([incentives, points]).then(values => {
+    const name = db.one(
+      'SELECT name FROM Users WHERE uname=$1',
+      [req.params.uname]
+    );
+    Promise.all([incentives, points, name]).then(values => {
     res.render('incentives', {
       title: 'Incentives',
       incentives: values[0],
-      points: values[1].count
+      points: values[1].count,
+      name: values[2].name
     });
   })
   } catch (e) {
