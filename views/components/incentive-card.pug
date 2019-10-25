@@ -1,0 +1,12 @@
+mixin incentive-card(title, description, organisation, points)
+  div.card(style='background-color: whitesmoke; display: block; padding: 10px; margin-bottom: 10px;')
+    div.card-body
+      - rname = rname || 'No restaurant to display at the moment'
+      h5.card-title #{title}
+      h6.points
+        |#{points} points
+      h6.card-text
+        | #{description} 
+      h7.organisation
+        | Organisation: #{organisation}
+      a.btn.btn-primary(href='/diners/logout')(style='border-color: #FECA1D; background-color: #FECA1D; float:right;') Claim
