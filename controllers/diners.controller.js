@@ -54,11 +54,18 @@ exports.showDinerProfile = async (req, res, next) => {
 
 exports.showIncentives = async (req, res, next) => {
   try {
-    const incentives = await db.any('SELECT * FROM Incentives');
+    const incentives = db.any('SELECT * FROM Incentives');
+    const points = db.one(
+      'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
+      [req.params.uname]
+    );
+    Promise.all([incentives, points]).then(values => {
     res.render('incentives', {
       title: 'Incentives',
-      incentives: incentives
+      incentives: values[0],
+      points: values[1].count
     });
+  })
   } catch (e) {
     next(e);
   }
