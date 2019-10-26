@@ -14,7 +14,7 @@ block content
       div.form-row
         div.form-group.col-md-6
           label Pax
-          input.form-control(name='pax' type='text')
+          input.form-control(name='pax' type='number', min=1, max=100 value=1)
         div.form-group.col-md-6
           label Cuisine
           input.form-control(name='cuisine' type='text')
