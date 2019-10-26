@@ -1,5 +1,4 @@
 body {
-  padding-top: 55px;
   font: 14px 'Lucida Grande', Helvetica, Arial, sans-serif;
 }
 
@@ -15,4 +14,13 @@ p, div, h1 {
 
 a {
   color: #00B7FF;
+}
+
+body .navbar-light .navbar-nav .nav-link {
+  color: white;
+  font-family: Verdana, Geneva, sans-serif;
+}
+
+body .navbar-light .navbar-nav .nav-link:hover {
+  color: blue;
 }
