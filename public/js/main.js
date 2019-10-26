@@ -13,3 +13,15 @@ $(document).ready(() => {
     });
   });
 });
+
+$('.date-input')
+  .on('change', function() {
+    console.log('asdfadklj');
+    this.setAttribute(
+      'data-date',
+      moment(this.value, 'YYYY-MM-DD').format(
+        this.getAttribute('data-date-format')
+      )
+    );
+  })
+  .trigger('change');

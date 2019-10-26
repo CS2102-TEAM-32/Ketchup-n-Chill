@@ -7,10 +7,10 @@ block content
       h3 Book a restaurant
       div.form-group
         label Date
-        input.form-control(name='date' type='text')
+        input.date-input.form-control(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
       div.form-group
         label Time
-        input.form-control(name='time' type='text')
+        input.form-control(name='time' type='time')
       div.form-row
         div.form-group.col-md-6
           label Pax
@@ -23,7 +23,7 @@ block content
         input.form-control(name='location' type='text')
       div.form-group
         label Restaurant
-        input.form-control(name='restaurant' type='text')
+        input.form-control(name='rname' type='text')
       button.btn.btn-light(type='submit') Search
   div#rest
     h1 #[strong Top Restaurants]
