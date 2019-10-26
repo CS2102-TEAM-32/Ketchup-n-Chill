@@ -3,7 +3,8 @@
   background-color: white;
   border-radius: 10px;
   overflow: auto;
-  width: 35%;
+  width: 30%;
+  min-width: 400px;
   float: right;
 }
 
