@@ -1,11 +1,10 @@
 .search-box {
   padding: 20px;
-  background-color: whitesmoke;
+  background-color: white;
   border-radius: 10px;
   overflow: auto;
-  position: absolute;
-  left: 100px;
-  top: 200px;
+  width: 35%;
+  float: right;
 }
 
 .btn {
@@ -33,6 +32,9 @@
 #wrapper {
   height: 100%;
   width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 10%;
 }
 
 #rest {
