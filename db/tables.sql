@@ -135,5 +135,5 @@ INSERT INTO RestaurantOwners values ('wy'), ('Twayne'), ('Bwayne');
 INSERT INTO OwnedRestaurants values ('wy', 'fudstreet', 'Popeyes', 'Fast Food', '9111 0000', '0900', '2100'), ('wy', '1street', 'Bibimbap', 'Korean', '9123 4567', '0900', '2200');
 INSERT INTO OwnedRestaurants values('Twayne', '51 Ang Mo Kio Ave 3, #01-04 51@AMK, Singapore 569922', 'Bangkok Jam', 'Thai', '9114 4444', '0800', '2100');
 INSERT INTO OwnedRestaurants values('Bwayne', '#01, 490 Lor 6 Toa Payoh, 11, Singapore 310490', 'Mcdonalds', 'Fast Food', '9114 4445', '0800', '2100');
-INSERT INTO HasTimeslots values ('19/10/2019', '10:00', 'Popeyes', 'fudstreet', 10), ('19/10/2019', '12:00', 'Popeyes', 'fudstreet', 10), ('19/10/2019', '14:00', 'Bibimbap', '1street', 10);
-INSERT INTO ReserveTimeslots values ('19/10/2019', '10:00', 'Popeyes', 'fudstreet', 'kh', 'gr8', '3', '2', TRUE), ('19/10/2019', '12:00', 'Popeyes', 'fudstreet', 'kh', 'gr9', '4','3', TRUE), ('19/10/2019', '14:00', 'Bibimbap', '1street', 'kh', 'gr10', '5', '2', TRUE);
+INSERT INTO HasTimeslots values ('2019-10-19', '10:00', 'Popeyes', 'fudstreet', 10), ('2019-10-19', '12:00', 'Popeyes', 'fudstreet', 10), ('2019-10-19', '14:00', 'Bibimbap', '1street', 10);
+INSERT INTO ReserveTimeslots values ('2019-10-19', '10:00', 'Popeyes', 'fudstreet', 'kh', 'gr8', '3', '2', TRUE), ('2019-10-19', '12:00', 'Popeyes', 'fudstreet', 'kh', 'gr9', '4','3', TRUE), ('2019-10-19', '14:00', 'Bibimbap', '1street', 'kh', 'gr10', '5', '2', TRUE);
