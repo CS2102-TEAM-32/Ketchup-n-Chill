@@ -41,3 +41,12 @@
 #rest {
   padding: 20px 100px 20px 100px;
 }
+
+.navbar-light .navbar-nav .nav-link:hover {
+  color: white;
+}
+
+.nav-item:hover {
+  border-bottom-style: solid;
+  border-color: white;
+}
