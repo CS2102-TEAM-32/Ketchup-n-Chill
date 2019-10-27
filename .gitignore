@@ -7,10 +7,12 @@ Icon?
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+.idea/*
 
 # Linux
 .directory
 *~
+.vs/
 
 
 # npm
