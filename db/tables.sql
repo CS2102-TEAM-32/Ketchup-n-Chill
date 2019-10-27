@@ -137,3 +137,6 @@ INSERT INTO OwnedRestaurants values('Twayne', '51 Ang Mo Kio Ave 3, #01-04 51@AM
 INSERT INTO OwnedRestaurants values('Bwayne', '#01, 490 Lor 6 Toa Payoh, 11, Singapore 310490', 'Mcdonalds', 'Fast Food', '9114 4445', '0800', '2100');
 INSERT INTO HasTimeslots values ('2019-10-19', '10:00', 'Popeyes', 'fudstreet', 10), ('2019-10-19', '12:00', 'Popeyes', 'fudstreet', 10), ('2019-10-19', '14:00', 'Bibimbap', '1street', 10);
 INSERT INTO ReserveTimeslots values ('2019-10-19', '10:00', 'Popeyes', 'fudstreet', 'kh', 'gr8', '3', '2', TRUE), ('2019-10-19', '12:00', 'Popeyes', 'fudstreet', 'kh', 'gr9', '4','3', TRUE), ('2019-10-19', '14:00', 'Bibimbap', '1street', 'kh', 'gr10', '5', '2', TRUE);
+-- Sample testing for home page search
+INSERT INTO HasTimeslots VALUES ('2019-12-12', '10:00', 'Popeyes', 'fudstreet', '10'); -- Simple test for search, search using date: 12 December 2019, time: 10:00AM (or none), etc
+INSERT INTO HasTimeslots VALUES ('2019-12-25', '12:00', 'Bibimbap', '1street', '15'); -- Another test for search
