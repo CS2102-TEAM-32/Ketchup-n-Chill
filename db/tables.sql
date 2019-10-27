@@ -86,7 +86,17 @@ CREATE TABLE Incentives (
 	description varchar(300),
 	organisation varchar(50) NOT NULL,
 	points integer NOT NULL,
-	is_claimed boolean DEFAULT FALSE
+	max_claims integer NOT NULL,
+	PRIMARY KEY (title, organisation)
+);
+
+CREATE TABLE Vouchers (
+	title varchar(50),
+	organisation varchar(50),
+	code varchar(50),
+	is_claimed boolean DEFAULT FALSE,
+	PRIMARY KEY (title, organisation, code),
+	FOREIGN KEY (title, organisation) REFERENCES Incentives (title, organisation) ON DELETE CASCADE
 );
 
 
