@@ -2,14 +2,15 @@ const db = require('../db/index');
 
 /* show all restaurants or selected restaurants based on req.query */
 exports.showRestaurants = async (req, res, next) => {
-  try {
-    const pgpSqlQuery = generatePgpSqlQuery(
-      'SELECT DISTINCT rname FROM OwnedRestaurants NATURAL JOIN HasTimeslots',
-      req.query
-    );
+  // take note: clause for num_available should not be just using =
 
-    const restaurants = await db.any(pgpSqlQuery, Object.values(req.query));
-    console.log(restaurants.length);
+  console.log(req.query);
+  try {
+    const restaurants = await queryDbFromReqQuery(
+      'SELECT DISTINCT rname FROM OwnedRestaurants NATURAL JOIN HasTimeslots',
+      req.query,
+      db.any
+    );
 
     res.render('restaurants', {
       title: 'Restaurants',
@@ -41,20 +42,41 @@ exports.showRestaurantProfile = async (req, res, next) => {
   }
 };
 
-/* 
- helper function to generate the string to be passed to pg promise.
+/*
+ helper function to form the query then query the db with it.
  takes in a string 'select ... from ...' as the first parameter.
- the second parameter is a req.query object.
- adds the where clause to the original string based on the keys from req.query object.
+ the second parameter is the req.query object.
+ the last parameter is a suitable pgp method (i.e none, one, oneOrNone, many, any)
+ forms the conditions in the where clause based on the keys from the req.query object,
+ then forms the full sql query with the given frontPortion,
+ then calls f with the query and the list of values.
+ returns the promise from the method, which you then can call await on.
 */
-function generatePgpSqlQuery(frontPortion, reqQueries) {
-  const keys = Object.keys(reqQueries);
+function queryDbFromReqQuery(frontPortion, reqQuery, f) {
+  const partials = {
+    date: 'date =',
+    time: 'time =',
+    pax: 'num_available >=', // help!
+    cuisine: 'cuisine =',
+    rname: 'rname ='
+  };
+
+  const keys = Object.keys(reqQuery);
   if (keys.length === 0) {
-    return frontPortion;
+    // the req.query object is empty, we will query without a where clause.
+    return f(frontPortion);
   }
 
   const conditions = keys
-    .map((key, index) => `${key} = $${index + 1}`) // want a base-1 index
+    .filter(key => reqQuery[key] !== '') // if they are empty, don't include in where clause
+    .map((key, index) => `${partials[key]} $${index + 1}`) // pgp uses base-1 index
     .reduce((acc, curr) => `${acc} AND ${curr}`);
-  return `${frontPortion} WHERE ${conditions}`;
+
+  // console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
+
+  // make the function call and return the promise
+  return f(
+    `${frontPortion} WHERE ${conditions}`,
+    Object.values(reqQuery).filter(value => value !== '')
+  );
 }
