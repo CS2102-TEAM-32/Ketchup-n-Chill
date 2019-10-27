@@ -48,6 +48,12 @@ app.get('*', (req, res, next) => {
   next();
 });
 
+// Global variables
+app.use((req, res, next) => {
+  res.locals.user = req.user || null;
+  next();
+})
+
 app.use('/', indexRouter);
 app.use('/diners', dinersRouter);
 app.use('/restaurants', restaurantsRouter);
