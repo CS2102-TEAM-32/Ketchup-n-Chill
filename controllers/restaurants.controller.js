@@ -16,6 +16,7 @@ exports.showRestaurants = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
+
 };
 
 exports.showRestaurantProfile = async (req, res, next) => {

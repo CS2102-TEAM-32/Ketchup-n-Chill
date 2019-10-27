@@ -2,52 +2,41 @@ extends layout
 
 block style
     style(type="text/css").
-        content-table {
-            margin: 25px 0;
-            float:top;
-            position:relative;
-            left:400px;
-            width:100%;
-            font-size: 3em;
-            border-radius: 10px 10px 0 0;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        table {
+            margin: auto;
+            width: 75%;
         }
-        content-table center{
-            margin-left:auto;
-            margin-right:auto;
-        }
-        content-table thead {
+        table thead {
             background-color: #e22512;
             color: #ffffff;
             text-align: center;
             font-weight: bold;
         }
-        content-table th
-        content-table td {
+        table td {
             padding: 12px 15px;
+            font
         }
-        content-table tbody tr {
+        table th {
+            padding: 12px 15px;
+            font-size: 20px;
+        }
+        table tbody tr {
             border-bottom: 1px solid #dddddd;
         }
-        content-table tbody tr:nth-of-type(even) {
+        table tbody tr:nth-of-type(even) {
             background-color: #f3f3f3;
         }
-        content-table tbody tr:last-of-type {
+        table tbody tr:last-of-type {
             border-bottom: 2px solid #980403;
         }
-        content-table td {
+        table td {
             text-align:center;
 
         }
-        content-table td:hover {
+        table td:hover {
             transform: scale(1.06);
             background: #ffb5b7;
 
-        }
-        link {
-            color: inherit;
-            text-decoration:none;
         }
         clearfix:after {
             content: "";
@@ -59,8 +48,6 @@ block style
 block content
     h1(style='text-align:center; padding-top:20px') All Restaurants
     div
-        <clearfix>
-            <content-table>
             table
                 thead
                     tr
@@ -70,11 +57,7 @@ block content
                     each restaurant in restaurants
                         tr
                             td
-                                <link>
-                                    a(href="/restaurants/" + restaurant.rname)= restaurant.rname
-                                </link>
+                                a(href="/restaurants/" + restaurant.rname)= restaurant.rname
 
-            </content-table>
-        </clearfix>
 
 
