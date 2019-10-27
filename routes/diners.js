@@ -13,6 +13,16 @@ router.post(
 router.get('/login', controller.getLoginPage);
 router.post('/login', controller.logDinerIn);
 router.get('/logout', controller.ensureAuthenticated, controller.logDinerOut);
+router.get(
+  '/reservations',
+  controller.ensureAuthenticated,
+  controller.showReservations
+);
+router.get(
+  '/incentives',
+  controller.ensureAuthenticated,
+  controller.showIncentives
+);
 router.delete(
   '/:uname',
   controller.ensureAuthenticated,

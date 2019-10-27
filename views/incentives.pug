@@ -1,0 +1,28 @@
+extends layout
+
+block style
+  style(type="text/css").
+    #incentives {
+      display: inline-table;
+      width: 100%;
+      table-layout: auto;
+      border-spacing: 10px;
+    }
+    .clearfix::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+
+block content
+  br
+  br
+  br
+  h4 Hello #{name}, you have #{points} points!
+  h4 Search box here
+  div#incentives
+    include ./components/incentive-card.pug
+    each incentive in incentives
+      +incentive-card(incentive.title, incentive.description, incentive.organisation, incentive.points)
+    else 
+      p No available incentives at the moment. Please check back later.

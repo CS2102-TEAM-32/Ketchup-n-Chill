@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS Admins CASCADE;
 DROP TABLE IF EXISTS RestaurantOwners CASCADE;
 DROP TABLE IF EXISTS Users CASCADE;
 DROP TABLE IF EXISTS Incentives CASCADE;
+DROP TABLE IF EXISTS Vouchers CASCADE;
 DROP TABLE IF EXISTS Menu CASCADE;
 DROP TABLE IF EXISTS FoodItems CASCADE;
 DROP TABLE IF EXISTS OwnedRestaurants CASCADE;
@@ -44,7 +45,7 @@ CREATE TABLE HasTimeslots (
 	rname VARCHAR(50),
 	raddress TEXT,
 	num_available integer,
-	PRIMARY KEY(date, time),
+	PRIMARY KEY(rname, raddress, date, time),
 	FOREIGN KEY(rname, raddress) REFERENCES OwnedRestaurants(rname, raddress) ON DELETE CASCADE
 );
 
@@ -58,8 +59,7 @@ CREATE TABLE ReserveTimeslots (
 	rating INTEGER CHECK ((rating IS NULL) OR (rating >= 0 AND rating <= 5)),
 	num_diners integer,
 	is_complete boolean DEFAULT FALSE,
-	FOREIGN KEY(r_date, r_time) REFERENCES HasTimeslots(date, time),
-	FOREIGN KEY(rname, raddress) REFERENCES OwnedRestaurants(rname, raddress),
+	FOREIGN KEY(rname, raddress, r_date, r_time) REFERENCES HasTimeslots(rname, raddress, date, time),
 	PRIMARY KEY(r_date, r_time, rname, raddress, duname)
 );
 
@@ -86,7 +86,17 @@ CREATE TABLE Incentives (
 	description varchar(300),
 	organisation varchar(50) NOT NULL,
 	points integer NOT NULL,
-	is_claimed boolean DEFAULT FALSE
+	max_claims integer NOT NULL,
+	PRIMARY KEY (title, organisation)
+);
+
+CREATE TABLE Vouchers (
+	title varchar(50),
+	organisation varchar(50),
+	code varchar(50),
+	is_claimed boolean DEFAULT FALSE,
+	PRIMARY KEY (title, organisation, code),
+	FOREIGN KEY (title, organisation) REFERENCES Incentives (title, organisation) ON DELETE CASCADE
 );
 
 
@@ -117,15 +127,6 @@ AS $$ BEGIN
 INSERT INTO Users VALUES (uname, name, pass);
 INSERT INTO RestaurantOwners VALUES (uname);
 END; $$ LANGUAGE plpgsql;
-
--- Sample Starting Test Cases --
-CALL add_admin('popgoesweasel', 'Chong Kay Heen', 'g00dpa$$w0rd');
-CALL add_diner('qtehpie', 'Teh Wen Yi', '12345678');
-CALL add_diner('wailunoob', 'Lim Wai Lun', 'wailunoob');
-CALL add_diner('jackbuibui', 'Jack Chen', '01234567');
-CALL add_rowner('Macdonalds', 'Ronald', 'abcdefgh');
-CALL add_rowner('KFC', 'Kentucky', 'kfckfckfc');
-CALL add_rowner('Dominoes', 'Domino', 'domiyess');
 
 -- Sample testing for Top 3 Restaurants --
 INSERT INTO Users(uname,name, pass) values  ('kh', 'kayheen', '123'), ('wy', 'wenyi', '456'), ('Twayne', 'Thomas Wayne', '123'), ('Bwayne', 'Bruce Wayne', '123');

@@ -34,7 +34,7 @@ exports.showDinerProfile = async (req, res, next) => {
         [req.params.uname]
     );
     const history = db.any(
-      'SELECT r_date AS date, r_time AS time, rname, raddress FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3',
+      "SELECT r_date, to_char(r_date, 'DD MON YYYY') AS date, r_time, to_char(r_time, 'HH12.MIPM') AS time, rname, raddress FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3",
         [req.params.uname]
     );
 	Promise.all([diner, points, mostVisited, reviews, history]).then(values => {
@@ -47,6 +47,54 @@ exports.showDinerProfile = async (req, res, next) => {
       history: values[4]
     });
 	})
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.showReservations = async (req, res, next) => {
+  try {
+    const reservations = db.any(
+      "SELECT duname, r_date, to_char(r_date, 'DD MON YYYY') AS date, r_time, to_char(r_time, 'HH12.MIPM') AS time, rname, raddress, review, rating, num_diners, is_complete FROM ReserveTimeslots WHERE duname=$1 AND r_date < current_date OR (r_date = current_date AND r_time >= current_time) ORDER BY r_date DESC, r_time DESC",
+      [req.user.uname]
+    );
+    const upcoming = db.any(
+      "SELECT duname, r_date, to_char(r_date, 'DD MON YYYY') AS date, r_time, to_char(r_time, 'HH12.MIPM') AS time, rname, raddress, review, rating, num_diners, is_complete FROM ReserveTimeslots WHERE duname=$1 AND r_date > current_date OR (r_date = current_date AND r_time < current_time) ORDER BY r_date DESC, r_time DESC",
+      [req.user.uname]
+    );
+    const duname = req.user.uname;
+    Promise.all([reservations, upcoming, duname]).then(values => {
+    res.render('reservations', {
+      title: 'Reservations',
+      reservations: values[0],
+      upcoming: values[1],
+      duname: values[2]
+    });
+    })
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.showIncentives = async (req, res, next) => {
+  try {
+    const incentives = db.any('SELECT * FROM Incentives');
+    const points = db.one(
+      'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
+      [req.user.uname]
+    );
+    const name = db.one(
+      'SELECT name FROM Users WHERE uname=$1',
+      [req.user.uname]
+    );
+    Promise.all([incentives, points, name]).then(values => {
+    res.render('incentives', {
+      title: 'Incentives',
+      incentives: values[0],
+      points: values[1].count,
+      name: values[2].name
+    });
+  })
   } catch (e) {
     next(e);
   }
