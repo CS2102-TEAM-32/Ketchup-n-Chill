@@ -2,9 +2,6 @@ const db = require('../db/index');
 
 /* show all restaurants or selected restaurants based on req.query */
 exports.showRestaurants = async (req, res, next) => {
-  // take note: clause for num_available should not be just using =
-
-  console.log(req.query);
   try {
     const restaurants = await queryDbFromReqQuery(
       'SELECT DISTINCT rname FROM OwnedRestaurants NATURAL JOIN HasTimeslots',
