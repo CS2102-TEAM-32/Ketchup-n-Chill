@@ -1,7 +1,3 @@
-body {
-  padding-top: 55px;
-  font: 14px 'Lucida Grande', Helvetica, Arial, sans-serif;
-}
 
 html,
 body {
@@ -15,4 +11,10 @@ p, div, h1 {
 
 a {
   color: #00B7FF;
+}
+
+body .navbar-light .navbar-nav .nav-link {
+  color: white;
+  font-family: Arial,Helvetica Neue,Helvetica,sans-serif; 
+  font-weight: bold;
 }
