@@ -1,0 +1,19 @@
+extends layout
+
+block style
+  style(type="text/css").
+    #reservations {
+      display: inline-table;
+      width: 100%;
+      table-layout: auto;
+      border-spacing: 10px;
+    }
+
+block content
+    h1 #{reservations[0].duname}'s Reservations
+    div#reservations
+      include ./components/reservation-card.pug
+      each reservation in reservations
+        +reservation-card(reservation.date, reservation.time, reservation.rname, reservation.raddress, reservation.review, reservation.rating, reservation.num_diners, reservation.is_complete)
+      else 
+        p You have not made any reservations.
