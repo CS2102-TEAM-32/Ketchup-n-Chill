@@ -14,12 +14,12 @@ router.get('/login', controller.getLoginPage);
 router.post('/login', controller.logDinerIn);
 router.get('/logout', controller.ensureAuthenticated, controller.logDinerOut);
 router.get(
-  '/reservations/:uname',
+  '/reservations',
   controller.ensureAuthenticated,
   controller.showReservations
 );
 router.get(
-  '/incentives/:uname',
+  '/incentives',
   controller.ensureAuthenticated,
   controller.showIncentives
 );
