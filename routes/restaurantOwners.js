@@ -14,4 +14,9 @@ router.get(
     controller.showHomePage
 );
 
+router.get(
+    '/:uname/:rname',
+    controller.showRestaurant
+);
+
 module.exports = router;

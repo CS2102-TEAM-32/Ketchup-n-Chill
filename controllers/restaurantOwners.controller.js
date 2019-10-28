@@ -17,6 +17,18 @@ exports.showHomePage = async (req, res, next) => {
         next(e);
     }
 };
+
+exports.showRestaurant = async (req, res, next) => {
+    try {
+        const restaurantDetails = await db.one('SELECT * FROM OwnedRestaurants WHERE uname=$1 AND rname=$2', [req.params.uname, req.params.rname]);
+        res.render('restaurantownersrestaurant', {
+            title: [req.params.rname] + [req.params.uname],
+            details: restaurantDetails
+        });
+    } catch (e) {
+        next(e);
+    }
+};
 // need to do the authentication, to do together with wailun... 
 
 
