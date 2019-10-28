@@ -1,6 +1,6 @@
-mixin restaurant-card(rname, rating, cuisine)
+mixin restaurant-card(rname, rating, cuisine, address)
   div.card(style='width: 18rem; display: table-cell;')
-    img.card-img-top(src='images/restaurant1.jpeg')
+    img.card-img-top(src='../images/restaurant1.jpeg')
     div.card-body
       - rname = rname || 'No restaurant to display at the moment'
       h5.card-title #{rname}
@@ -8,3 +8,5 @@ mixin restaurant-card(rname, rating, cuisine)
         |Rating: #{rating + '/5'|| 'NIL'}
         br
         |Cuisine: #{cuisine || 'NIL'}
+        br
+        |Address: #{address || 'NIL'}

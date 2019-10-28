@@ -30,7 +30,7 @@ block content
     div#top-restaurants
       include ./components/restaurant-card.pug
       each rest in restaurants
-        +restaurant-card(rest.rname, rest.avg, rest.cuisine)
+        +restaurant-card(rest.rname, rest.avg, rest.cuisine, rest.raddress)
       else 
         p No available top restaurants at the moment. Please check back later. 
 block style
