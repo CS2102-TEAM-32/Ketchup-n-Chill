@@ -46,7 +46,7 @@ CREATE TABLE HasTimeslots (
 	raddress TEXT,
 	num_available integer,
 	PRIMARY KEY(rname, raddress, date, time),
-	FOREIGN KEY(rname, raddress) REFERENCES OwnedRestaurants(rname, raddress) ON DELETE CASCADE
+	FOREIGN KEY(rname, raddress) REFERENCES OwnedRestaurants(rname, raddress) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE ReserveTimeslots (
@@ -59,7 +59,8 @@ CREATE TABLE ReserveTimeslots (
 	rating INTEGER CHECK ((rating IS NULL) OR (rating >= 0 AND rating <= 5)),
 	num_diners integer,
 	is_complete boolean DEFAULT FALSE,
-	FOREIGN KEY(rname, raddress, r_date, r_time) REFERENCES HasTimeslots(rname, raddress, date, time),
+	FOREIGN KEY(rname, raddress, r_date, r_time) REFERENCES HasTimeslots(rname, raddress, date, time)
+	ON UPDATE CASCADE,
 	PRIMARY KEY(r_date, r_time, rname, raddress, duname)
 );
 

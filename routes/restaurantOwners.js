@@ -14,9 +14,17 @@ router.get(
     controller.showHomePage
 );
 
+router.post('/:uname/:rname', controller.updateRestaurant);
+
 router.get(
     '/:uname/:rname',
     controller.showRestaurant
+);
+
+
+router.get(
+    '/:uname/:rname/edit',
+    controller.editRestaurant
 );
 
 module.exports = router;

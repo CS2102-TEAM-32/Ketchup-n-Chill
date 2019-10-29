@@ -33,36 +33,64 @@ block style
         }
         .btn {
             float: center;
+            background-color: #FECA1D;
         }
+        .wrapper {
+            text-align: center;
+        }
+
+        #rest {
+            padding: 10px 20px 10px 20px;
+        }
+
 
 block content
 
     <restplate>
         h1(style="color:red") #{details.rname}
-        img(src='../../../images/restaurant1.jpeg' style='width:500px; height:300px; float:top;')
+        img(src='/images/restaurant1.jpeg' style='width:500px; height:300px; float:top;')
         br
         br
         <information>
-        img(src='../../../images/address_loc.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+        img(src='/images/address_loc.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
         p <b>Address:</b>
         p #{details.raddress}
         br
-        img(src='../../../images/rest_owner.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+        img(src='/images/rest_owner.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
         p <b>Restaurant Owner:</b>
         p #{details.uname}
         br
-        img(src='../../../images/cuisine.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+        img(src='/images/cuisine.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
         p <b>Cuisine:</b>
         p #{details.cuisine}
         br
-        img(src='../../../images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+        img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
         p <b>Opening Hours:</b>
         p #{details.opening_hr} - #{details.closing_hr}
         br
-        img(src='../../../images/telephone.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+        img(src='/images/telephone.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
         p <b>Contact Number:</b>
         p  #{details.phone_num}
+        br 
+        p <b>Current Available Timeslots:</b> 
         </information>
-        button.btn.btn-light(type='submit' value='Submit') Edit Timeslot // border for this. 
-        button.btn.btn-light(type='submit' value='Submit') Edit Details  // border for this too.
+        div#rest
+            table(id="timeslots", align="center", width: "100%")
+                thead 
+                    tr
+                        th No.
+                        th Date
+                        th Time
+                        th Pax
+                tbody
+                    each timeslot, i in timeslots
+                        tr 
+                            td= i+1
+                            td #{timeslot.date}
+                            td #{timeslot.time}
+                            td #{timeslot.num_available}
+        
     </restplate>
+    br
+    div.wrapper
+        a.btn.btn-light(href='/restaurantowners/' + details.uname + '/' + details.rname + '/edit') Edit Information
