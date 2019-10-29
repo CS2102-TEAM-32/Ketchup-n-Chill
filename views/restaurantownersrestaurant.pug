@@ -37,11 +37,13 @@ block style
         }
         .wrapper {
             text-align: center;
+
         }
 
         #rest {
             padding: 10px 20px 10px 20px;
         }
+
 
 
 block content
@@ -75,7 +77,7 @@ block content
         p <b>Current Available Timeslots:</b> 
         </information>
         div#rest
-            table(id="timeslots", align="center", width: "100%")
+            table(id="timeslots", align="center", width: "100%", font-size: "20px")
                 thead 
                     tr
                         th No.
@@ -93,4 +95,5 @@ block content
     </restplate>
     br
     div.wrapper
-        a.btn.btn-light(href='/restaurantowners/' + details.uname + '/' + details.rname + '/edit') Edit Information
+        a.btn.btn-light(href='/restaurantowners/' + details.uname + '/' + details.rname + '/' + details.raddress + '/edit') Edit Information
+        a.btn.btn-light(href='/restaurantowners/' + details.uname + '/' + details.rname + '/' + details.raddress + '/edittimeslot') Edit Timeslots

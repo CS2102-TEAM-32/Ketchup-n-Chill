@@ -14,17 +14,22 @@ router.get(
     controller.showHomePage
 );
 
-router.post('/:uname/:rname', controller.updateRestaurant);
+router.post('/:uname/:rname/:raddress', controller.updateRestaurant);
 
 router.get(
-    '/:uname/:rname',
+    '/:uname/:rname/:raddress',
     controller.showRestaurant
 );
 
 
 router.get(
-    '/:uname/:rname/edit',
+    '/:uname/:rname/:raddress/edit',
     controller.editRestaurant
+);
+
+router.get(
+    '/:uname/:rname/:raddress/edittimeslot',
+    controller.editTimeslots
 );
 
 module.exports = router;

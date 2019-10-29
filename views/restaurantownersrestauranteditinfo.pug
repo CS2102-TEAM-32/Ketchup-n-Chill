@@ -43,34 +43,34 @@ block style
 block content
 
     <restplate>
-        form(method='POST' action='/restaurantowners/' + details.uname + '/' + details.rname)
+        form(method='POST' action='/restaurantowners/' + details.uname + '/' + details.rname + '/' + details.raddress)
             <information>
-            img(src='../../../images/restaurant1.jpeg' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+            img(src='/images/restaurant1.jpeg' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label(for='rname') Restaurant Name:
                 input#rname.form-control(type='text', value=details.rname, name='name')
             br
-            img(src='../../../images/address_loc.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+            img(src='/images/address_loc.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label(for='raddress') Address:
                 input#rnaddress.form-control(type='text', value=details.raddress, name='address')
             br
-            img(src='../../../images/cuisine.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+            img(src='/images/cuisine.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label(for='cuisine') Cuisine:
                 input#cuisine.form-control(type='text', value=details.cuisine, name='cuisine')
             br
-            img(src='../../../images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+            img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label(for='opening_hr') Opening Hour:
                 input#opening_hr.form-control(type='text', value=details.opening_hr, name='opening_hr')
             br
-            img(src='../../../images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+            img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label(for='closing_hr') Closing Hour:
                 input#closing_hr.form-control(type='text', value=details.closing_hr, name='closing_hr')
             br
-            img(src='../../../images/telephone.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+            img(src='/images/telephone.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label(for='phone_num') Contact Number:
                 input#phone_num.form-control(type='text', value=details.phone_num, name='phone_num')

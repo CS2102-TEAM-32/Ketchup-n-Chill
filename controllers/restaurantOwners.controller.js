@@ -22,8 +22,8 @@ exports.showRestaurant = async (req, res, next) => {
     try {
         // need to query the address also hmz. 
         console.log("goes to show res instead");
-        const restaurantDetails = await db.one('SELECT * FROM OwnedRestaurants WHERE uname=$1 AND rname=$2', [req.params.uname, req.params.rname]);
-        const timeslots = await db.any('SELECT * FROM HasTimeslots WHERE rname=$1 ORDER BY date DESC, time', [req.params.rname]);
+        const restaurantDetails = await db.one('SELECT * FROM OwnedRestaurants WHERE uname=$1 AND rname=$2 AND raddress=$3', [req.params.uname, req.params.rname, req.params.raddress]);
+        const timeslots = await db.any('SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress=$2 ORDER BY date DESC, time', [req.params.rname, req.params.raddress]);
         res.render('restaurantownersrestaurant', {
             title: [req.params.uname] + "'s " + [req.params.rname],
             details: restaurantDetails,
@@ -36,9 +36,8 @@ exports.showRestaurant = async (req, res, next) => {
 
 
 exports.editRestaurant = async (req, res, next) => {
-    // not the most efficient way to query again, will think of a better way to pass information around.
     try {
-        const restaurantDetails = await db.one('SELECT * FROM OwnedRestaurants WHERE uname=$1 AND rname=$2', [req.params.uname, req.params.rname]);
+        const restaurantDetails = await db.one('SELECT * FROM OwnedRestaurants WHERE uname=$1 AND rname=$2 AND raddress=$3', [req.params.uname, req.params.rname, req.params.raddress]);
         res.render('restaurantownersrestauranteditinfo', {
             title: 'Edit ' + [req.params.rname],
             details: restaurantDetails
@@ -48,10 +47,22 @@ exports.editRestaurant = async (req, res, next) => {
     }
 };
 
+exports.editTimeslots = async (req, res, next) => {
+    try {
+        const timeslots = await db.one('SELECT * FROM OwnedRestaurants NATURAL JOIN HasTimeslot WHERE uname=$1 AND rname=$2 AND raddress=$3', [req.params.uname, req.params.rname, req.params.raddress]);
+        res.render('restaurantownersrestauranteditinfo', {
+            title: 'Edit ' + [req.params.rname],
+            timeslots: timeslots
+        });
+    } catch (e) {
+        next(e);
+    }
+};
+
 exports.updateRestaurant = async (req, res, next) => {
     if (!req.body.name || !req.body.address || !req.body.cuisine || !req.body.opening_hr || !req.body.closing_hr || !req.body.phone_num) {
         req.flash("Cannot leave any entry blank.");
-        res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/edit');
+        res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress + '/edit');
     } else {
         try {
             // need to check for validity of the requests 
@@ -94,7 +105,7 @@ exports.updateRestaurant = async (req, res, next) => {
                 await db.none('UPDATE OwnedRestaurants SET rname=$1, raddress=$2, cuisine=$3, opening_hr=$4, closing_hr=$5, phone_num=$6 WHERE uname=$7 AND rname=$8', temp);
                 req.flash("Restaurant successfully updated!");
                 // render the restaurant page with the updated details. 
-                res.redirect('/restaurantowners/' + req.params.uname + '/' + req.body.name);
+                res.redirect('/restaurantowners/' + req.params.uname + '/' + req.body.name + '/' + req.body.address);
             }
 
         } catch (e) {
