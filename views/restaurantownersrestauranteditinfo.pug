@@ -43,7 +43,8 @@ block style
 block content
 
     <restplate>
-        form(method='POST' action='/restaurantowners/' + details.uname + '/' + details.rname + '/' + details.raddress)
+        - console.log(details.raddress)
+        form(method='POST' action='/restaurantowners/' + details.uname + '/' + details.rname + '/' + details.raddress.replace("#", "%23"))
             <information>
             img(src='/images/restaurant1.jpeg' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group

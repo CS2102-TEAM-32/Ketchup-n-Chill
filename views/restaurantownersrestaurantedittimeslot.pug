@@ -1,0 +1,101 @@
+extends layout
+
+block style
+    style(type="text/css").
+        restplate {
+            float: top;
+            width: 50%;
+            text-align: center;
+            border-style: solid;
+            border-width: 0.05px;
+            border-color: #FECA1D;
+            margin-top: 30px;
+            margin-left:auto;
+            margin-right:auto;
+            display:block;
+        }
+        plate {
+            float: top;
+            width: 50%;
+            text-align: center;
+            border-style: solid;
+            border-width: 0.05px;
+            border-color: rgba(254, 255, 246, 0);
+            margin-top: 30px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        information {
+            text-align: left;
+            font-size: 25px;
+
+        }
+        .btn {
+            float: center;
+            background-color: #FECA1D;
+
+        }
+        .wrapper {
+            text-align: center;
+        }
+        #rest {
+            padding: 10px 20px 10px 20px;
+        }
+
+
+block content
+
+    <restplate>
+        h1(style="color:red") To include restaurant name 
+        form(method='POST' action='/restaurantowners/' + timeslots.uname + '/' + timeslots.rname + '/' + timeslots.raddress + '/timeUpdated')
+            <information>
+            img(src='/images/restaurant1.jpeg' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+            div.form-group
+                label(for='rname') Start Date:
+                input#rname.form-control(type='text', value=timeslots.rname, name='name')
+            br
+            img(src='/images/address_loc.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+            div.form-group
+                label(for='raddress') End Date:
+                input#rnaddress.form-control(type='text', value=timeslots.raddress, name='address')
+            br
+            img(src='/images/cuisine.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+            div.form-group
+                label(for='cuisine') Start Time:
+                input#cuisine.form-control(type='text', value=timeslots.cuisine, name='cuisine')
+            br
+            img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+            div.form-group
+                label(for='opening_hr') End Time:
+                input#opening_hr.form-control(type='text', value=timeslots.opening_hr, name='opening_hr')
+            br
+            img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+            div.form-group
+                label(for='closing_hr') Num Pax:
+                input#closing_hr.form-control(type='text', value=timeslots.closing_hr, name='closing_hr')
+            br
+            img(src='/images/telephone.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
+            div.form-group
+                label(for='phone_num') Days:
+                input#phone_num.form-control(type='text', value=timeslots.phone_num, name='phone_num')
+            button.btn.btn-light(type='submit' value='Submit') Add
+            </information>
+
+    </restplate>
+    div#rest
+        h1(align="center") Current Timeslots:
+        table(id="currtimes", align="center", width: "100%", font-size: "20px")
+            thead 
+                tr
+                    th No.
+                    th Date
+                    th Time
+                    th Pax
+            tbody
+                each timeslot, i in timeslots
+                    tr 
+                        td= i+1
+                        td #{timeslot.date}
+                        td #{timeslot.time}
+                        td #{timeslot.num_available}

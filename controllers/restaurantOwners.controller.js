@@ -49,9 +49,9 @@ exports.editRestaurant = async (req, res, next) => {
 
 exports.editTimeslots = async (req, res, next) => {
     try {
-        const timeslots = await db.one('SELECT * FROM OwnedRestaurants NATURAL JOIN HasTimeslot WHERE uname=$1 AND rname=$2 AND raddress=$3', [req.params.uname, req.params.rname, req.params.raddress]);
-        res.render('restaurantownersrestauranteditinfo', {
-            title: 'Edit ' + [req.params.rname],
+        const timeslots = await db.any('SELECT * FROM OwnedRestaurants NATURAL JOIN HasTimeslots WHERE uname=$1 AND rname=$2 AND raddress=$3', [req.params.uname, req.params.rname, req.params.raddress]);
+        res.render('restaurantownersrestaurantedittimeslot', {
+            title: 'Edit timeslots for ' + [req.params.rname],
             timeslots: timeslots
         });
     } catch (e) {
@@ -60,9 +60,10 @@ exports.editTimeslots = async (req, res, next) => {
 };
 
 exports.updateRestaurant = async (req, res, next) => {
+    console.log(req.params.raddress + "end");
     if (!req.body.name || !req.body.address || !req.body.cuisine || !req.body.opening_hr || !req.body.closing_hr || !req.body.phone_num) {
         req.flash("Cannot leave any entry blank.");
-        res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress + '/edit');
+        res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress.replace("#","%23") + '/edit');
     } else {
         try {
             // need to check for validity of the requests 
@@ -105,7 +106,7 @@ exports.updateRestaurant = async (req, res, next) => {
                 await db.none('UPDATE OwnedRestaurants SET rname=$1, raddress=$2, cuisine=$3, opening_hr=$4, closing_hr=$5, phone_num=$6 WHERE uname=$7 AND rname=$8', temp);
                 req.flash("Restaurant successfully updated!");
                 // render the restaurant page with the updated details. 
-                res.redirect('/restaurantowners/' + req.params.uname + '/' + req.body.name + '/' + req.body.address);
+                res.redirect('/restaurantowners/' + req.params.uname + '/' + req.body.name + '/' + req.body.address.replace("#", "%23"));
             }
 
         } catch (e) {
