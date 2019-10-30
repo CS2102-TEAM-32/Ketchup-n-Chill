@@ -3,6 +3,7 @@ const db = require('../db/index');
 var bcrypt = require('bcryptjs');
 var { check, validationResult } = require('express-validator');
 var passport = require('passport');
+const moment = require('moment');
 
 exports.showHomePage = async (req, res, next) => {
     try {
@@ -52,7 +53,9 @@ exports.editTimeslots = async (req, res, next) => {
         const timeslots = await db.any('SELECT * FROM OwnedRestaurants NATURAL JOIN HasTimeslots WHERE uname=$1 AND rname=$2 AND raddress=$3', [req.params.uname, req.params.rname, req.params.raddress]);
         res.render('restaurantownersrestaurantedittimeslot', {
             title: 'Edit timeslots for ' + [req.params.rname],
-            timeslots: timeslots
+            timeslots: timeslots,
+            date: moment().format('YYYY-MM-DD'),
+            values: { uname : req.params.uname, rname: req.params.rname, raddress: req.params.raddress }
         });
     } catch (e) {
         next(e);

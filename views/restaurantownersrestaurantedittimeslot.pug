@@ -43,42 +43,69 @@ block style
             padding: 10px 20px 10px 20px;
         }
 
+        .date-input {
+            position: relative;
+            color: white;
+        }
+
+        .date-input:before {
+            position: absolute;
+            top: 7px; left: 10px;
+            content: attr(data-date);
+            display: inline-block;
+            color: black;
+        }
+
+        .date-input::-webkit-datetime-edit, .date-input::-webkit-inner-spin-button, .date-input::-webkit-clear-button {
+            display: none;
+        }
+
+        .date-input::-webkit-calendar-picker-indicator {
+            position: absolute;
+            top: 10px;
+            right: 5px;
+            color: black;
+            opacity: 1;
+        }
 
 block content
 
     <restplate>
-        h1(style="color:red") To include restaurant name 
-        form(method='POST' action='/restaurantowners/' + timeslots.uname + '/' + timeslots.rname + '/' + timeslots.raddress + '/timeUpdated')
+        h1(style="color:red") #{values.rname} 
+        form(method='POST' action='/restaurantowners/' + values.uname + '/' + values.rname + '/' + values.raddress.replace("#", "%23") + '/timeUpdated')
             <information>
             img(src='/images/restaurant1.jpeg' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
-                label(for='rname') Start Date:
-                input#rname.form-control(type='text', value=timeslots.rname, name='name')
+                label Start Date:
+                input.date-input.form-control(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
             br
             img(src='/images/address_loc.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
-                label(for='raddress') End Date:
-                input#rnaddress.form-control(type='text', value=timeslots.raddress, name='address')
+                label End Date
+                input.date-input.form-control(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
             br
             img(src='/images/cuisine.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
-                label(for='cuisine') Start Time:
-                input#cuisine.form-control(type='text', value=timeslots.cuisine, name='cuisine')
+                label Start Time:
+                input.form-control(name='time' type='time')
             br
             img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
-                label(for='opening_hr') End Time:
-                input#opening_hr.form-control(type='text', value=timeslots.opening_hr, name='opening_hr')
+                label End Time:
+                input.form-control(name='time' type='time')
             br
             img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
-                label(for='closing_hr') Num Pax:
-                input#closing_hr.form-control(type='text', value=timeslots.closing_hr, name='closing_hr')
+                label Num Pax:
+                input.form-control(name='pax' type='number', min=1, max=100 value=1)
             br
             img(src='/images/telephone.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
-                label(for='phone_num') Days:
-                input#phone_num.form-control(type='text', value=timeslots.phone_num, name='phone_num')
+                label Days:
+                each val, index in [' Monday', ' Tuesday', ' Wednesday', ' Thursday', ' Friday', ' Saturday', ' Sunday']
+                    div.checkbox-inline
+                        input.checkbox-input(type='checkbox', name=`days[${index}]`, value=val, id=`create-shift-${val}`)
+                        label(for=`create-shift-${val}`)=val
             button.btn.btn-light(type='submit' value='Submit') Add
             </information>
 
