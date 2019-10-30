@@ -24,8 +24,6 @@ exports.showHomePage = async (req, res, next) => {
 
 exports.showRestaurant = async (req, res, next) => {
     try {
-        // need to query the address also hmz. 
-        console.log("goes to show res instead");
         const restaurantDetails = await db.one('SELECT * FROM OwnedRestaurants WHERE uname=$1 AND rname=$2 AND raddress=$3', [req.params.uname, req.params.rname, req.params.raddress]);
         const timeslots = await db.any('SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress=$2 ORDER BY date DESC, time', [req.params.rname, req.params.raddress]);
         res.render('restaurantownersrestaurant', {
@@ -137,15 +135,8 @@ exports.updateTimeslot = async (req, res, next) => {
 
                 var stime = moment(req.body.stime, "HH:mm");
                 var etime = moment(req.body.etime, "HH:mm");
-                console.log(stime.format("HH:mm"));
-                console.log(etime.format("HH:mm"));
-
-                /*for (var d = sdate; d <= edate; d.setDate(d.getDate() + 1)) {
-                    console.log(new Date(d));
-                    /*for (var t = stime; t <= etime; t = t + 60) {
-                        console.log(d + " " + t);
-                    }
-                }*/
+                //console.log(stime.format("HH:mm"));
+                //console.log(etime.format("HH:mm"));
 
                 var numpax = parseInt(req.body.pax, 10);
                 const values = [];
@@ -153,17 +144,15 @@ exports.updateTimeslot = async (req, res, next) => {
                 //var original = 'INSERT INTO HasTimeslots (date, time, rname, raddress, num_available) VALUES ';
 
                 for (var d = moment(sdate); d.diff(edate, 'days') <= 0; d.add(1, 'days')) {
-                    console.log(d.format('YYYY-MM-DD'));
-                    console.log(d.day());
+                    //console.log(d.format('YYYY-MM-DD'));
+                    //console.log(d.day());
                     if (req.body.days.includes(d.day().toString())) {
-                        console.log(d.day() + " is in the array");
+                        //console.log(d.day() + " is in the array");
                         for (var t = moment(stime, "HH:mm"); t.diff(etime, 'hours') <= 0; t.add(1, 'hours')) {
-                            console.log(t.format("HH:mm"));
+                            //console.log(t.format("HH:mm"));
                             var arr = [d.format('YYYY-MM-DD'), t.format("HH:mm"), req.params.rname, req.params.raddress, numpax];
                             const check = await db.any('SELECT 1 FROM HasTimeslots WHERE rname=$3 AND raddress=$4 AND date=$1 AND time=$2', arr);
-                            console.log(check);
                             if (check.length == 0) {
-                                console.log("check is not 0");
                                 var temp = { date: d.format('YYYY-MM-DD'), time: t.format("HH:mm"), rname: req.params.rname, raddress: req.params.raddress, num_available: numpax };
                                 values.push(temp);
                             }
@@ -175,19 +164,17 @@ exports.updateTimeslot = async (req, res, next) => {
                         }
                     }  
                 }
-                //console.log(original);
-                console.log(values);
+                //console.log(values);
                 const query = pgp.helpers.insert(values, col);
                 await db.none(query).catch(error => {
                     console.log("ERROR:", error.message || error);
                 });
-                //await db.none(original + '("2019-12-30", "09:30", "Popeyes", "229 Victoria St, Singapore 188023", 1');
-                //await db.none(original);
+                req.flash("Entries updated!");
                 res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress.replace("#", "%23") + '/edittimeslot');
             }
         }
     } catch (e) {
-        console.log("error:", error.messsage);
+        next(e);
     }
 };
 // need to do the authentication, to do together with wailun... 
