@@ -1,4 +1,7 @@
 const db = require('../db/index');
+const pgp = require('pg-promise')({
+    capSQL: true
+});
 
 var bcrypt = require('bcryptjs');
 var { check, validationResult } = require('express-validator');
@@ -115,6 +118,76 @@ exports.updateRestaurant = async (req, res, next) => {
         } catch (e) {
             next(e);
         }
+    }
+};
+
+exports.updateTimeslot = async (req, res, next) => {
+    try {
+        console.log(req.body);
+        if (!req.body.sdate || !req.body.edate || !req.body.stime || !req.body.etime || !req.body.pax || !req.body.days) {
+            req.flash("Cannot leave any entry blank.");
+            res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress.replace("#", "%23") + '/edittimeslot');
+        } else {
+            var errors = validationResult(req);
+            if (!errors.isEmpty()) {
+
+            } else {
+                var sdate = new Date(req.body.sdate);
+                var edate = new Date(req.body.edate);
+
+                var stime = moment(req.body.stime, "HH:mm");
+                var etime = moment(req.body.etime, "HH:mm");
+                console.log(stime.format("HH:mm"));
+                console.log(etime.format("HH:mm"));
+
+                /*for (var d = sdate; d <= edate; d.setDate(d.getDate() + 1)) {
+                    console.log(new Date(d));
+                    /*for (var t = stime; t <= etime; t = t + 60) {
+                        console.log(d + " " + t);
+                    }
+                }*/
+
+                var numpax = parseInt(req.body.pax, 10);
+                const values = [];
+                const col = new pgp.helpers.ColumnSet(['date', 'time', 'rname', 'raddress', 'num_available'], { table: 'hastimeslots' });
+                //var original = 'INSERT INTO HasTimeslots (date, time, rname, raddress, num_available) VALUES ';
+
+                for (var d = moment(sdate); d.diff(edate, 'days') <= 0; d.add(1, 'days')) {
+                    console.log(d.format('YYYY-MM-DD'));
+                    console.log(d.day());
+                    if (req.body.days.includes(d.day().toString())) {
+                        console.log(d.day() + " is in the array");
+                        for (var t = moment(stime, "HH:mm"); t.diff(etime, 'hours') <= 0; t.add(1, 'hours')) {
+                            console.log(t.format("HH:mm"));
+                            var arr = [d.format('YYYY-MM-DD'), t.format("HH:mm"), req.params.rname, req.params.raddress, numpax];
+                            const check = await db.any('SELECT 1 FROM HasTimeslots WHERE rname=$3 AND raddress=$4 AND date=$1 AND time=$2', arr);
+                            console.log(check);
+                            if (check.length == 0) {
+                                console.log("check is not 0");
+                                var temp = { date: d.format('YYYY-MM-DD'), time: t.format("HH:mm"), rname: req.params.rname, raddress: req.params.raddress, num_available: numpax };
+                                values.push(temp);
+                            }
+                            //db.none('INSERT INTO HasTimeslots (date, time, rname, raddress, num_available) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (rname, raddress, date, time) DO NOTHING', arr);
+                            //original = original + '(' + d.format('YYYY-MM-DD') + ', ' + t.format("HH:mm") + ', ' + req.params.rname + ', ' + req.params.raddress + ', ' + req.body.pax + ')';
+                            //if (t.diff(etime, 'hours') < 0) {
+                             //   original = original + ',';
+                            //}
+                        }
+                    }  
+                }
+                //console.log(original);
+                console.log(values);
+                const query = pgp.helpers.insert(values, col);
+                await db.none(query).catch(error => {
+                    console.log("ERROR:", error.message || error);
+                });
+                //await db.none(original + '("2019-12-30", "09:30", "Popeyes", "229 Victoria St, Singapore 188023", 1');
+                //await db.none(original);
+                res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress.replace("#", "%23") + '/edittimeslot');
+            }
+        }
+    } catch (e) {
+        console.log("error:", error.messsage);
     }
 };
 // need to do the authentication, to do together with wailun... 

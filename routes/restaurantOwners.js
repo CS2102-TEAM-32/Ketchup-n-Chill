@@ -32,4 +32,6 @@ router.get(
     controller.editTimeslots
 );
 
+router.post('/:uname/:rname/:raddress/updatetimeslot', controller.updateTimeslot);
+
 module.exports = router;

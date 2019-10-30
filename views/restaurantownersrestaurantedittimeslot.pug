@@ -72,27 +72,27 @@ block content
 
     <restplate>
         h1(style="color:red") #{values.rname} 
-        form(method='POST' action='/restaurantowners/' + values.uname + '/' + values.rname + '/' + values.raddress.replace("#", "%23") + '/timeUpdated')
+        form(method='POST' action='/restaurantowners/' + values.uname + '/' + values.rname + '/' + values.raddress.replace("#", "%23") + '/updateTimeslot')
             <information>
             img(src='/images/restaurant1.jpeg' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label Start Date:
-                input.date-input.form-control(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
+                input.date-input.form-control(name='sdate' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
             br
             img(src='/images/address_loc.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label End Date
-                input.date-input.form-control(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
+                input.date-input.form-control(name='edate' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
             br
             img(src='/images/cuisine.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label Start Time:
-                input.form-control(name='time' type='time')
+                input.form-control(name='stime' type='time')
             br
             img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label End Time:
-                input.form-control(name='time' type='time')
+                input.form-control(name='etime' type='time')
             br
             img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
@@ -101,11 +101,28 @@ block content
             br
             img(src='/images/telephone.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
-                label Days:
-                each val, index in [' Monday', ' Tuesday', ' Wednesday', ' Thursday', ' Friday', ' Saturday', ' Sunday']
-                    div.checkbox-inline
-                        input.checkbox-input(type='checkbox', name=`days[${index}]`, value=val, id=`create-shift-${val}`)
-                        label(for=`create-shift-${val}`)=val
+                label Day:
+                div.checkbox-inline
+                    input.checkbox-input#create-shift-mon(type='checkbox', name='days', value=1)
+                    label(for='create-shift-mon') Monday
+                div.checkbox-inline
+                    input.checkbox-input#create-shift-tue(type='checkbox', name='days', value=2)
+                    label(for='create-shift-tue') Tuesday
+                div.checkbox-inline
+                    input.checkbox-input#create-shift-wed(type='checkbox', name='days', value=3)
+                    label(for='create-shift-wed') Wednesday
+                div.checkbox-inline
+                    input.checkbox-input#create-shift-thur(type='checkbox', name='days', value=4)
+                    label(for='create-shift-thur') Thursday
+                div.checkbox-inline
+                    input.checkbox-input#create-shift-fri(type='checkbox', name='days', value=5)
+                    label(for='create-shift-fri') Friday
+                div.checkbox-inline
+                    input.checkbox-input#create-shift-sat(type='checkbox', name='days', value=6)
+                    label(for='create-shift-sat') Saturday
+                div.checkbox-inline
+                    input.checkbox-input#create-shift-sun(type='checkbox', name='days', value=0)
+                    label(for='create-shift-sun') Sunday
             button.btn.btn-light(type='submit' value='Submit') Add
             </information>
 
