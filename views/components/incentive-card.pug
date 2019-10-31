@@ -7,11 +7,6 @@ mixin incentive-card(title, description, organisation, points)
         getConfirmation.style.display = "none";
         voucher.style.display = "none";
       }
-      window.onclick = function(event) {
-        if (event.target == getConfirmation || event.target == voucher) {
-          getConfirmation.style.display = "none";
-        }
-      }
       function viewVoucher() {
         getConfirmation.style.display = "none";
         voucher.style.display = "block";
@@ -30,7 +25,7 @@ mixin incentive-card(title, description, organisation, points)
   div#voucher.modal
     div.modal-content
       div.modal-body
-        p Your voucher code is blah
+        p Voucher has been added to your list!
       div.modal-footer
         a.btn.btn-primary(href='../vouchers', type='button', class="btn") View my vouchers
         a.btn.btn-primary(onclick='cancel()', type='button', class="btn") Continue browsing
