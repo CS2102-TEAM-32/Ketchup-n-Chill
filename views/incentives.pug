@@ -8,6 +8,27 @@ block style
       table-layout: auto;
       border-spacing: 10px;
     }
+    #wrapper {
+      width: 50%;
+      display: block;
+      margin: auto;
+    }
+    .search-box {
+      padding-top: 10px;
+      padding-left: 5px;
+      padding-right: 0px;
+      background-color: whitesmoke;
+      border-style: solid;
+      border-width: 1px;
+      border-color: #FECA1D;
+      border-radius: 10px;
+      width: 100%;
+    }
+    .btn {
+      text-align: center;
+      background-color: #FECA1D;
+      margin-left: 12px;
+    }
     .clearfix::after {
       content: "";
       clear: both;
@@ -18,8 +39,18 @@ block content
   br
   br
   br
-  h4 Hello #{name}, you have #{points} points!
-  h4 Search box here
+  h4(style='text-align:center;') Hello #{name}, you have #{points} points! Search for incentives here:
+  div#wrapper
+    div.search-box
+      form(method='GET' action='/incentives')
+        div.form-row
+          img(src='../../images/search_icon.png' style='width:25px; height:25px; float:left; margin-right:10px; margin-top: 10px;')
+          div.form-group.col-md-8
+            input.form-control(name='organisation' type='text' placeholder='organisation')
+          div.form-group.col-md-2
+            input.form-control(name='points' type='number', min=1, max=1000, placeholder='points')
+          div.form-group.col-md-1
+            button.btn.btn-light(type='submit' value='Submit') Search
   div#incentives
     include ./components/incentive-card.pug
     each incentive in incentives
