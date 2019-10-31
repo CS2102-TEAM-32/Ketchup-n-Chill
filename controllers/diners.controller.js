@@ -83,7 +83,7 @@ exports.showIncentives = async (req, res, next) => {
       req.query,
       db.any
     );
-    console.log('incentives', incentives);
+    //console.log('incentives', incentives);
 
     const points = db.one(
       'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
@@ -134,7 +134,7 @@ function queryDbFromReqQuery(frontPortion, reqQuery, f) {
     .map((key, index) => `${partials[key]} $${index + 1}`) // pgp uses base-1 index
     .reduce((acc, curr) => `${acc} AND ${curr}`);
 
-  console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
+  //console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
 
   // make the function call and return the promise
   return f(

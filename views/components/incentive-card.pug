@@ -1,4 +1,40 @@
 mixin incentive-card(title, description, organisation, points)
+  script.
+      function confirmation() {
+        getConfirmation.style.display = "block";
+      }
+      function cancel() {
+        getConfirmation.style.display = "none";
+        voucher.style.display = "none";
+      }
+      window.onclick = function(event) {
+        if (event.target == getConfirmation || event.target == voucher) {
+          getConfirmation.style.display = "none";
+        }
+      }
+      function viewVoucher() {
+        getConfirmation.style.display = "none";
+        voucher.style.display = "block";
+      }
+      var getConfirmation = document.getElementById("getConfirmation");
+      var voucher = document.getElementById("voucher");
+
+  div#getConfirmation.modal
+    div.modal-content
+      div.modal-body
+        p Would you like to confirm your claim?
+      div.modal-footer
+        a.btn.btn-primary(onclick='viewVoucher()', type='button', class="btn") Confirm
+        a.btn.btn-primary(onclick='cancel()', type='button', class="btn") Cancel
+
+  div#voucher.modal
+    div.modal-content
+      div.modal-body
+        p Your voucher code is blah
+      div.modal-footer
+        a.btn.btn-primary(href='../vouchers', type='button', class="btn") View my vouchers
+        a.btn.btn-primary(onclick='cancel()', type='button', class="btn") Continue browsing
+
   div.card(style='background-color: whitesmoke; display: block; padding: 2px; margin-bottom: 10px; border-radius: 10px;')
     div.card-body
       div.clearfix
@@ -11,4 +47,4 @@ mixin incentive-card(title, description, organisation, points)
           | #{description} 
         h7.organisation
           | This incentive is brought to you by <b>#{organisation}</b>
-        a.btn.btn-primary(href='/diners/logout', style='border-color: #FECA1D; background-color: #FECA1D; float:right;') Claim
+        a.btn.btn-primary(onclick='confirmation()', style='border-color: #FECA1D; background-color: #FECA1D; float:right;') Claim
