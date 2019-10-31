@@ -1,0 +1,10 @@
+mixin voucher-card(title, description, points, organisation, code)
+  div.card(style='background-color: whitesmoke; display: block; padding: 10px; margin-bottom: 10px;')
+    div.card-body
+      h5.card-title(style='color:#FECA1D;') #{title} by #{organisation}
+      h7.code Code: #{code}
+      br
+      h7.card-text
+        | #{description}
+        br
+        | You redeemed for #{points} points

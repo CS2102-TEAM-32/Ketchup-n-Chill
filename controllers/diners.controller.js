@@ -76,6 +76,28 @@ exports.showReservations = async (req, res, next) => {
   }
 };
 
+exports.showVouchers = async (req, res, next) => {
+  try {
+    const vouchers = db.any(
+      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=FALSE",
+      [req.user.uname]
+    );
+    const redeemedVouchers = db.any(
+      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=TRUE",
+      [req.user.uname]
+    );
+    Promise.all([vouchers, redeemedVouchers]).then(values => {
+      res.render('vouchers', {
+        title: 'Vouchers',
+        vouchers: values[0],
+        redeemedVouchers: values[1]
+      });
+    })
+  } catch (e) {
+    next(e);
+  }
+};
+
 exports.showIncentives = async (req, res, next) => {
   try {
     const incentives = await queryDbFromReqQuery(
@@ -166,7 +188,7 @@ exports.createDiner = async (req, res, next) => {
       hash
     ]);
     req.flash('success', 'You are now registered!');
-    res.redirect('/diners/' + req.body.uname);
+    res.redirect('/diners/account/' + req.body.uname);
   } catch (e) {
     next(e);
   }
@@ -220,7 +242,7 @@ exports.logDinerIn = (req, res, next) => {
     req.flash('success', info.message);
     req.logIn(user, err => {
       if (err) return next(err);
-      return res.redirect('/diners/' + user.uname);
+      return res.redirect('/diners/account/' + user.uname);
     });
   })(req, res, next);
 };

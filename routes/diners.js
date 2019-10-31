@@ -23,6 +23,11 @@ router.get(
   controller.ensureAuthenticated,
   controller.showIncentives
 );
+router.get(
+  '/vouchers',
+  controller.ensureAuthenticated,
+  controller.showVouchers
+);
 router.get('/account', function (req, res, next) {
   const page = 'account/' + [req.user.uname];
   console.log(page);
