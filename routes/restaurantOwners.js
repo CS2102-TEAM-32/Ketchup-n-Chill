@@ -9,6 +9,12 @@ var controller = require('../controllers/restaurantOwners.controller');
 
 router.get('/', controller.showHomePage);
 
+router.get('/register', controller.registerRestaurantOwner);
+router.post(
+    '/register',
+    controller.registerValidations,
+    controller.createRestaurantOwner
+);
 router.get(
     '/:uname',
     controller.showHomePage
