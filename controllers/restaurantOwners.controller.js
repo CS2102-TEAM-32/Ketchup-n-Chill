@@ -64,9 +64,10 @@ exports.editTimeslots = async (req, res, next) => {
 };
 
 exports.updateRestaurant = async (req, res, next) => {
+    console.log(req.body.raddress + "end");
     console.log(req.params.raddress + "end");
     if (!req.body.name || !req.body.address || !req.body.cuisine || !req.body.opening_hr || !req.body.closing_hr || !req.body.phone_num) {
-        req.flash("Cannot leave any entry blank.");
+        req.flash('danger', "Cannot leave any entry blank.");
         res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress.replace("#","%23") + '/edit');
     } else {
         try {
@@ -108,7 +109,7 @@ exports.updateRestaurant = async (req, res, next) => {
                 var temp = [req.body.name, req.body.address, req.body.cuisine,
                 req.body.opening_hr, req.body.closing_hr, req.body.phone_num, req.params.uname, req.params.rname];
                 await db.none('UPDATE OwnedRestaurants SET rname=$1, raddress=$2, cuisine=$3, opening_hr=$4, closing_hr=$5, phone_num=$6 WHERE uname=$7 AND rname=$8', temp);
-                req.flash("Restaurant successfully updated!");
+                req.flash('success', "Restaurant successfully updated!");
                 // render the restaurant page with the updated details. 
                 res.redirect('/restaurantowners/' + req.params.uname + '/' + req.body.name + '/' + req.body.address.replace("#", "%23"));
             }
@@ -123,7 +124,7 @@ exports.updateTimeslot = async (req, res, next) => {
     try {
         console.log(req.body);
         if (!req.body.sdate || !req.body.edate || !req.body.stime || !req.body.etime || !req.body.pax || !req.body.days) {
-            req.flash("Cannot leave any entry blank.");
+            req.flash('danger', "Cannot leave any entry blank.");
             res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress.replace("#", "%23") + '/edittimeslot');
         } else {
             var errors = validationResult(req);
@@ -169,7 +170,7 @@ exports.updateTimeslot = async (req, res, next) => {
                 await db.none(query).catch(error => {
                     console.log("ERROR:", error.message || error);
                 });
-                req.flash("Entries updated!");
+                req.flash('success', "Entries updated!");
                 res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress.replace("#", "%23") + '/edittimeslot');
             }
         }
@@ -177,37 +178,63 @@ exports.updateTimeslot = async (req, res, next) => {
         next(e);
     }
 };
-// need to do the authentication, to do together with wailun... 
 
+exports.registerRestaurantOwner = (req, res, next) => {
+    res.render('registerowner', {
+        title: 'Register as Restaurant Owner'
+    });
+};
 
-// this is abit wrong, need to check with wailun how to change this.
-// cause passport authenticate users the db of diners instead of users.
-/*exports.logRestaurantOwnerIn = (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
-        if (err) return next(err);
-        if (!user) {
-            req.flash('danger', info.message);
-            return res.redirect('/restaurantowners/login');
+exports.registerValidations = [
+    check('name', 'Name must not be empty.')
+        .not()
+        .isEmpty(),
+    check('uname', 'Username must be at least 5 characters.').isLength({
+        min: 5
+    }),
+    check('pass', 'Password must be at least 8 characters.')
+        .isLength({ min: 8 })
+        .custom((value, { req }) => {
+            if (value !== req.body.pass2)
+                throw new Error('Passwords do not match.');
+            return value;
+        }),
+    (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            errors.array().map(error => req.flash('danger', error.msg));
+            return res.render('registerowner', {
+                prevName: req.body.name,
+                prevUname: req.body.uname
+            });
         }
-        req.flash('success', info.message);
-        req.logIn(user, err => {
-            if (err) return next(err);
-            return res.redirect('/restaurantowners/' + user.uname);
-        });
-    })(req, res, next);
-};
-
-// this is also abit wrong, need to check with wailun how to do this.
-exports.logDinerOut = (req, res, next) => {
-    req.logout();
-    req.flash('success', 'You have succesfully logged out.');
-    res.redirect('/restaurantowners/login');
-};
-
-exports.ensureAuthenticated = (req, res, next) => {
-    if (req.isAuthenthicated()) {
         return next();
     }
-    req.flash('danger', 'Please login');
-    res.redirect('/restaurantowners/login');
-}; */
+];
+
+exports.createRestaurantOwner = async (req, res, next) => {
+    if (!req.body.uname || !req.body.name || !req.body.pass)
+        return res.sendStatus(400);
+    try {
+        const hash = bcrypt.hashSync(req.body.pass, bcrypt.genSaltSync(10));
+        const check = await db.any('SELECT * FROM Users WHERE uname=$1', [req.body.uname]);
+        if (check.length == 0) {
+            await db.none('CALL add_rowner($1, $2, $3)', [
+                req.body.uname,
+                req.body.name,
+                hash
+            ]);
+            req.flash('success', 'You are now registered!');
+            res.redirect('/restaurantowners/' + req.body.uname);
+        } else {
+            req.flash('danger', 'Username exists, please use another one.');
+            res.render('registerowner', {
+                prevName: req.body.name,
+                prevUname: req.body.uname
+            });
+        }
+        
+    } catch (e) {
+        next(e);
+    }
+};
