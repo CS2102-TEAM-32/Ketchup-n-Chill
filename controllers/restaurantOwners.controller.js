@@ -24,6 +24,7 @@ exports.showHomePage = async (req, res, next) => {
 
 exports.showRestaurant = async (req, res, next) => {
     try {
+        console.log(req.params.raddress);
         const restaurantDetails = await db.one('SELECT * FROM OwnedRestaurants WHERE uname=$1 AND rname=$2 AND raddress=$3', [req.params.uname, req.params.rname, req.params.raddress]);
         const timeslots = await db.any('SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress=$2 ORDER BY date DESC, time', [req.params.rname, req.params.raddress]);
         res.render('restaurantownersrestaurant', {
@@ -64,11 +65,11 @@ exports.editTimeslots = async (req, res, next) => {
 };
 
 exports.updateRestaurant = async (req, res, next) => {
-    console.log(req.body.raddress + "end");
+    console.log(req.body.address + "end");
     console.log(req.params.raddress + "end");
     if (!req.body.name || !req.body.address || !req.body.cuisine || !req.body.opening_hr || !req.body.closing_hr || !req.body.phone_num) {
         req.flash('danger', "Cannot leave any entry blank.");
-        res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress.replace("#","%23") + '/edit');
+        res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress.replace("#","%23").replace("/", "%2F")+ '/edit');
     } else {
         try {
             // need to check for validity of the requests 
@@ -111,7 +112,9 @@ exports.updateRestaurant = async (req, res, next) => {
                 await db.none('UPDATE OwnedRestaurants SET rname=$1, raddress=$2, cuisine=$3, opening_hr=$4, closing_hr=$5, phone_num=$6 WHERE uname=$7 AND rname=$8', temp);
                 req.flash('success', "Restaurant successfully updated!");
                 // render the restaurant page with the updated details. 
-                res.redirect('/restaurantowners/' + req.params.uname + '/' + req.body.name + '/' + req.body.address.replace("#", "%23"));
+                //console.log(encodeURIComponent('/restaurantowners/' + req.params.uname + '/' + req.body.name + '/' + req.body.address));
+                // should use encodeuricomponent for restaurant address. 
+                res.redirect('/restaurantowners/' + req.params.uname + '/' + req.body.name + '/' + req.body.address.replace("#", "%23").replace("/", "%2F"));
             }
 
         } catch (e) {
@@ -125,7 +128,7 @@ exports.updateTimeslot = async (req, res, next) => {
         console.log(req.body);
         if (!req.body.sdate || !req.body.edate || !req.body.stime || !req.body.etime || !req.body.pax || !req.body.days) {
             req.flash('danger', "Cannot leave any entry blank.");
-            res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress.replace("#", "%23") + '/edittimeslot');
+            res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress.replace("#", "%23").replace("/", "%2F") + '/edittimeslot');
         } else {
             var errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -171,7 +174,7 @@ exports.updateTimeslot = async (req, res, next) => {
                     console.log("ERROR:", error.message || error);
                 });
                 req.flash('success', "Entries updated!");
-                res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress.replace("#", "%23") + '/edittimeslot');
+                res.redirect('/restaurantowners/' + req.params.uname + '/' + req.params.rname + '/' + req.params.raddress.replace("#", "%23").replace("/", "%2F") + '/edittimeslot');
             }
         }
     } catch (e) {
