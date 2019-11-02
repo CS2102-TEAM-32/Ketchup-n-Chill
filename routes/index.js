@@ -2,11 +2,16 @@ var express = require('express');
 var router = express.Router();
 
 var controller = require('../controllers/index.controller');
+var common = require('../controllers/common.controller');
 
 router.get('/', function(req, res, next) {
   res.redirect('/home');
 });
 
 router.get('/home', controller.showHomePage);
+
+router.get('/login', controller.getLoginPage);
+
+router.post('/login', common.login);
 
 module.exports = router;

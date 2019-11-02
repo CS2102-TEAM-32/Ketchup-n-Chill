@@ -134,6 +134,7 @@ exports.createDiner = async (req, res, next) => {
           });
       }    
     
+      
   } catch (e) {
     next(e);
   }
@@ -176,32 +177,3 @@ exports.registerValidations = [
     return next();
   }
 ];
-
-exports.logDinerIn = (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
-    if (err) return next(err);
-    if (!user) {
-      req.flash('danger', info.message);
-      return res.redirect('/diners/login');
-    }
-    req.flash('success', info.message);
-    req.logIn(user, err => {
-      if (err) return next(err);
-      return res.redirect('/diners/' + user.uname);
-    });
-  })(req, res, next);
-};
-
-exports.logDinerOut = (req, res, next) => {
-  req.logout();
-  req.flash('success', 'You have succesfully logged out.');
-  res.redirect('/diners/login');
-};
-
-exports.ensureAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  req.flash('danger', 'Please login');
-  res.redirect('/diners/login');
-};
