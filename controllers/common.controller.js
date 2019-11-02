@@ -27,8 +27,7 @@ exports.login = (req, res, next) => {
     req.flash('success', info.message);
     req.logIn(user, err => {
       if (err) return next(err);
-      const resource = user.type + 's'; // the resource name is plural of the type
-      return res.redirect(`/${resource}/${user.uname}`);
+      return res.redirect(`/home`);
     });
   })(req, res, next);
 };
