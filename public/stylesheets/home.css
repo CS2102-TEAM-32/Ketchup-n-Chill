@@ -22,12 +22,6 @@
 .container-fluid {
   padding: 0px;
   margin: 0px;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-image: url(/images/bg.jpg);
 }
 
 #wrapper {
@@ -35,7 +29,12 @@
   width: 100%;
   display: flex;
   align-items: center;
-  padding: 10%;
+  padding: 7%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url(/images/bg.jpg);
+
 }
 
 #rest {
@@ -74,4 +73,14 @@
   right: 5px;
   color: black;
   opacity: 1;
+}
+
+#navbar {
+  position: absolute;
+}
+
+body .navbar-light .navbar-nav .nav-link {
+  color: white;
+  font-family: Arial,Helvetica Neue,Helvetica,sans-serif; 
+  font-weight: bold;
 }

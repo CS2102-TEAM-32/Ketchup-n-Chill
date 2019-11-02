@@ -14,9 +14,13 @@ a {
 }
 
 body .navbar-light .navbar-nav .nav-link {
-  color: white;
+  color: black;
   font-family: Arial,Helvetica Neue,Helvetica,sans-serif; 
-  font-weight: bold;
+}
+
+.nav-item:hover {
+  border-bottom-style: solid;
+  border-color: black;
 }
 
 #alert {
@@ -26,4 +30,8 @@ body .navbar-light .navbar-nav .nav-link {
 
 #navbar {
   width: 100%;
+}
+
+.container {
+  min-height: 80%;
 }
