@@ -190,6 +190,7 @@ exports.registerRestaurantOwner = (req, res, next) => {
     });
 };
 
+// TODO: validations move to somewhere common
 exports.registerValidations = [
     check('name', 'Name must not be empty.')
         .not()
@@ -230,7 +231,7 @@ exports.createRestaurantOwner = async (req, res, next) => {
                 hash
             ]);
             req.flash('success', 'You are now registered!');
-            res.redirect('/restaurantowners/' + req.body.uname);
+            res.redirect('/restaurantowners/');
         } else {
             req.flash('danger', 'Username exists, please use another one.');
             res.render('registerowner', {

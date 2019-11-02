@@ -8,20 +8,13 @@ var common = require('../controllers/common.controller');
   //  res.redirect('/restaurantowners');
 //});
 
-router.get('/', controller.showHomePage);
+router.get('/', common.ensureAuthenticatedRestaurantOwner, controller.showHomePage);
 
 router.get('/register', controller.registerRestaurantOwner);
 router.post(
     '/register',
     controller.registerValidations,
     controller.createRestaurantOwner
-);
-
-// need to rethink: if we do this, can't really prevent people from 'snooping'?
-router.get(
-    '/:uname',
-    common.ensureAuthenticatedRestaurantOwner,
-    controller.showHomePage
 );
 
 router.post('/:rname/:raddress', controller.updateRestaurant);
