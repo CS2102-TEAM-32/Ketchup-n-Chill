@@ -16,13 +16,13 @@ exports.showReservations = async (req, res, next) => {
     );
     const duname = req.user.uname;
     Promise.all([reservations, upcoming, duname]).then(values => {
-    res.render('reservations', {
-      title: 'Reservations',
-      reservations: values[0],
-      upcoming: values[1],
-      duname: values[2]
+      res.render('reservations', {
+        title: 'Reservations',
+        reservations: values[0],
+        upcoming: values[1],
+        duname: values[2]
+      });
     });
-    })
   } catch (e) {
     next(e);
   }
@@ -35,18 +35,17 @@ exports.showIncentives = async (req, res, next) => {
       'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
       [req.user.uname]
     );
-    const name = db.one(
-      'SELECT name FROM Users WHERE uname=$1',
-      [req.user.uname]
-    );
+    const name = db.one('SELECT name FROM Users WHERE uname=$1', [
+      req.user.uname
+    ]);
     Promise.all([incentives, points, name]).then(values => {
-    res.render('incentives', {
-      title: 'Incentives',
-      incentives: values[0],
-      points: values[1].count,
-      name: values[2].name
+      res.render('incentives', {
+        title: 'Incentives',
+        incentives: values[0],
+        points: values[1].count,
+        name: values[2].name
+      });
     });
-  })
   } catch (e) {
     next(e);
   }
@@ -69,24 +68,24 @@ exports.createDiner = async (req, res, next) => {
     return res.sendStatus(400);
   try {
     const hash = bcrypt.hashSync(req.body.pass, bcrypt.genSaltSync(10));
-    const check = await db.any('SELECT * FROM Users WHERE uname=$1', [req.body.uname]);
-      if (check.length == 0) {
-          await db.none('CALL add_diner($1, $2, $3)', [
-              req.body.uname,
-              req.body.name,
-              hash
-          ]);
-          req.flash('success', 'You are now registered!');
-          res.redirect('/restaurantowners/' + req.body.uname);
-      } else {
-          req.flash('danger', 'Username exists, please use another one.');
-          res.render('register', {
-              prevName: req.body.name,
-              prevUname: req.body.uname
-          });
-      }    
-    
-      
+    const check = await db.any('SELECT * FROM Users WHERE uname=$1', [
+      req.body.uname
+    ]);
+    if (check.length == 0) {
+      await db.none('CALL add_diner($1, $2, $3)', [
+        req.body.uname,
+        req.body.name,
+        hash
+      ]);
+      req.flash('success', 'You are now registered!');
+      res.redirect('/restaurantowners/' + req.body.uname);
+    } else {
+      req.flash('danger', 'Username exists, please use another one.');
+      res.render('register', {
+        prevName: req.body.name,
+        prevUname: req.body.uname
+      });
+    }
   } catch (e) {
     next(e);
   }
@@ -113,8 +112,7 @@ exports.registerValidations = [
   check('pass', 'Password must be at least 8 characters.')
     .isLength({ min: 8 })
     .custom((value, { req }) => {
-      if (value !== req.body.pass2)
-        throw new Error('Passwords do not match.');
+      if (value !== req.body.pass2) throw new Error('Passwords do not match.');
       return value;
     }),
   (req, res, next) => {

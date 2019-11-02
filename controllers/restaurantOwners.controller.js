@@ -5,23 +5,7 @@ const pgp = require('pg-promise')({
 
 var bcrypt = require('bcryptjs');
 var { check, validationResult } = require('express-validator');
-var passport = require('passport');
 const moment = require('moment');
-
-exports.showHomePage = async (req, res, next) => {
-    try {
-        const topRestaurants = await db.any('SELECT rname, cuisine, raddress, round(AVG(rating)) AS avg FROM ReserveTimeSlots NATURAL JOIN OwnedRestaurants WHERE uname=$1 GROUP BY rname, cuisine, raddress ORDER BY AVG(rating) DESC, rname LIMIT 3', [req.user.uname]);
-        const allRestaurants = await db.any('SELECT * FROM OwnedRestaurants WHERE uname=$1', [req.user.uname]);
-        res.render('restaurantowners', {
-            // view looks wrong
-            title: 'Welcome ' + [req.user.uname] +'!',
-            topRestaurants: topRestaurants,
-            allRestaurants: allRestaurants
-        });
-    } catch (e) {
-        next(e);
-    }
-};
 
 exports.showRestaurant = async (req, res, next) => {
     try {

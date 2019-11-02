@@ -1,4 +1,5 @@
 const db = require('../db/index');
+const moment = require('moment');
 
 var passport = require('passport');
 
@@ -48,6 +49,15 @@ exports.logout = (req, res, next) => {
   res.redirect('/home');
 }
 
+exports.showHomePage = (req, res, next) => {
+  console.log(req.user);
+  if (req.user && req.user.type === 'restaurantOwner') {
+    return showRestaurantOwnerHomePage(req, res, next);
+  }
+  // not logged in or diner
+  return showGenericHomePage(req, res, next);
+}
+
 exports.showProfile = (req, res, next) => {
   const type = req.user.type;
   if (type === 'diner') {
@@ -92,6 +102,35 @@ showDinerProfile = async (req, res, next) => {
       history: values[4]
     });
 	})
+  } catch (e) {
+    next(e);
+  }
+};
+
+showRestaurantOwnerHomePage = async (req, res, next) => {
+    try {
+        const topRestaurants = await db.any('SELECT rname, cuisine, raddress, round(AVG(rating)) AS avg FROM ReserveTimeSlots NATURAL JOIN OwnedRestaurants WHERE uname=$1 GROUP BY rname, cuisine, raddress ORDER BY AVG(rating) DESC, rname LIMIT 3', [req.user.uname]);
+        const allRestaurants = await db.any('SELECT * FROM OwnedRestaurants WHERE uname=$1', [req.user.uname]);
+        res.render('restaurantowners', {
+            title: 'Welcome ' + [req.user.uname] +'!',
+            topRestaurants: topRestaurants,
+            allRestaurants: allRestaurants
+        });
+    } catch (e) {
+        next(e);
+    }
+};
+
+showGenericHomePage = async (req, res, next) => {
+  try {
+    const restaurants = await db.any(
+      'SELECT rname, cuisine, raddress, round(AVG(rating)) AS avg FROM ReserveTimeSlots NATURAL JOIN OwnedRestaurants GROUP BY rname, cuisine, raddress ORDER BY AVG(rating) DESC, rname LIMIT 3'
+    );
+    res.render('home', {
+      title: 'Ketchup and Chill!',
+      date: moment().format('YYYY-MM-DD'),
+      restaurants: restaurants
+    });
   } catch (e) {
     next(e);
   }

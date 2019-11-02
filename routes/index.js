@@ -8,7 +8,7 @@ router.get('/', function(req, res, next) {
   res.redirect('/home');
 });
 
-router.get('/home', controller.showHomePage);
+router.get('/home', common.showHomePage);
 
 router.get('/login', controller.getLoginPage);
 

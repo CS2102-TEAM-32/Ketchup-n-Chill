@@ -4,12 +4,6 @@ var router = express.Router();
 var controller = require('../controllers/restaurantOwners.controller');
 var common = require('../controllers/common.controller');
 
-//router.get('/', function (req, res, next) {
-  //  res.redirect('/restaurantowners');
-//});
-
-router.get('/', common.ensureAuthenticatedRestaurantOwner, controller.showHomePage);
-
 router.get('/register', controller.registerRestaurantOwner);
 router.post(
     '/register',
