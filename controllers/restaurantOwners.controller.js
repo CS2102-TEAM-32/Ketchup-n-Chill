@@ -13,6 +13,7 @@ exports.showHomePage = async (req, res, next) => {
         const topRestaurants = await db.any('SELECT rname, cuisine, raddress, round(AVG(rating)) AS avg FROM ReserveTimeSlots NATURAL JOIN OwnedRestaurants WHERE uname=$1 GROUP BY rname, cuisine, raddress ORDER BY AVG(rating) DESC, rname LIMIT 3', [req.params.uname]);
         const allRestaurants = await db.any('SELECT * FROM OwnedRestaurants WHERE uname=$1', [req.params.uname]);
         res.render('restaurantowners', {
+            // view looks wrong
             title: 'Welcome ' + [req.params.uname] +'!',
             topRestaurants: topRestaurants,
             allRestaurants: allRestaurants

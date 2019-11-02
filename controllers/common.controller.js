@@ -9,6 +9,7 @@ exports.ensureAuthenticatedDiner = (req, res, next) => {
 };
 
 exports.ensureAuthenticatedRestaurantOwner = (req, res, next) => {
+  console.log(req.user);
   if (req.user && req.user.type === 'restaurantOwner') {
     return next();
   }
