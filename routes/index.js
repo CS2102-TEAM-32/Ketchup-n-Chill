@@ -14,7 +14,7 @@ router.get('/login', controller.getLoginPage);
 
 router.post('/login', common.login);
 
-router.get('/logout', common.logout);
+router.get('/logout', common.ensureAuthenticatedAny, common.logout);
 
 router.get('/profile', common.showProfile);
 

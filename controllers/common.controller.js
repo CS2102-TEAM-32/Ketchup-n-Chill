@@ -19,6 +19,14 @@ exports.ensureAuthenticatedRestaurantOwner = (req, res, next) => {
   res.redirect('/login');
 };
 
+exports.ensureAuthenticatedAny = (req, res, next) => {
+  if (req.isAuthenticated) {
+    return next();
+  }
+  req.flash('danger', 'Please login');
+  res.redirect('/login');
+}
+
 exports.login = (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) return next(err);

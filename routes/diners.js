@@ -11,7 +11,6 @@ router.post(
   controller.createDiner
 );
 router.get('/login', controller.getLoginPage);
-router.get('/logout', common.ensureAuthenticatedDiner, common.logout);
 router.get(
   '/reservations',
   common.ensureAuthenticatedDiner,
