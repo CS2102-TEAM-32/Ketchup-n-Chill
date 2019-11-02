@@ -4,7 +4,6 @@ var router = express.Router();
 var controller = require('../controllers/diners.controller');
 var common = require('../controllers/common.controller');
 
-router.get('/', common.ensureAuthenticatedDiner, controller.showAllDiners);
 router.get('/register', controller.registerDiner);
 router.post(
   '/register',
@@ -27,11 +26,6 @@ router.delete(
   '/:uname',
   common.ensureAuthenticatedDiner,
   controller.deleteDiner
-);
-router.get(
-  '/:uname',
-  common.ensureAuthenticatedDiner,
-  controller.showDinerProfile
 );
 
 module.exports = router;

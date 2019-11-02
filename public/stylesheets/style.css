@@ -18,3 +18,12 @@ body .navbar-light .navbar-nav .nav-link {
   font-family: Arial,Helvetica Neue,Helvetica,sans-serif; 
   font-weight: bold;
 }
+
+#alert {
+  position: absolute;
+  bottom: 0;
+}
+
+#navbar {
+  width: 100%;
+}
