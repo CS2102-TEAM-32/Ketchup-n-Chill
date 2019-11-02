@@ -16,33 +16,35 @@ router.post(
     controller.registerValidations,
     controller.createRestaurantOwner
 );
+
+// need to rethink: if we do this, can't really prevent people from 'snooping'?
 router.get(
     '/:uname',
     common.ensureAuthenticatedRestaurantOwner,
     controller.showHomePage
 );
 
-router.post('/:uname/:rname/:raddress', controller.updateRestaurant);
+router.post('/:rname/:raddress', controller.updateRestaurant);
 
 router.get(
-    '/:uname/:rname/:raddress',
+    '/:rname/:raddress',
     common.ensureAuthenticatedRestaurantOwner,
     controller.showRestaurant
 );
 
 
 router.get(
-    '/:uname/:rname/:raddress/edit',
+    '/:rname/:raddress/edit',
     common.ensureAuthenticatedRestaurantOwner,
     controller.editRestaurant
 );
 
 router.get(
-    '/:uname/:rname/:raddress/edittimeslot',
+    '/:rname/:raddress/edittimeslot',
     common.ensureAuthenticatedRestaurantOwner,
     controller.editTimeslots
 );
 
-router.post('/:uname/:rname/:raddress/updatetimeslot', common.ensureAuthenticatedRestaurantOwner, controller.updateTimeslot);
+router.post('/:rname/:raddress/updatetimeslot', common.ensureAuthenticatedRestaurantOwner, controller.updateTimeslot);
 
 module.exports = router;
