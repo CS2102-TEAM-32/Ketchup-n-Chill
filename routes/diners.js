@@ -36,5 +36,4 @@ router.delete(
   controller.deleteDiner
 );
 
-
 module.exports = router;

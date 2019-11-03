@@ -47,7 +47,7 @@ block append content
         p #{diner.name}
         br
         if user.uname === diner.uname
-          a.btn.btn-primary(href='/logout') Log Out
+          a.btn.btn-primary(href='/diners/logout') Log Out
           br
           br
           a.btn.btn-danger.delete-diner(href="#" usr=diner.uname) Delete Account

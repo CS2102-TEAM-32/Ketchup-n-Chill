@@ -103,7 +103,8 @@ block style
 
 block append content
   .container
-    h4 Hello #{name}, you have #{points} points!
+    h4(style='text-align:center;') Hello #{name}, you have #{points} points! Search for incentives here:
+    div#wrapper
     div.search-box
       form(method='GET' action='/diners/incentives')
         div.form-row
@@ -114,9 +115,10 @@ block append content
             input.form-control(name='points' type='number', min=1, max=1000, placeholder='points')
           div.form-group.col-md-1
             button.btn.btn-light(type='submit' value='Submit') Search
-    div#incentives
-      include ./components/incentive-card.pug
-      each incentive in incentives
-        +incentive-card(incentive.title, incentive.description, incentive.organisation, incentive.points)
-      else 
-        p No available incentives at the moment. Please check back later.
+  div#incentives
+    include ./components/incentive-card.pug
+    - var index = 0
+    each incentive in incentives
+      +incentive-card(incentive.title, incentive.description, incentive.organisation, incentive.points, 'card-' + index++)
+    else 
+      p No available incentives at the moment. Please check back later.

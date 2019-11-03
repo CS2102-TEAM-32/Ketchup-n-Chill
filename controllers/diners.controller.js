@@ -68,6 +68,46 @@ exports.redeemVoucher = async (req, res, next) => {
   }
 };
 
+exports.showVouchers = async (req, res, next) => {
+  try {
+    const vouchers = db.any(
+      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=FALSE",
+      [req.user.uname]
+    );
+    const redeemedVouchers = db.any(
+      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=TRUE",
+      [req.user.uname]
+    );
+    Promise.all([vouchers, redeemedVouchers]).then(values => {
+      res.render('vouchers', {
+        title: 'Vouchers',
+        vouchers: values[0],
+        redeemedVouchers: values[1]
+      });
+    })
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Not complete, no route coming here yet
+exports.redeemVoucher = async (req, res, next) => {
+  try {
+    const voucher = await db.one('SELECT * FROM Vouchers WHERE title = $1 AND organisation = $2 AND redeemed = FALSE LIMIT 1', [
+      req.params.title,
+      req.params.organisation
+    ]);
+    await db.one('UPDATE Vouchers SET duname = $1 AND redeemed = TRUE WHERE title = $2 AND organisation = $2 RETURNING *', [
+      req.user.uname,
+      voucher.title,
+      voucher.organisation
+    ]);
+    res.sendStatus(JSON.stringify(voucher.code));
+  } catch (e) {
+    next(e);
+  }
+};
+
 exports.showIncentives = async (req, res, next) => {
   try {
     const incentives = await queryDbFromReqQuery(
