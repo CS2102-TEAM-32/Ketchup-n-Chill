@@ -22,14 +22,17 @@ block content
             th No.
             th RestaurantName 
             th Address 
+            th 
         tbody
           -var i = 1;
           each rest, i in allRestaurants 
             tr 
               td= i+1
               td
-                a(href='/restaurantowners/' +  rest.rname +'/' + encodeURIComponent(rest.raddress)) #{rest.rname}
+                a(href='/restaurants/' +  rest.rname +'/' + encodeURIComponent(rest.raddress)) #{rest.rname}
               td #{rest.raddress}
+              td
+                a(href='/restaurantowners/' +  rest.rname +'/' + encodeURIComponent(rest.raddress) + '/edit') edit
 
 block style
   link(rel='stylesheet' href='/stylesheets/home.css')

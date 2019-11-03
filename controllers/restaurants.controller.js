@@ -85,6 +85,26 @@ exports.showRestaurantProfile = async (req, res, next) => {
   }
 };
 
+exports.showRestaurantMenus = async (req, res, next) => {
+  try {
+    // check if restaurant exists
+    await db.one(
+      'SELECT * FROM OwnedRestaurants WHERE rname=$1 AND raddress=$2',
+      [req.params.rname, req.params.raddress]
+    );
+    const menus = await db.any(
+      'SELECT * FROM Menu WHERE rname=$1 AND raddress=$2',
+      [req.params.rname, req.params.raddress]
+    );
+
+    return res.render('restaurant-menus', {
+      menus
+    });
+  } catch (e) {
+    return res.sendStatus(404);
+  }
+};
+
 /*
  helper function to form the query then query the db with it.
  takes in a string 'select ... from ...' as the first parameter.

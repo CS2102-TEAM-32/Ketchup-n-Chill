@@ -20,3 +20,8 @@
     table-layout: fixed;
     border-spacing: 10px;
 }
+
+tr, td {
+  text-align: center;
+  width: 500px;
+}

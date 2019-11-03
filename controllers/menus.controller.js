@@ -22,10 +22,6 @@ exports.showMenu = async (req, res, next) => {
   }
 };
 
-exports.showRestaurantMenus = async (req, res, next) => {
-  // show the menus of a particular restaurant
-};
-
 exports.showAddMenuPage = async (req, res, next) => {
   // check whether it belongs to the restaurant owner first
   try {

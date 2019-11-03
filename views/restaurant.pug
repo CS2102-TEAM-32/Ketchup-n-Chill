@@ -157,6 +157,7 @@ block append content
       img(src='/images/telephone.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
       p <b>Contact Number:</b>
       p  #{phoneNum}
+      a(href='/restaurants/' + restName + '/' + restAddr + '/menus') View menus
       </information>
     </restplate>
     br
@@ -167,12 +168,11 @@ block append content
           form-group
             span.form-label Date
               input.date-input.form-control(name ="date" type="date" value=date min=date date-date='' date-date-format='DD MMMM YYYY')
-span.form-label Time
-  input.form-control(name='time' type='time')
-span.form-label Pax
-  input.form-control(name='pax' type='number', min=1, max=100 value=1)
-
-form-btn
-  button.submit-btn Book Now
-    </plate>
+    span.form-label Time
+      input.form-control(name='time' type='time')
+    span.form-label Pax
+      input.form-control(name='pax' type='number', min=1, max=100 value=1)
+    form-btn
+      button.submit-btn Book Now
+        </plate>
 
