@@ -27,5 +27,12 @@ ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMED
 5. Run `npm start`
 6. Visit http://localhost:3000
 
+## Importing data into database using csv files
+1. Ensure that the table has been created 
+2. in PSQL, enter the following code to mass insert into table
+```
+copy <table_name> from 'directory/file.csv' with csv header;
+```
+
 ## Additional Information
 - Using Node.js v12.2.0
