@@ -23,13 +23,23 @@ router.get(
   controller.ensureAuthenticated,
   controller.showIncentives
 );
+router.get(
+  '/vouchers',
+  controller.ensureAuthenticated,
+  controller.showVouchers
+);
+router.get('/account', function (req, res, next) {
+  const page = 'account/' + [req.user.uname];
+  console.log(page);
+  res.redirect(page);
+});
 router.delete(
-  '/:uname',
+  '/account/:uname',
   controller.ensureAuthenticated,
   controller.deleteDiner
 );
 router.get(
-  '/:uname',
+  '/account/:uname',
   controller.ensureAuthenticated,
   controller.showDinerProfile
 );

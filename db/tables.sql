@@ -95,9 +95,11 @@ CREATE TABLE Vouchers (
 	title varchar(50),
 	organisation varchar(50),
 	code varchar(50),
-	is_claimed boolean DEFAULT FALSE,
+	duname varchar(50) DEFAULT NULL,
+	redeemed BOOLEAN DEFAULT FALSE,
 	PRIMARY KEY (title, organisation, code),
-	FOREIGN KEY (title, organisation) REFERENCES Incentives (title, organisation) ON DELETE CASCADE
+	FOREIGN KEY (title, organisation) REFERENCES Incentives (title, organisation) ON DELETE CASCADE,
+	FOREIGN KEY (duname) REFERENCES Diners(uname) ON DELETE CASCADE
 );
 
 

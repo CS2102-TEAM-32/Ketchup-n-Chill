@@ -8,21 +8,119 @@ block style
       table-layout: auto;
       border-spacing: 10px;
     }
+    #wrapper {
+      width: 50%;
+      display: block;
+      margin: auto;
+    }
+    .search-box {
+      padding-top: 10px;
+      padding-left: 5px;
+      padding-right: 0px;
+      background-color: whitesmoke;
+      border-style: solid;
+      border-width: 1px;
+      border-color: #FECA1D;
+      border-radius: 10px;
+      width: 100%;
+    }
+    .btn {
+      text-align: center;
+      background-color: #FECA1D;
+      margin-left: 12px;
+    }
     .clearfix::after {
       content: "";
       clear: both;
       display: table;
+    }
+    /* The Modal (background) */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      padding-top: 100px; /* Location of the box */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+      position: relative;
+      background-color: #fefefe;
+      margin: auto;
+      padding: 0;
+      border: 1px solid #888;
+      width: 80%;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+      -webkit-animation-name: animatetop;
+      -webkit-animation-duration: 0.4s;
+      animation-name: animatetop;
+      animation-duration: 0.4s
+    }
+
+    /* Add Animation */
+    @-webkit-keyframes animatetop {
+      from {top:-300px; opacity:0} 
+      to {top:0; opacity:1}
+    }
+
+    @keyframes animatetop {
+      from {top:-300px; opacity:0}
+      to {top:0; opacity:1}
+    }
+
+    /* The Close Button */
+    .close {
+      color: white;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 16px;
+    }
+
+    .modal-footer {
+      padding: 2px 16px;
+      background-color: #FECA1D;
+      color: white;
+      float: left;
     }
 
 block content
   br
   br
   br
-  h4 Hello #{name}, you have #{points} points!
-  h4 Search box here
+  h4(style='text-align:center;') Hello #{name}, you have #{points} points! Search for incentives here:
+  div#wrapper
+    div.search-box
+      form(method='GET' action='/diners/incentives')
+        div.form-row
+          img(src='../../images/search_icon.png' style='width:25px; height:25px; float:left; margin-right:10px; margin-top: 10px;')
+          div.form-group.col-md-8
+            input.form-control(name='organisation' type='text' placeholder='organisation')
+          div.form-group.col-md-2
+            input.form-control(name='points' type='number', min=1, max=1000, placeholder='points')
+          div.form-group.col-md-1
+            button.btn.btn-light(type='submit' value='Submit') Search
   div#incentives
     include ./components/incentive-card.pug
+    - var index = 0
     each incentive in incentives
-      +incentive-card(incentive.title, incentive.description, incentive.organisation, incentive.points)
+      +incentive-card(incentive.title, incentive.description, incentive.organisation, incentive.points, 'card-' + index++)
     else 
       p No available incentives at the moment. Please check back later.
