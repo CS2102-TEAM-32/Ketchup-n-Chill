@@ -1,20 +1,23 @@
-mixin incentive-card(title, description, organisation, points)
+mixin incentive-card(title, description, organisation, points, index)
   script.
       function confirmation() {
+        var getConfirmation = document.getElementById('#{index}');
         getConfirmation.style.display = "block";
       }
       function cancel() {
+        var getConfirmation = document.getElementById('#{index}');
         getConfirmation.style.display = "none";
         voucher.style.display = "none";
       }
       function viewVoucher() {
+        var getConfirmation = document.getElementById('#{index}');
         getConfirmation.style.display = "none";
         voucher.style.display = "block";
       }
-      var getConfirmation = document.getElementById("getConfirmation");
       var voucher = document.getElementById("voucher");
 
-  div#getConfirmation.modal
+  p #{index}
+  div.modal(id = index)
     div.modal-content
       div.modal-body
         p Would you like to confirm your claim?
@@ -27,7 +30,7 @@ mixin incentive-card(title, description, organisation, points)
       div.modal-body
         p Voucher has been added to your list!
       div.modal-footer
-        a.btn.btn-primary(href='../vouchers', type='button', class="btn") View my vouchers
+        a.btn.btn-primary(href='../diners/vouchers', type='button', class="btn") View my vouchers
         a.btn.btn-primary(onclick='cancel()', type='button', class="btn") Continue browsing
 
   div.card(style='background-color: whitesmoke; display: block; padding: 2px; margin-bottom: 10px; border-radius: 10px;')
@@ -42,4 +45,4 @@ mixin incentive-card(title, description, organisation, points)
           | #{description} 
         h7.organisation
           | This incentive is brought to you by <b>#{organisation}</b>
-        a.btn.btn-primary(onclick='confirmation()', style='border-color: #FECA1D; background-color: #FECA1D; float:right;') Claim
+        a.btn.btn-primary(data-target = index, onclick='confirmation()', style='border-color: #FECA1D; background-color: #FECA1D; float:right;') Claim

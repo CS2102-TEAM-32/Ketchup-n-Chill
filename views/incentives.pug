@@ -119,7 +119,8 @@ block content
             button.btn.btn-light(type='submit' value='Submit') Search
   div#incentives
     include ./components/incentive-card.pug
+    - var index = 0
     each incentive in incentives
-      +incentive-card(incentive.title, incentive.description, incentive.organisation, incentive.points)
+      +incentive-card(incentive.title, incentive.description, incentive.organisation, incentive.points, 'card-' + index++)
     else 
       p No available incentives at the moment. Please check back later.
