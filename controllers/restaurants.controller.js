@@ -98,6 +98,7 @@ exports.showRestaurantMenus = async (req, res, next) => {
     );
 
     return res.render('restaurant-menus', {
+      restaurant: req.params,
       menus
     });
   } catch (e) {

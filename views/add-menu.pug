@@ -3,7 +3,7 @@ extends layout
 block append content
   h1 Add menu to #{rname} at #{raddress}
   .restplate
-    form(method='POST' action='/menus/' + rname + '/' + raddress)
+    form(method='POST' action='/menus/' + rname + '/' + encodeURIComponent(raddress))
       .information
         .form-group
           label Menu name:

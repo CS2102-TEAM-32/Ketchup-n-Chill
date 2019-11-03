@@ -24,11 +24,13 @@ block content
               td= i+1 + '.'
               td #{rest.rname}
               td
-                a(href='/restaurants/' +  rest.rname +'/' + encodeURIComponent(rest.raddress)) View listing
+                a(href='/restaurants/' +  rest.rname +'/' + encodeURIComponent(rest.raddress)) view listing
               td
-                a(href='/restaurants/' + rest.rname + '/' + encodeURIComponent(rest.raddress) + '/menus') View menus
+                a(href='/restaurants/' + rest.rname + '/' + encodeURIComponent(rest.raddress) + '/menus') view menus
               td
                 a(href='/restaurantowners/' +  rest.rname +'/' + encodeURIComponent(rest.raddress) + '/edit') edit
+              td
+                a(href='/menus/' + rest.rname + '/' + encodeURIComponent(rest.raddress) + '/add') add a menu
 
 block style
   link(rel='stylesheet' href='/stylesheets/home.css')

@@ -78,7 +78,7 @@ exports.createDiner = async (req, res, next) => {
         hash
       ]);
       req.flash('success', 'You are now registered!');
-      res.redirect('/restaurantowners/' + req.body.uname);
+      res.redirect('/login');
     } else {
       req.flash('danger', 'Username exists, please use another one.');
       res.render('register', {
