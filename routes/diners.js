@@ -22,7 +22,6 @@ router.get(
   controller.showIncentives
 );
 router.delete(
-  '/:uname',
   common.ensureAuthenticatedDiner,
   controller.deleteDiner
 );

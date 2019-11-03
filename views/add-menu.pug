@@ -1,0 +1,21 @@
+extends layout
+
+block append content
+  h1 Add menu to #{rname} at #{raddress}
+  .restplate
+    form(method='POST' action='/menus/' + rname + '/' + raddress)
+      .information
+        .form-group
+          label Menu name:
+          input(type=text name='title')
+        br
+        ul#fieldList
+          li
+            input(type=text name='item' placeholder='item')
+          li
+            input(type=text name='price' placeholder='price')
+      button.btn.btn-light#addMore Add another item
+      button.btn.btn-light(type='submit' value='Submit') Submit
+
+block style
+  link(rel='stylesheet' href='/stylesheets/add-menu.css')
