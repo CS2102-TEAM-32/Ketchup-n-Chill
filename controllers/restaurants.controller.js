@@ -16,8 +16,47 @@ exports.showRestaurants = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
-
 };
+
+exports.addRestaurant = async (req, res, next) => {
+  if (
+    !req.body.name ||
+    !req.body.address ||
+    !req.body.cuisine ||
+    !req.body.opening_hr ||
+    !req.body.closing_hr ||
+    !req.body.phone_num
+  ) {
+    req.flash('danger', 'Fields must not be blank!');
+    res.redirect('/restaurants/add');
+  }
+
+  try {
+    await db.one('INSERT INTO OwnedRestaurants VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [
+      req.user.uname,
+      req.body.address,
+      req.body.name,
+      req.body.cuisine,
+      req.body.phone_num,
+      req.body.opening_hr,
+      req.body.closing_hr
+    ]);
+
+    // no errors thrown
+    req.flash('success', 'Your restaurant has been added!');
+    return res.redirect('/home');
+  } catch (e) {
+    // errors thrown
+    // insert failed due to duplicate primary keys...
+    console.log(e);
+    req.flash('danger', 'Something went wrong; please try again. Perhaps your restaurant has been registered already?');
+    return res.redirect('/restaurants/add');
+  }
+};
+
+exports.showRestaurantAddPage = async (req, res, next) => {
+  res.render('restaurantowners-add-restaurant');
+}
 
 exports.showRestaurantProfile = async (req, res, next) => {
   try {

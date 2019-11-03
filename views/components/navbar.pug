@@ -8,10 +8,14 @@ mixin navbar
 
     .collapse.navbar-collapse(id='navbarSupportedContent')
       ul.navbar-nav.mr-auto
-        li.nav-item
-          a.nav-link(href='../restaurants') All restaurants
-        li.nav-item
-          a.nav-link(href='../diners/incentives') Incentives
+        if !user || user.type === 'diner'
+          li.nav-item
+            a.nav-link(href='/restaurants') All restaurants
+          li.nav-item
+            a.nav-link(href='/diners/incentives') Incentives
+        else
+          li.nav-item
+            a.nav-link(href='/restaurants/add') Add your restaurant
       ul.navbar-nav.float-right
         if !user
           li.nav-item
