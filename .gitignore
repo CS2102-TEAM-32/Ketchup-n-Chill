@@ -1,3 +1,4 @@
+.idea/
 # OS X
 .DS_Store*
 Icon?
@@ -7,7 +8,6 @@ Icon?
 Thumbs.db
 ehthumbs.db
 Desktop.ini
-.idea/*
 
 # Linux
 .directory
