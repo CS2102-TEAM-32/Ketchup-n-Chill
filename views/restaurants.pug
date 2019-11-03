@@ -53,12 +53,13 @@ block append content
         thead
           tr
             th Restaurant Names
+            th Cuisine
 
         tbody
           each restaurant in restaurants
             tr
               td
                 a(href="/restaurants/" + restaurant.rname + '/' + encodeURIComponent(restaurant.raddress))= restaurant.rname
-
-
-
+              td
+                p #{restaurant.cuisine}
+                
