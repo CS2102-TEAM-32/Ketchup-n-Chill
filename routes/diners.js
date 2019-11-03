@@ -21,9 +21,20 @@ router.get(
   common.ensureAuthenticatedDiner,
   controller.showIncentives
 );
+router.get(
+  '/vouchers',
+  common.ensureAuthenticatedDiner,
+  controller.showVouchers
+);
+router.get('/account', function (req, res, next) {
+  const page = 'account/' + [req.user.uname];
+  console.log(page);
+  res.redirect(page);
+});
 router.delete(
   common.ensureAuthenticatedDiner,
   controller.deleteDiner
 );
+
 
 module.exports = router;
