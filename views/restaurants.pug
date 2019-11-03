@@ -14,7 +14,7 @@ block style
         }
         table td {
             padding: 12px 15px;
-            font
+
         }
         table th {
             padding: 12px 15px;
@@ -30,10 +30,13 @@ block style
             border-bottom: 2px solid #980403;
         }
         table td {
-            text-align:center;
+            text-align:left;
 
         }
-        table td:hover {
+        table td:nth-of-type(even){
+            text-align:center;
+        }
+        table td:nth-of-type(odd):hover {
             transform: scale(1.06);
             background: #ffb5b7;
 
@@ -43,6 +46,10 @@ block style
             clear: both;
             display: table;
         }
+        cuisinetext {
+            text-align: right;
+        }
+
 
 
 block content
@@ -52,12 +59,19 @@ block content
                 thead
                     tr
                         th Restaurant Names
+                        th Cuisine
 
                 tbody
                     each restaurant in restaurants
                         tr
                             td
                                 a(href="/restaurants/" + restaurant.rname)= restaurant.rname
+                            td
+                                <cuisinetext>
+                                    a()=restaurant.cuisine
+                                </cuisinetext>
+
+
 
 
 

@@ -4,7 +4,7 @@ const db = require('../db/index');
 exports.showRestaurants = async (req, res, next) => {
   try {
     const restaurants = await queryDbFromReqQuery(
-      'SELECT DISTINCT rname FROM OwnedRestaurants NATURAL JOIN HasTimeslots',
+      'SELECT rname, cuisine FROM OwnedRestaurants ORDER BY rname',
       req.query,
       db.any
     );
