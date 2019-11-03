@@ -6,22 +6,43 @@ module.exports = passport => {
   passport.use(
     new LocalStrategy(
       { usernameField: 'uname', passwordField: 'pass' },
-      (uname, pass, done) => {
-        db.one('SELECT * FROM Diners NATURAL JOIN Users WHERE uname=$1', [
-          uname
-        ])
-          .then(diner => {
+      async (uname, pass, done) => {
+        const diner = await db.oneOrNone(
+          'SELECT * FROM Users NATURAL JOIN Diners WHERE uname=$1',
+          [uname]
+        );
+        const restaurantOwner = await db.oneOrNone(
+          'SELECT * FROM Users NATURAL Join RestaurantOwners WHERE uname = $1',
+          [uname]
+        );
+
+        let promise;
+
+        // there is no user who is both a diner and restaurant owner
+        if (diner) {
+          diner.type = 'diner';
+          console.log(diner);
+          promise = Promise.resolve(diner);
+        } else if (restaurantOwner) {
+          restaurantOwner.type = 'restaurantOwner';
+          promise = Promise.resolve(restaurantOwner);
+        } else {
+          promise = Promise.reject();
+        }
+
+        promise
+          .then(user => {
             return new Promise((resolve, reject) => {
-              bcrypt.compare(pass, diner.pass, (err, isMatch) => {
+              bcrypt.compare(pass, user.pass, (err, isMatch) => {
                 if (err) return reject(err);
                 if (!isMatch) return resolve(null);
-                return resolve(diner);
+                return resolve(user);
               });
             });
           })
-          .then(diner => {
-            if (!diner) return done(null, false, { message: 'Wrong password' });
-            return done(null, diner, { message: 'Successfully logged in.' });
+          .then(user => {
+            if (!user) return done(null, false, { message: 'Wrong password' });
+            return done(null, user, { message: 'Successfully logged in.' });
           })
           .catch(e => done(null, false, { message: 'No such user.' }));
       }
@@ -29,12 +50,15 @@ module.exports = passport => {
   );
 
   passport.serializeUser((user, done) => {
-    done(null, user.uname);
+    done(null, { uname: user.uname, type: user.type });
   });
 
-  passport.deserializeUser((uname, done) => {
-    db.one('SELECT * FROM Diners WHERE uname=$1', [uname])
-      .then(diner => done(null, diner))
+  passport.deserializeUser((user, done) => {
+    db.one('SELECT * FROM Users WHERE uname=$1', [user.uname])
+      .then(info => {
+        info.type = user.type;
+        done(null, info);
+      })
       .catch(e => done(e, null));
   });
 };

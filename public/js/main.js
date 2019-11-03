@@ -1,11 +1,29 @@
 $(document).ready(() => {
   $('.delete-diner').on('click', e => {
-    const usr = $(e.target).attr('usr');
     $.ajax({
       type: 'DELETE',
-      url: '/diners/' + usr,
+      url: '/diners/',
       success: () => {
         window.location.href = '/diners';
+      },
+      error: err => {
+        console.log(err);
+      }
+    });
+  });
+});
+
+$(document).ready(() => {
+  $('#delete-menu').on('click', e => {
+    console.log('clicked');
+    const title = $(e.target).attr('title');
+    const raddress = $(e.target).attr('raddress');
+    const rname = $(e.target).attr('rname');
+    $.ajax({
+      type: 'DELETE',
+      url: '/menus/' + rname + '/' + raddress + '/' + title,
+      success: () => {
+        window.location.href = '/home';
       },
       error: err => {
         console.log(err);
@@ -24,3 +42,16 @@ $('.date-input')
     );
   })
   .trigger('change');
+
+$(document).ready(() => {
+  $('#addMore').on('click', e => {
+    e.preventDefault();
+    $('#fieldList').append('<li>&nbsp;</li>');
+    $('#fieldList').append(
+      '<li><input type=text name="item" placeholder="item" /></li>'
+    );
+    $('#fieldList').append(
+      '<li><input type=text name="price" placeholder="price" /></li>'
+    );
+  });
+});

@@ -4,54 +4,6 @@ var bcrypt = require('bcryptjs');
 var { check, validationResult } = require('express-validator');
 var passport = require('passport');
 
-exports.showAllDiners = async (req, res, next) => {
-  try {
-    const diners = await db.any('SELECT * FROM Diners');
-    res.render('diners', {
-      title: 'Diners',
-      diners: diners
-    });
-  } catch (e) {
-    next(e);
-  }
-};
-
-exports.showDinerProfile = async (req, res, next) => {
-  try {
-    const diner = db.one('SELECT * FROM Diners NATURAL JOIN Users WHERE uname=$1', [
-      req.params.uname
-    ]);
-    const points = db.one(
-      'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
-      [req.params.uname]
-    );
-    const mostVisited = db.any(
-      'SELECT rname, raddress FROM ReserveTimeslots WHERE duname=$1 GROUP BY rname, raddress ORDER BY count(*) DESC LIMIT 3',
-        [req.params.uname]
-    );
-    const reviews = db.any(
-      'SELECT rname, rating, review FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3',
-        [req.params.uname]
-    );
-    const history = db.any(
-      "SELECT r_date, to_char(r_date, 'DD MON YYYY') AS date, r_time, to_char(r_time, 'HH12.MIPM') AS time, rname, raddress FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3",
-        [req.params.uname]
-    );
-	Promise.all([diner, points, mostVisited, reviews, history]).then(values => {
-    res.render('diner', {
-      title: values[0].uname,
-      diner: values[0],
-      points: values[1],
-      visited: values[2],
-      reviews: values[3],
-      history: values[4]
-    });
-	})
-  } catch (e) {
-    next(e);
-  }
-};
-
 exports.showReservations = async (req, res, next) => {
   try {
     const reservations = db.any(
@@ -64,13 +16,53 @@ exports.showReservations = async (req, res, next) => {
     );
     const duname = req.user.uname;
     Promise.all([reservations, upcoming, duname]).then(values => {
-    res.render('reservations', {
-      title: 'Reservations',
-      reservations: values[0],
-      upcoming: values[1],
-      duname: values[2]
+      res.render('reservations', {
+        title: 'Reservations',
+        reservations: values[0],
+        upcoming: values[1],
+        duname: values[2]
+      });
     });
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.showVouchers = async (req, res, next) => {
+  try {
+    const vouchers = db.any(
+      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=FALSE",
+      [req.user.uname]
+    );
+    const redeemedVouchers = db.any(
+      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=TRUE",
+      [req.user.uname]
+    );
+    Promise.all([vouchers, redeemedVouchers]).then(values => {
+      res.render('vouchers', {
+        title: 'Vouchers',
+        vouchers: values[0],
+        redeemedVouchers: values[1]
+      });
     })
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Not complete, no route coming here yet
+exports.redeemVoucher = async (req, res, next) => {
+  try {
+    const voucher = await db.one('SELECT * FROM Vouchers WHERE title = $1 AND organisation = $2 AND redeemed = FALSE LIMIT 1', [
+      req.params.title,
+      req.params.organisation
+    ]);
+    await db.one('UPDATE Vouchers SET duname = $1 AND redeemed = TRUE WHERE title = $2 AND organisation = $2 RETURNING *', [
+      req.user.uname,
+      voucher.title,
+      voucher.organisation
+    ]);
+    res.sendStatus(JSON.stringify(voucher.code));
   } catch (e) {
     next(e);
   }
@@ -129,18 +121,17 @@ exports.showIncentives = async (req, res, next) => {
       'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
       [req.user.uname]
     );
-    const name = db.one(
-      'SELECT name FROM Users WHERE uname=$1',
-      [req.user.uname]
-    );
+    const name = db.one('SELECT name FROM Users WHERE uname=$1', [
+      req.user.uname
+    ]);
     Promise.all([incentives, points, name]).then(values => {
-    res.render('incentives', {
-      title: 'Incentives',
-      incentives: values[0],
-      points: values[1].count,
-      name: values[2].name
+      res.render('incentives', {
+        title: 'Incentives',
+        incentives: values[0],
+        points: values[1].count,
+        name: values[2].name
+      });
     });
-  })
   } catch (e) {
     next(e);
   }
@@ -200,33 +191,36 @@ exports.createDiner = async (req, res, next) => {
     return res.sendStatus(400);
   try {
     const hash = bcrypt.hashSync(req.body.pass, bcrypt.genSaltSync(10));
-    const check = await db.any('SELECT * FROM Users WHERE uname=$1', [req.body.uname]);
-      if (check.length == 0) {
-          await db.none('CALL add_diner($1, $2, $3)', [
-              req.body.uname,
-              req.body.name,
-              hash
-          ]);
-          req.flash('success', 'You are now registered!');
-          res.redirect('/restaurantowners/' + req.body.uname);
-      } else {
-          req.flash('danger', 'Username exists, please use another one.');
-          res.render('register', {
-              prevName: req.body.name,
-              prevUname: req.body.uname
-          });
-      }    
+    const check = await db.any('SELECT * FROM Users WHERE uname=$1', [
+      req.body.uname
+    ]);
+    if (check.length == 0) {
+      await db.none('CALL add_diner($1, $2, $3)', [
+        req.body.uname,
+        req.body.name,
+        hash
+      ]);
+      req.flash('success', 'You are now registered!');
+      res.redirect('/login');
+    } else {
+      req.flash('danger', 'Username exists, please use another one.');
+      res.render('register', {
+        prevName: req.body.name,
+        prevUname: req.body.uname
+      });
+    }
   } catch (e) {
     next(e);
   }
 };
 
 exports.deleteDiner = async (req, res, next) => {
+  // TODO: PROCEDURE TO DELETE!!! The following is not correct
   try {
     await db.one('DELETE FROM Diners WHERE uname=$1 RETURNING *', [
-      req.params.uname
+      req.user.uname
     ]);
-    res.sendStatus(200);
+    return res.sendStatus(200);
   } catch (e) {
     next(e);
   }
@@ -242,8 +236,7 @@ exports.registerValidations = [
   check('pass', 'Password must be at least 8 characters.')
     .isLength({ min: 8 })
     .custom((value, { req }) => {
-      if (value !== req.body.pass2)
-        throw new Error('Passwords do not match.');
+      if (value !== req.body.pass2) throw new Error('Passwords do not match.');
       return value;
     }),
   (req, res, next) => {
@@ -259,6 +252,7 @@ exports.registerValidations = [
   }
 ];
 
+/*
 exports.logDinerIn = (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) return next(err);
@@ -287,3 +281,4 @@ exports.ensureAuthenticated = (req, res, next) => {
   req.flash('danger', 'Please login');
   res.redirect('/diners/login');
 };
+*/

@@ -2,12 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var controller = require('../controllers/restaurantOwners.controller');
-
-//router.get('/', function (req, res, next) {
-  //  res.redirect('/restaurantowners');
-//});
-
-router.get('/', controller.showHomePage);
+var common = require('../controllers/common.controller');
 
 router.get('/register', controller.registerRestaurantOwner);
 router.post(
@@ -15,29 +10,28 @@ router.post(
     controller.registerValidations,
     controller.createRestaurantOwner
 );
-router.get(
-    '/:uname',
-    controller.showHomePage
-);
 
-router.post('/:uname/:rname/:raddress', controller.updateRestaurant);
+router.post('/:rname/:raddress', controller.updateRestaurant);
 
 router.get(
-    '/:uname/:rname/:raddress',
+    '/:rname/:raddress',
+    common.ensureAuthenticatedRestaurantOwner,
     controller.showRestaurant
 );
 
 
 router.get(
-    '/:uname/:rname/:raddress/edit',
+    '/:rname/:raddress/edit',
+    common.ensureAuthenticatedRestaurantOwner,
     controller.editRestaurant
 );
 
 router.get(
-    '/:uname/:rname/:raddress/edittimeslot',
+    '/:rname/:raddress/edittimeslot',
+    common.ensureAuthenticatedRestaurantOwner,
     controller.editTimeslots
 );
 
-router.post('/:uname/:rname/:raddress/updatetimeslot', controller.updateTimeslot);
+router.post('/:rname/:raddress/updatetimeslot', common.ensureAuthenticatedRestaurantOwner, controller.updateTimeslot);
 
 module.exports = router;

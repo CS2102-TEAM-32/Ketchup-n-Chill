@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 
 var controller = require('../controllers/diners.controller');
+var common = require('../controllers/common.controller');
 
-router.get('/', controller.ensureAuthenticated, controller.showAllDiners);
 router.get('/register', controller.registerDiner);
 router.post(
   '/register',
@@ -11,21 +11,19 @@ router.post(
   controller.createDiner
 );
 router.get('/login', controller.getLoginPage);
-router.post('/login', controller.logDinerIn);
-router.get('/logout', controller.ensureAuthenticated, controller.logDinerOut);
 router.get(
   '/reservations',
-  controller.ensureAuthenticated,
+  common.ensureAuthenticatedDiner,
   controller.showReservations
 );
 router.get(
   '/incentives',
-  controller.ensureAuthenticated,
+  common.ensureAuthenticatedDiner,
   controller.showIncentives
 );
 router.get(
   '/vouchers',
-  controller.ensureAuthenticated,
+  common.ensureAuthenticatedDiner,
   controller.showVouchers
 );
 router.get('/account', function (req, res, next) {
@@ -34,14 +32,8 @@ router.get('/account', function (req, res, next) {
   res.redirect(page);
 });
 router.delete(
-  '/account/:uname',
-  controller.ensureAuthenticated,
+  common.ensureAuthenticatedDiner,
   controller.deleteDiner
-);
-router.get(
-  '/account/:uname',
-  controller.ensureAuthenticated,
-  controller.showDinerProfile
 );
 
 module.exports = router;

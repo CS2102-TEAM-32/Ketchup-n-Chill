@@ -3,11 +3,16 @@ const db = require('../db/index');
 /* show all restaurants or selected restaurants based on req.query */
 exports.showRestaurants = async (req, res, next) => {
   try {
-    const restaurants = await queryDbFromReqQuery(
-      'SELECT rname, cuisine FROM OwnedRestaurants ORDER BY rname',
-      req.query,
-      db.any
-    );
+    let restaurants;
+    if (Object.entries(req.query).length === 0) { // no query
+      restaurants = await db.many('SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants');
+    } else {
+      restaurants = await queryDbFromReqQuery(
+        'SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants NATURAL JOIN HasTimeslots',
+        req.query,
+        db.any
+      );
+    }
 
     res.render('restaurants', {
       title: 'Restaurants',
@@ -16,14 +21,54 @@ exports.showRestaurants = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
-
 };
 
+exports.addRestaurant = async (req, res, next) => {
+  if (
+    !req.body.name ||
+    !req.body.address ||
+    !req.body.cuisine ||
+    !req.body.opening_hr ||
+    !req.body.closing_hr ||
+    !req.body.phone_num
+  ) {
+    req.flash('danger', 'Fields must not be blank!');
+    res.redirect('/restaurants/add');
+  }
+
+  try {
+    await db.one('INSERT INTO OwnedRestaurants VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [
+      req.user.uname,
+      req.body.address,
+      req.body.name,
+      req.body.cuisine,
+      req.body.phone_num,
+      req.body.opening_hr,
+      req.body.closing_hr
+    ]);
+
+    // no errors thrown
+    req.flash('success', 'Your restaurant has been added!');
+    return res.redirect('/home');
+  } catch (e) {
+    // errors thrown
+    // insert failed due to duplicate primary keys...
+    console.log(e);
+    req.flash('danger', 'Something went wrong; please try again. Perhaps your restaurant has been registered already?');
+    return res.redirect('/restaurants/add');
+  }
+};
+
+exports.showRestaurantAddPage = async (req, res, next) => {
+  res.render('restaurantowners-add-restaurant');
+}
+
 exports.showRestaurantProfile = async (req, res, next) => {
+  console.log(req.params);
   try {
     const restaurant = await db.one(
-      'SELECT * FROM OwnedRestaurants where rname=$1',
-      [req.params.rname]
+      'SELECT * FROM OwnedRestaurants WHERE rname=$1 AND raddress=$2',
+      [req.params.rname, req.params.raddress],
     );
 
     res.render('restaurant', {
@@ -37,6 +82,27 @@ exports.showRestaurantProfile = async (req, res, next) => {
     });
   } catch (e) {
     next(e);
+  }
+};
+
+exports.showRestaurantMenus = async (req, res, next) => {
+  try {
+    // check if restaurant exists
+    await db.one(
+      'SELECT * FROM OwnedRestaurants WHERE rname=$1 AND raddress=$2',
+      [req.params.rname, req.params.raddress]
+    );
+    const menus = await db.any(
+      'SELECT * FROM Menu WHERE rname=$1 AND raddress=$2',
+      [req.params.rname, req.params.raddress]
+    );
+
+    return res.render('restaurant-menus', {
+      restaurant: req.params,
+      menus
+    });
+  } catch (e) {
+    return res.sendStatus(404);
   }
 };
 

@@ -1,13 +1,14 @@
 extends layout
 
 block content
-  h1 Login
-  form(method='POST' action='/diners/login')
-    #form-group
-      label Username:
-      input.form-control(name='uname' type='text')
-    #form-group
-      label Password:
-      input.form-control(name='pass' type='password')
-    br
-    input(type='submit' value='Submit')
+  .container(style='padding-top:10%;')
+    h1 Login
+    form(method='POST' action='/login')
+      #form-group
+        label Username:
+        input.form-control(name='uname' type='text')
+      #form-group
+        label Password:
+        input.form-control(name='pass' type='password')
+      br
+      input(type='submit' value='Submit')

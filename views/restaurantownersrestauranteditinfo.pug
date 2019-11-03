@@ -40,11 +40,11 @@ block style
         }
 
 
-block content
+block append content
 
     <restplate>
         - console.log(details.raddress)
-        form(method='POST' action='/restaurantowners/' + details.uname + '/' + details.rname + '/' + details.raddress.replace("#", "%23").replace("/", "%2F"))
+        form(method='POST' action='/restaurantowners/' + details.rname + '/' + encodeURIComponent(details.raddress))
             <information>
             img(src='/images/restaurant1.jpeg' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
@@ -75,6 +75,6 @@ block content
             div.form-group
                 label(for='phone_num') Contact Number:
                 input#phone_num.form-control(type='text', value=details.phone_num, name='phone_num')
-            button.btn.btn-light(type='submit' value='Submit') Submit
+            button.btn.btn-light(type='submit' value='Submit') Confirm changes
             </information>
     </restplate>
