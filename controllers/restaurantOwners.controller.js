@@ -55,7 +55,8 @@ exports.updateRestaurant = async (req, res, next) => {
     if (!req.body.name || !req.body.address || !req.body.cuisine || !req.body.opening_hr || !req.body.closing_hr || !req.body.phone_num) {
         // perhaps we could do this front end, but good to check?
         req.flash('danger', "Cannot leave any entry blank.");
-        res.redirect('/restaurantowners/' + req.params.rname + '/' + req.params.raddress.replace("#","%23").replace("/", "%2F")+ '/edit');
+        let encoded = encodeURIComponent(req.params.raddress);
+        res.redirect('/restaurantowners/' + req.params.rname + '/' + encoded + '/edit');
     } else {
         try {
             // need to check for validity of the requests 
@@ -100,7 +101,8 @@ exports.updateRestaurant = async (req, res, next) => {
                 // render the restaurant page with the updated details. 
                 //console.log(encodeURIComponent('/restaurantowners/' + req.user.uname + '/' + req.body.name + '/' + req.body.address));
                 // should use encodeuricomponent for restaurant address. 
-                res.redirect('/restaurantowners/' + req.body.name + '/' + req.body.address.replace("#", "%23").replace("/", "%2F"));
+                let encoded = encodeURIComponent(req.body.address);
+                res.redirect('/restaurantowners/' + req.body.name + '/' + encoded);
             }
 
         } catch (e) {
@@ -114,7 +116,8 @@ exports.updateTimeslot = async (req, res, next) => {
         console.log(req.body);
         if (!req.body.sdate || !req.body.edate || !req.body.stime || !req.body.etime || !req.body.pax || !req.body.days) {
             req.flash('danger', "Cannot leave any entry blank.");
-            res.redirect('/restaurantowners/' + '/' + req.params.rname + '/' + req.params.raddress.replace("#", "%23").replace("/", "%2F") + '/edittimeslot');
+            let encoded = encodeURIComponent(req.params.raddress);
+            res.redirect('/restaurantowners/' + '/' + req.params.rname + '/' + encoded + '/edittimeslot');
         } else {
             var errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -160,7 +163,8 @@ exports.updateTimeslot = async (req, res, next) => {
                     console.log("ERROR:", error.message || error);
                 });
                 req.flash('success', "Entries updated!");
-                res.redirect('/restaurantowners/' + req.params.rname + '/' + req.params.raddress.replace("#", "%23").replace("/", "%2F") + '/edittimeslot');
+                let encoded = encodeURIComponent(req.params.raddress);
+                res.redirect('/restaurantowners/' + req.params.rname + '/' + encoded + '/edittimeslot');
             }
         }
     } catch (e) {

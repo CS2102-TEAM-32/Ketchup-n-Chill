@@ -46,7 +46,7 @@ block style
 
 
 
-block content
+block append content
 
     <restplate>
         h1(style="color:red") #{details.rname}
@@ -95,5 +95,6 @@ block content
     </restplate>
     br
     div.wrapper
-        a.btn.btn-light(href='/restaurantowners/' + details.rname + '/' + details.raddress.replace("#", "%23").replace("/", "%2F") + '/edit') Edit Information
-        a.btn.btn-light(href='/restaurantowners/' + details.rname + '/' + details.raddress.replace("#", "%23").replace("/", "%2F") + '/edittimeslot') Edit Timeslots
+        - var encoded = encodeURIComponent(details.raddress);
+        a.btn.btn-light(href='/restaurantowners/' + details.rname + '/' + encoded + '/edit') Edit Information
+        a.btn.btn-light(href='/restaurantowners/' + details.rname + '/' + encoded + '/edittimeslot') Edit Timeslots

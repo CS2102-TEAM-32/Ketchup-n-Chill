@@ -1,7 +1,7 @@
 extends layout
 
-block append content
-  .container
+block content
+  .container(style='padding-top:10%;')
     h1 Login
     form(method='POST' action='/login')
       #form-group

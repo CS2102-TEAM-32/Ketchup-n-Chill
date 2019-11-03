@@ -39,7 +39,8 @@ block content
                       td #{rest.opening_hr}
                       td #{rest.closing_hr}
                       td 
-                          a(href='/restaurantowners/' +  rest.rname +'/' + rest.raddress.replace("#", "%23").replace("/", "%2F")) #{rest.rname}
+                          - var encoded = encodeURIComponent(rest.raddress);
+                          a(href='/restaurantowners/' +  rest.rname +'/' + encoded) #{rest.rname}
 
 block style
   link(rel='stylesheet' href='/stylesheets/home.css')
