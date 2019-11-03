@@ -3,11 +3,16 @@ const db = require('../db/index');
 /* show all restaurants or selected restaurants based on req.query */
 exports.showRestaurants = async (req, res, next) => {
   try {
-    const restaurants = await queryDbFromReqQuery(
-      'SELECT DISTINCT rname FROM OwnedRestaurants NATURAL JOIN HasTimeslots',
-      req.query,
-      db.any
-    );
+    let restaurants;
+    if (Object.entries(req.query).length === 0) { // no query
+      restaurants = await db.many('SELECT DISTINCT rname, raddress FROM OwnedRestaurants');
+    } else {
+      restaurants = await queryDbFromReqQuery(
+        'SELECT DISTINCT rname FROM OwnedRestaurants NATURAL JOIN HasTimeslots',
+        req.query,
+        db.any
+      );
+    }
 
     res.render('restaurants', {
       title: 'Restaurants',
@@ -59,10 +64,11 @@ exports.showRestaurantAddPage = async (req, res, next) => {
 }
 
 exports.showRestaurantProfile = async (req, res, next) => {
+  console.log(req.params);
   try {
     const restaurant = await db.one(
-      'SELECT * FROM OwnedRestaurants where rname=$1',
-      [req.params.rname]
+      'SELECT * FROM OwnedRestaurants WHERE rname=$1 AND raddress=$2',
+      [req.params.rname, req.params.raddress],
     );
 
     res.render('restaurant', {

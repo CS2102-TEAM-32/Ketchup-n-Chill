@@ -11,7 +11,7 @@ router.post('/', common.ensureAuthenticatedRestaurantOwner, controller.addRestau
 router.get('/add', common.ensureAuthenticatedRestaurantOwner, controller.showRestaurantAddPage);
 
 router.get(
-    '/:rname',
+    '/:rname/:raddress',
     controller.showRestaurantProfile
 );
 
