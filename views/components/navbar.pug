@@ -8,9 +8,9 @@ mixin navbar
 
     .collapse.navbar-collapse(id='navbarSupportedContent')
       ul.navbar-nav.mr-auto
+        li.nav-item
+          a.nav-link(href='/restaurants') All restaurants
         if !user || user.type === 'diner'
-          li.nav-item
-            a.nav-link(href='/restaurants') All restaurants
           li.nav-item
             a.nav-link(href='/diners/incentives') Incentives
         else
@@ -24,5 +24,6 @@ mixin navbar
           li.nav-item.dropdown
             a.nav-link.dropdown-toggle(id='navbarDropdownMenuLink' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false') Account
             .dropdown-menu(aria-labelledby='navbarDropdownMenuLink')
-              a.dropdown-item(href='/profile') Profile
+              if user.type === 'diner'
+                a.dropdown-item(href='/profile') Profile
               a.dropdown-item(href='/logout') Logout
