@@ -1,4 +1,7 @@
+# .idea files
 .idea/
+views/.idea/
+
 # OS X
 .DS_Store*
 Icon?
@@ -14,9 +17,10 @@ Desktop.ini
 *~
 .vs/
 
-
 # npm
 node_modules
 package-lock.json
 *.log
 *.gz
+
+# Put ! before to not ignore file/folder
