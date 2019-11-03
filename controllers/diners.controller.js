@@ -189,6 +189,22 @@ exports.createDiner = async (req, res, next) => {
     ]);
     req.flash('success', 'You are now registered!');
     res.redirect('/diners/account/' + req.body.uname);
+    const check = await db.any('SELECT * FROM Users WHERE uname=$1', [req.body.uname]);
+      if (check.length == 0) {
+          await db.none('CALL add_diner($1, $2, $3)', [
+              req.body.uname,
+              req.body.name,
+              hash
+          ]);
+          req.flash('success', 'You are now registered!');
+          res.redirect('/restaurantowners/' + req.body.uname);
+      } else {
+          req.flash('danger', 'Username exists, please use another one.');
+          res.render('register', {
+              prevName: req.body.name,
+              prevUname: req.body.uname
+          });
+      }    
   } catch (e) {
     next(e);
   }
