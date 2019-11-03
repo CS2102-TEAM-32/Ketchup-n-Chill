@@ -17,20 +17,16 @@ block content
       h1 #[strong All My Restaurants]
       br
       table(id="restaurants" align="center" width="100%")
-        thead 
-          tr
-            th No.
-            th RestaurantName 
-            th Address 
-            th 
         tbody
           -var i = 1;
           each rest, i in allRestaurants 
             tr 
-              td= i+1
+              td= i+1 + '.'
+              td #{rest.rname}
               td
-                a(href='/restaurants/' +  rest.rname +'/' + encodeURIComponent(rest.raddress)) #{rest.rname}
-              td #{rest.raddress}
+                a(href='/restaurants/' +  rest.rname +'/' + encodeURIComponent(rest.raddress)) View listing
+              td
+                a(href='/restaurants/' + rest.rname + '/' + encodeURIComponent(rest.raddress) + '/menus') View menus
               td
                 a(href='/restaurantowners/' +  rest.rname +'/' + encodeURIComponent(rest.raddress) + '/edit') edit
 
