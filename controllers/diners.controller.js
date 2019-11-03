@@ -98,6 +98,24 @@ exports.showVouchers = async (req, res, next) => {
   }
 };
 
+// Not complete, no route coming here yet
+exports.redeemVoucher = async (req, res, next) => {
+  try {
+    const voucher = await db.one('SELECT * FROM Vouchers WHERE title = $1 AND organisation = $2 AND redeemed = FALSE LIMIT 1', [
+      req.params.title,
+      req.params.organisation
+    ]);
+    await db.one('UPDATE Vouchers SET duname = $1 AND redeemed = TRUE WHERE title = $2 AND organisation = $2 RETURNING *', [
+      req.user.uname,
+      voucher.title,
+      voucher.organisation
+    ]);
+    res.sendStatus(JSON.stringify(voucher.code));
+  } catch (e) {
+    next(e);
+  }
+};
+
 exports.showIncentives = async (req, res, next) => {
   try {
     const incentives = await queryDbFromReqQuery(
