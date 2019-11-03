@@ -12,37 +12,25 @@ block content
         each rest in topRestaurants
           +restaurant-card(rest.rname, rest.avg, rest.cuisine, rest.raddress)
         else 
-          p(style="color:white;padding:20%;", align="center") Currently, there are no restaurants under you! Scroll down to create your own restaurant! 
+          p(style="color:white;padding:20%;" align="center") Currently, there are no restaurants under you! Scroll down to create your own restaurant! 
     div#rest
       h1 #[strong All My Restaurants]
       br
-      table(id="restaurants", align="center", width="100%")
-          thead 
-              tr
-                  th No.
-                  th RestaurantName 
-                  th Address 
-                  th Cuisine 
-                  th Phone Number 
-                  th Opening Hour
-                  th Closing Hour 
-                  th Link to Restaurant Page 
-          tbody
-              -var i = 1;
-              each rest, i in allRestaurants 
-                  tr 
-                      td= i+1
-                      td #{rest.rname}
-                      td #{rest.raddress}
-                      td #{rest.cuisine}
-                      td #{rest.phone_num}
-                      td #{rest.opening_hr}
-                      td #{rest.closing_hr}
-                      td 
-                          - var encoded = encodeURIComponent(rest.raddress);
-                          a(href='/restaurantowners/' +  rest.rname +'/' + encoded) #{rest.rname}
+      table(id="restaurants" align="center" width="100%")
+        thead 
+          tr
+            th No.
+            th RestaurantName 
+            th Address 
+        tbody
+          -var i = 1;
+          each rest, i in allRestaurants 
+            tr 
+              td= i+1
+              td
+                a(href='/restaurantowners/' +  rest.rname +'/' + encodeURIComponent(rest.raddress)) #{rest.rname}
+              td #{rest.raddress}
 
 block style
   link(rel='stylesheet' href='/stylesheets/home.css')
   link(rel='stylesheet' href='/stylesheets/restaurantowners.css')
-    
