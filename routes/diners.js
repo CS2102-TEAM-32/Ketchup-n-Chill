@@ -27,8 +27,8 @@ router.get(
   controller.showVouchers
 );
 router.get(
-  '/redeem',
-  controller.redeemVoucher
+  '/claim',
+  controller.claimVoucher
 );
 router.get('/account', function (req, res, next) {
   const page = 'account/' + [req.user.uname];

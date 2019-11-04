@@ -50,23 +50,6 @@ exports.showVouchers = async (req, res, next) => {
   }
 };
 
-exports.redeemVoucher = async (req, res, next) => {
-  try {
-    const voucher = await db.one('SELECT * FROM Vouchers WHERE title = $1 AND organisation = $2 AND redeemed = FALSE LIMIT 1', [
-      req.params.title,
-      req.params.organisation
-    ]);
-    await db.one('UPDATE Vouchers SET duname = $1 AND redeemed = TRUE WHERE title = $2 AND organisation = $2 RETURNING *', [
-      req.user.uname,
-      voucher.title,
-      voucher.organisation
-    ]);
-    res.sendStatus(JSON.stringify(voucher.code));
-  } catch (e) {
-    next(e);
-  }
-};
-
 exports.showVouchers = async (req, res, next) => {
   try {
     const name = req.user.uname;
@@ -91,7 +74,7 @@ exports.showVouchers = async (req, res, next) => {
   }
 };
 
-exports.redeemVoucher = async (req, res, next) => {
+exports.claimVoucher = async (req, res, next) => {
   try {
     const voucher = await queryDbFromReqQueryForVoucher(
       "SELECT * FROM Vouchers NATURAL JOIN Incentives",
