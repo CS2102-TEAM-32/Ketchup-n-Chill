@@ -16,11 +16,10 @@ mixin incentive-card(title, description, organisation, points, index)
       }
       var voucher = document.getElementById("voucher");
 
-  p #{index}
   div.modal(id = index)
     div.modal-content
       div.modal-body
-        p Would you like to confirm your claim?
+        p Would you like to confirm your claim #{title}?
       div.modal-footer
         a.btn.btn-primary(onclick='viewVoucher()', type='button', class="btn") Confirm
         a.btn.btn-primary(onclick='cancel()', type='button', class="btn") Cancel

@@ -9,7 +9,7 @@ block style
       border-spacing: 10px;
     }
     #wrapper {
-      width: 50%;
+      width: 80%;
       display: block;
       margin: auto;
     }
@@ -102,9 +102,8 @@ block style
     }
 
 block append content
-  .container
-    h4(style='text-align:center;') Hello #{name}, you have #{points} points! Search for incentives here:
-    div#wrapper
+  h4(style='text-align:center;') Hello #{name}, you have #{points} points! Search for incentives here:
+  div#wrapper
     div.search-box
       form(method='GET' action='/diners/incentives')
         div.form-row
