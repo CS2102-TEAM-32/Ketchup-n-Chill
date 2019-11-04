@@ -5,13 +5,11 @@ mixin incentive-card(title, description, organisation, points, index)
         var getConfirmation = document.getElementById($(event.target).attr('card-id'));
         getConfirmation.style.display = "block";
       }
-      function cancel() {
-        var getConfirmation = document.getElementById('#{index}');
+      function cancel(event) {
+        var getConfirmation = document.getElementById($(event.target).attr('card-id'));
         getConfirmation.style.display = "none";
-        voucher.style.display = "none";
       }
       function viewVoucher(event) {
-        console.log(event);
         var getConfirmation = document.getElementById($(event.target).attr('card-id'));
         getConfirmation.style.display = "none";
         const title = $(event.target).attr('title');
@@ -23,19 +21,16 @@ mixin incentive-card(title, description, organisation, points, index)
             organisation: organisation
           },
           success: (response) => {
-            $( "div" ).data( "test", response );
-            console.log("success!");
-            console.log(response);
+            $( "div" ).data( "test", 'Your code is: ' + response );
             $( "span" ).text( $( "div" ).data( "test" ) );
-            console.log($( "div" ).data( "test" ));
           },
           error: err => {
             console.log("error:" + err);
           }
         });
+        var voucher = document.getElementById("voucher");
         voucher.style.display = "block";
       }
-      var voucher = document.getElementById("voucher");
 
   div.modal(id = index)
     div.modal-content
@@ -43,16 +38,16 @@ mixin incentive-card(title, description, organisation, points, index)
         p Would you like to confirm your claim for #{title} for #{points} points?
       div.modal-footer
         a.btn.btn-primary(card-id=index title=title organisation=organisation onclick='viewVoucher(event)' type='button' class="btn") Confirm
-        a.btn.btn-primary(onclick='cancel()' type='button' class="btn") Cancel
+        a.btn.btn-primary(card-id=index onclick='cancel(event)' type='button' class="btn") Cancel
 
   div#voucher.modal
     div.modal-content
       div.modal-body
-        p Your code is: <span></span>
+        p <span></span>
         p Voucher has been added to your list!
       div.modal-footer
         a.btn.btn-primary(href='../diners/vouchers', type='button', class="btn") View my vouchers
-        a.btn.btn-primary(onclick='cancel()', type='button', class="btn") Continue browsing
+        a.btn.btn-primary(card-id='voucher' onclick='cancel(event)', type='button', class="btn") Continue browsing
 
   div.card(style='background-color: whitesmoke; display: block; padding: 2px; margin-bottom: 10px; border-radius: 10px;')
     div.card-body
