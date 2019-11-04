@@ -85,6 +85,24 @@ exports.showRestaurantProfile = async (req, res, next) => {
   }
 };
 
+exports.showRestaurantTimeslot = async (req, res, next) => {
+    console.log(req.params);
+    try {
+        const timeslots = await db.many(
+            'SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress =$2 AND num_available > 0',
+            [req.params.rname, req.params.raddress]
+        );
+
+        return res.render('timeslots', {
+            timeslotList: timeslots,
+            restName: timeslots[0].rname
+        });
+    } catch (e) {
+        console.log(e);
+        return res.sendStatus(404);
+    }
+};
+
 exports.showRestaurantMenus = async (req, res, next) => {
   try {
     // check if restaurant exists

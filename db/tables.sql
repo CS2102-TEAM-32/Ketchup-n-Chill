@@ -43,7 +43,7 @@ CREATE TABLE HasTimeslots (
 	date DATE,
 	time TIME,
 	rname VARCHAR(50),
-	raddress TEXT,
+	raddress varchar(1024),
 	num_available integer,
 	PRIMARY KEY(rname, raddress, date, time),
 	FOREIGN KEY(rname, raddress) REFERENCES OwnedRestaurants(rname, raddress) ON DELETE CASCADE ON UPDATE CASCADE
@@ -95,11 +95,9 @@ CREATE TABLE Vouchers (
 	title varchar(50),
 	organisation varchar(50),
 	code varchar(50),
-	duname varchar(50) DEFAULT NULL,
-	redeemed BOOLEAN DEFAULT FALSE,
+	is_claimed boolean DEFAULT FALSE,
 	PRIMARY KEY (title, organisation, code),
-	FOREIGN KEY (title, organisation) REFERENCES Incentives (title, organisation) ON DELETE CASCADE,
-	FOREIGN KEY (duname) REFERENCES Diners(uname) ON DELETE CASCADE
+	FOREIGN KEY (title, organisation) REFERENCES Incentives (title, organisation) ON DELETE CASCADE
 );
 
 
@@ -146,5 +144,5 @@ INSERT INTO ReserveTimeslots values ('2019-10-19', '10:00', 'Bangkok Jam', '51 A
 INSERT INTO HasTimeslots VALUES ('2019-12-12', '10:00', 'Popeyes', 'fudstreet', '10'); -- Simple test for search, search using date: 12 December 2019, time: 10:00AM (or none), etc
 INSERT INTO HasTimeslots VALUES ('2019-12-25', '12:00', 'Bibimbap', '1street', '15'); -- Another test for search
 INSERT INTO HasTimeslots VALUES ('2019-10-19', '10:00', 'Bangkok Jam', '51 Ang Mo Kio Ave 3, #01-04 51@AMK, Singapore 569922', '18');
-
+INSERT INTO HasTimeslots VALUES ('2019-11-03', '10:00', 'Bangkok Jam', '51 Ang Mo Kio Ave 3, #01-04 51@AMK, Singapore 569922', '18');
 
