@@ -44,7 +44,7 @@ exports.showVouchers = async (req, res, next) => {
         vouchers: values[0],
         redeemedVouchers: values[1]
       });
-    })
+    });
   } catch (e) {
     next(e);
   }
@@ -53,6 +53,7 @@ exports.showVouchers = async (req, res, next) => {
 // Not complete, no route coming here yet
 exports.redeemVoucher = async (req, res, next) => {
   try {
+    console.log(req.params.title);
     const voucher = await db.one('SELECT * FROM Vouchers WHERE title = $1 AND organisation = $2 AND redeemed = FALSE LIMIT 1', [
       req.params.title,
       req.params.organisation
@@ -70,6 +71,7 @@ exports.redeemVoucher = async (req, res, next) => {
 
 exports.showVouchers = async (req, res, next) => {
   try {
+    const name = req.user.uname;
     const vouchers = db.any(
       "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=FALSE",
       [req.user.uname]
@@ -78,35 +80,75 @@ exports.showVouchers = async (req, res, next) => {
       "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=TRUE",
       [req.user.uname]
     );
-    Promise.all([vouchers, redeemedVouchers]).then(values => {
+    Promise.all([name, vouchers, redeemedVouchers]).then(values => {
       res.render('vouchers', {
         title: 'Vouchers',
-        vouchers: values[0],
-        redeemedVouchers: values[1]
+        name: values[0],
+        vouchers: values[1],
+        redeemedVouchers: values[2]
       });
-    })
+    });
   } catch (e) {
     next(e);
   }
 };
 
-// Not complete, no route coming here yet
 exports.redeemVoucher = async (req, res, next) => {
   try {
-    const voucher = await db.one('SELECT * FROM Vouchers WHERE title = $1 AND organisation = $2 AND redeemed = FALSE LIMIT 1', [
-      req.params.title,
-      req.params.organisation
-    ]);
-    await db.one('UPDATE Vouchers SET duname = $1 AND redeemed = TRUE WHERE title = $2 AND organisation = $2 RETURNING *', [
+    const voucher = await queryDbFromReqQueryForVoucher(
+      "SELECT * FROM Vouchers",
+      req.query,
+      db.one
+    );
+    const update = await db.one("UPDATE Vouchers SET duname = $1 WHERE title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
       req.user.uname,
       voucher.title,
-      voucher.organisation
+      voucher.organisation,
+      voucher.code
     ]);
-    res.sendStatus(JSON.stringify(voucher.code));
+    res.json(voucher.code);
   } catch (e) {
+    console.log(e);
     next(e);
   }
 };
+
+/*
+ helper function to form the query then query the db with it.
+ takes in a string 'select ... from ...' as the first parameter.
+ the second parameter is the req.query object.
+ the last parameter is a suitable pgp method (i.e none, one, oneOrNone, many, any)
+ forms the conditions in the where clause based on the keys from the req.query object,
+ then forms the full sql query with the given frontPortion,
+ then calls f with the query and the list of values.
+ returns the promise from the method, which you then can call await on.
+*/
+// It's currently case sensitive and doesn't accept when organisation names are > 1 word (cuz no '') so gotta fix that!
+function queryDbFromReqQueryForVoucher(frontPortion, reqQuery, f) {
+  const partials = {
+    title: 'title=',
+    organisation: 'organisation='
+  };
+
+  const keys = Object.keys(reqQuery);
+  if (keys.length === 0) {
+    // the req.query object is empty, we will query without a where clause.
+    return f(frontPortion);
+  }
+
+  const conditions = keys
+    .filter(key => reqQuery[key] !== '') // if they are empty, don't include in where clause
+    .map((key, index) => `${partials[key]} $${index + 1}`) // pgp uses base-1 index
+    .reduce((acc, curr) => `${acc} AND ${curr}`);
+
+  //console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
+
+  // make the function call and return the promise
+  return f(
+    `${frontPortion} WHERE duname IS NULL AND ${conditions} LIMIT 1`,
+    Object.values(reqQuery).filter(value => value !== '')
+  );
+}
 
 exports.showIncentives = async (req, res, next) => {
   try {
