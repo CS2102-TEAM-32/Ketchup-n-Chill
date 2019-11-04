@@ -1,6 +1,5 @@
 mixin incentive-card(title, description, organisation, points, index)
   script.
-      var code;
       function confirmation(event) {
         var getConfirmation = document.getElementById($(event.target).attr('card-id'));
         getConfirmation.style.display = "block";
