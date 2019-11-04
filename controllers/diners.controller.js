@@ -100,13 +100,22 @@ exports.redeemVoucher = async (req, res, next) => {
       req.query,
       db.one
     );
-    const update = await db.one("UPDATE Vouchers SET duname = $1 WHERE title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
-      req.user.uname,
-      voucher.title,
-      voucher.organisation,
-      voucher.code
-    ]);
-    res.json(voucher.code);
+    const points = db.one(
+      'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
+      [req.user.uname]
+    );
+    if (points.count >= voucher.code) {
+      const update = await db.one("UPDATE Vouchers SET duname = $1 WHERE title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
+        req.user.uname,
+        voucher.title,
+        voucher.organisation,
+        voucher.code
+      ]);
+      res.json(voucher.code);
+    }
+    else {
+      res.json(0);
+    }
   } catch (e) {
     console.log(e);
     next(e);
