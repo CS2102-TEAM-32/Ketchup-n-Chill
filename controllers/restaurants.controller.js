@@ -5,7 +5,7 @@ exports.showRestaurants = async (req, res, next) => {
   try {
     let restaurants;
     if (Object.entries(req.query).length === 0) { // no query
-      restaurants = await db.many('SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants');
+      restaurants = await db.many('SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants ORDER BY rname');
     } else {
       restaurants = await queryDbFromReqQuery(
         'SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants NATURAL JOIN HasTimeslots',
@@ -83,6 +83,24 @@ exports.showRestaurantProfile = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
+};
+
+exports.showRestaurantTimeslot = async (req, res, next) => {
+    console.log(req.params);
+    try {
+        const timeslots = await db.many(
+            'SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress =$2 AND num_available > 0',
+            [req.params.rname, req.params.raddress]
+        );
+
+        return res.render('timeslots', {
+            timeslotList: timeslots,
+            restName: timeslots[0].rname
+        });
+    } catch (e) {
+        console.log(e);
+        return res.sendStatus(404);
+    }
 };
 
 exports.showRestaurantMenus = async (req, res, next) => {

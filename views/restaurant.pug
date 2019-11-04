@@ -158,6 +158,8 @@ block append content
       p <b>Contact Number:</b>
       p  #{phoneNum}
       a(href='/restaurants/' + restName + '/' + restAddr + '/menus') View menus
+      br
+      a(href='/restaurants/' + restName + '/' + restAddr + '/timeslots') View Available Timeslots
       </information>
     </restplate>
     br
@@ -167,7 +169,7 @@ block append content
         row
           form-group
             span.form-label Date
-              input.date-input.form-control(name ="date" type="date" value=date min=date date-date='' date-date-format='DD MMMM YYYY')
+                input.date-input.form-control(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
     span.form-label Time
       input.form-control(name='time' type='time')
     span.form-label Pax

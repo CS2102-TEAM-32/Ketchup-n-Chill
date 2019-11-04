@@ -1,0 +1,59 @@
+extends layout
+
+block style
+    style(type="text/css").
+        table {
+            margin: auto;
+            width: 75%;
+        }
+        table thead {
+            background-color: #e22512;
+            color: #ffffff;
+            text-align: center;
+            font-weight: bold;
+        }
+        table td {
+            padding: 12px 15px;
+            font
+        }
+        table th {
+            padding: 12px 15px;
+            font-size: 20px;
+        }
+        table tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+        table tbody tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+        table tbody tr:last-of-type {
+            border-bottom: 2px solid #980403;
+        }
+        table td {
+            text-align:center;
+
+        }
+        clearfix:after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+
+block append content
+    .container
+        h1(style='text-align:center; padding-top:20px') #{restName}
+        div
+            table
+                thead
+                    tr
+                        th Date
+                        th Time
+
+                tbody
+                    each timeslot in timeslotList
+                        tr
+                            td
+                                p #{timeslot.date}
+                            td
+                                p #{timeslot.time}

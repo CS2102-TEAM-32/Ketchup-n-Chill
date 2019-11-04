@@ -13,7 +13,21 @@ block content
             input.date-input.form-control(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
           div.form-group
             label Time
-            input.form-control(name='time' type='time')
+            input.form-control(name='time' type='time' value=time list='limittimelist' min=time)
+            datalist#limittimelist
+              option(value="09:00")
+              option(value="10:00")
+              option(value="11:00")
+              option(value="12:00")
+              option(value="13:00")
+              option(value="14:00")
+              option(value="15:00")
+              option(value="16:00")
+              option(value="17:00")
+              option(value="18:00")
+              option(value="19:00")
+              option(value="20:00")
+              option(value="21:00")
           div.form-row
             div.form-group.col-md-6
               label Pax
