@@ -1,7 +1,8 @@
 mixin incentive-card(title, description, organisation, points, index)
   script.
-      function confirmation() {
-        var getConfirmation = document.getElementById('#{index}');
+      var code;
+      function confirmation(event) {
+        var getConfirmation = document.getElementById($(event.target).attr('card-id'));
         getConfirmation.style.display = "block";
       }
       function cancel() {
@@ -9,9 +10,29 @@ mixin incentive-card(title, description, organisation, points, index)
         getConfirmation.style.display = "none";
         voucher.style.display = "none";
       }
-      function viewVoucher() {
-        var getConfirmation = document.getElementById('#{index}');
+      function viewVoucher(event) {
+        console.log(event);
+        var getConfirmation = document.getElementById($(event.target).attr('card-id'));
         getConfirmation.style.display = "none";
+        const title = $(event.target).attr('title');
+        const organisation = $(event.target).attr('organisation');
+        $.ajax({
+          url: '/diners/redeem/',
+          data: {
+            title: title,
+            organisation: organisation
+          },
+          success: (response) => {
+            $( "div" ).data( "test", response );
+            console.log("success!");
+            console.log(response);
+            $( "span" ).text( $( "div" ).data( "test" ) );
+            console.log($( "div" ).data( "test" ));
+          },
+          error: err => {
+            console.log("error:" + err);
+          }
+        });
         voucher.style.display = "block";
       }
       var voucher = document.getElementById("voucher");
@@ -19,14 +40,15 @@ mixin incentive-card(title, description, organisation, points, index)
   div.modal(id = index)
     div.modal-content
       div.modal-body
-        p Would you like to confirm your claim #{title}?
+        p Would you like to confirm your claim for #{title} for #{points} points?
       div.modal-footer
-        a.btn.btn-primary(onclick='viewVoucher()', type='button', class="btn") Confirm
-        a.btn.btn-primary(onclick='cancel()', type='button', class="btn") Cancel
+        a.btn.btn-primary(card-id=index title=title organisation=organisation onclick='viewVoucher(event)' type='button' class="btn") Confirm
+        a.btn.btn-primary(onclick='cancel()' type='button' class="btn") Cancel
 
   div#voucher.modal
     div.modal-content
       div.modal-body
+        p Your code is: <span></span>
         p Voucher has been added to your list!
       div.modal-footer
         a.btn.btn-primary(href='../diners/vouchers', type='button', class="btn") View my vouchers
@@ -44,4 +66,4 @@ mixin incentive-card(title, description, organisation, points, index)
           | #{description} 
         h7.organisation
           | This incentive is brought to you by <b>#{organisation}</b>
-        a.btn.btn-primary(data-target = index, onclick='confirmation()', style='border-color: #FECA1D; background-color: #FECA1D; float:right;') Claim
+        a.btn.btn-primary(card-id=index onclick='confirmation(event)' style='border-color: #FECA1D; background-color: #FECA1D; float:right;') Claim
