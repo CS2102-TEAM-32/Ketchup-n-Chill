@@ -5,7 +5,7 @@ exports.showRestaurants = async (req, res, next) => {
   try {
     let restaurants;
     if (Object.entries(req.query).length === 0) { // no query
-      restaurants = await db.many('SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants');
+      restaurants = await db.many('SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants ORDER BY rname');
     } else {
       restaurants = await queryDbFromReqQuery(
         'SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants NATURAL JOIN HasTimeslots',
