@@ -8,19 +8,88 @@ block style
       table-layout: auto;
       border-spacing: 10px;
     }
+    .btn {
+      text-align: center;
+      background-color: #FECA1D;
+      margin-left: 12px;
+    }
+    /* The Modal (background) */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      padding-top: 100px; /* Location of the box */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
 
-block content
-  br
-  br
-  br
-  h1 #{vouchers[0].duname}'s Vouchers
+    /* Modal Content */
+    .modal-content {
+      position: relative;
+      background-color: #fefefe;
+      margin: auto;
+      padding: 0;
+      border: 1px solid #888;
+      width: 80%;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+      -webkit-animation-name: animatetop;
+      -webkit-animation-duration: 0.4s;
+      animation-name: animatetop;
+      animation-duration: 0.4s
+    }
+
+    /* Add Animation */
+    @-webkit-keyframes animatetop {
+      from {top:-300px; opacity:0} 
+      to {top:0; opacity:1}
+    }
+
+    @keyframes animatetop {
+      from {top:-300px; opacity:0}
+      to {top:0; opacity:1}
+    }
+
+    /* The Close Button */
+    .close {
+      color: white;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 16px;
+    }
+
+    .modal-footer {
+      padding: 2px 16px;
+      background-color: #FECA1D;
+      color: white;
+      float: left;
+    }
+
+block append content
+  h1 #{name}'s Vouchers
   br
   h4(style='margin-left: 25px;') Unused Vouchers
   div#reservations
-    include ./components/voucher-card.pug
+    include ./components/unredeemed-voucher-card.pug
+    - var id = 0
     each voucher in vouchers
-      +voucher-card(voucher.title, voucher.description, voucher.points, voucher.organisation, voucher.code)
-    else 
+      +voucher-card(voucher.title, voucher.description, voucher.points, voucher.organisation, voucher.code, 'vouchercard-' + id++)
+    else
       p You have no vouchers. Take a look at the incentives we have for you!
       a.btn.btn-primary(href='/diners/incentives', style='border-color: #FECA1D; background-color: #FECA1D; margin-left: 20px;') View Incentives
   br
@@ -29,7 +98,7 @@ block content
   div#reservations
     include ./components/voucher-card.pug
     each voucher in redeemedVouchers
-      +voucher-card(voucher.title, voucher.description, voucher.points, voucher.organisation, voucher.code)
+      +voucher-card(voucher.title, voucher.description, voucher.points, voucher.organisation, voucher.code, 0)
     else 
       p You have no used vouchers.
   img(src='../../images/ketchupandchilli_header.png' style='width:97%; margin-left: 10px; margin-right: 10px;')

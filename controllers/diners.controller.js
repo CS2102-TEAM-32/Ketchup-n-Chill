@@ -44,25 +44,7 @@ exports.showVouchers = async (req, res, next) => {
         vouchers: values[0],
         redeemedVouchers: values[1]
       });
-    })
-  } catch (e) {
-    next(e);
-  }
-};
-
-// Not complete, no route coming here yet
-exports.redeemVoucher = async (req, res, next) => {
-  try {
-    const voucher = await db.one('SELECT * FROM Vouchers WHERE title = $1 AND organisation = $2 AND redeemed = FALSE LIMIT 1', [
-      req.params.title,
-      req.params.organisation
-    ]);
-    await db.one('UPDATE Vouchers SET duname = $1 AND redeemed = TRUE WHERE title = $2 AND organisation = $2 RETURNING *', [
-      req.user.uname,
-      voucher.title,
-      voucher.organisation
-    ]);
-    res.sendStatus(JSON.stringify(voucher.code));
+    });
   } catch (e) {
     next(e);
   }
@@ -70,6 +52,7 @@ exports.redeemVoucher = async (req, res, next) => {
 
 exports.showVouchers = async (req, res, next) => {
   try {
+    const name = req.user.uname;
     const vouchers = db.any(
       "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=FALSE",
       [req.user.uname]
@@ -78,35 +61,156 @@ exports.showVouchers = async (req, res, next) => {
       "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=TRUE",
       [req.user.uname]
     );
-    Promise.all([vouchers, redeemedVouchers]).then(values => {
+    Promise.all([name, vouchers, redeemedVouchers]).then(values => {
       res.render('vouchers', {
         title: 'Vouchers',
-        vouchers: values[0],
-        redeemedVouchers: values[1]
+        name: values[0],
+        vouchers: values[1],
+        redeemedVouchers: values[2]
       });
-    })
+    });
   } catch (e) {
     next(e);
   }
 };
 
-// Not complete, no route coming here yet
-exports.redeemVoucher = async (req, res, next) => {
+exports.claimVoucher = async (req, res, next) => {
   try {
-    const voucher = await db.one('SELECT * FROM Vouchers WHERE title = $1 AND organisation = $2 AND redeemed = FALSE LIMIT 1', [
-      req.params.title,
-      req.params.organisation
-    ]);
-    await db.one('UPDATE Vouchers SET duname = $1 AND redeemed = TRUE WHERE title = $2 AND organisation = $2 RETURNING *', [
-      req.user.uname,
-      voucher.title,
-      voucher.organisation
-    ]);
-    res.sendStatus(JSON.stringify(voucher.code));
+    const voucher = await queryDbFromReqQueryForVoucher(
+      "SELECT * FROM Vouchers NATURAL JOIN Incentives",
+      req.query,
+      db.one
+    );
+    const points = await calculatePoints(req.user.uname);
+    if (points >= voucher.points) {
+      const update = await db.one("UPDATE Vouchers SET duname = $1 WHERE title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
+        req.user.uname,
+        voucher.title,
+        voucher.organisation,
+        voucher.code
+      ]);
+      res.json(voucher.code);
+    }
+    else {
+      res.json(0);
+    }
   } catch (e) {
+    console.log(e);
     next(e);
   }
 };
+
+async function calculatePoints(uname) {
+  const points = db.one(
+    'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
+    [uname]
+  );
+  const existingVouchers = db.one(
+    "SELECT SUM(points) FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1",
+    [uname]
+  );
+  return Promise.all([points, existingVouchers]).then(values => {
+    return values[0].count - values[1].sum;
+  });
+}
+
+
+/*
+ helper function to form the query then query the db with it.
+ takes in a string 'select ... from ...' as the first parameter.
+ the second parameter is the req.query object.
+ the last parameter is a suitable pgp method (i.e none, one, oneOrNone, many, any)
+ forms the conditions in the where clause based on the keys from the req.query object,
+ then forms the full sql query with the given frontPortion,
+ then calls f with the query and the list of values.
+ returns the promise from the method, which you then can call await on.
+*/
+// It's currently case sensitive and doesn't accept when organisation names are > 1 word (cuz no '') so gotta fix that!
+function queryDbFromReqQueryForVoucher(frontPortion, reqQuery, f) {
+  const partials = {
+    title: 'title=',
+    organisation: 'organisation='
+  };
+
+  const keys = Object.keys(reqQuery);
+  if (keys.length === 0) {
+    // the req.query object is empty, we will query without a where clause.
+    return f(frontPortion);
+  }
+
+  const conditions = keys
+    .filter(key => reqQuery[key] !== '') // if they are empty, don't include in where clause
+    .map((key, index) => `${partials[key]} $${index + 1}`) // pgp uses base-1 index
+    .reduce((acc, curr) => `${acc} AND ${curr}`);
+
+  //console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
+
+  // make the function call and return the promise
+  return f(
+    `${frontPortion} WHERE duname IS NULL AND ${conditions} LIMIT 1`,
+    Object.values(reqQuery).filter(value => value !== '')
+  );
+}
+
+exports.redeemVoucher = async (req, res, next) => {
+  try {
+    const voucher = await queryDbFromReqQueryForRedemption(
+      "SELECT * FROM Vouchers",
+      req.query,
+      db.one
+    );
+    const update = await db.one("UPDATE Vouchers SET redeemed = TRUE WHERE duname = $1 AND title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
+      req.user.uname,
+      voucher.title,
+      voucher.organisation,
+      voucher.code
+    ]);
+    console.log(update);
+    return res.sendStatus(200);
+  } catch (e) {
+    console.log(e);
+    next(e);
+  }
+};
+
+/*
+ helper function to form the query then query the db with it.
+ takes in a string 'select ... from ...' as the first parameter.
+ the second parameter is the req.query object.
+ the last parameter is a suitable pgp method (i.e none, one, oneOrNone, many, any)
+ forms the conditions in the where clause based on the keys from the req.query object,
+ then forms the full sql query with the given frontPortion,
+ then calls f with the query and the list of values.
+ returns the promise from the method, which you then can call await on.
+*/
+// It's currently case sensitive and doesn't accept when organisation names are > 1 word (cuz no '') so gotta fix that!
+function queryDbFromReqQueryForRedemption(frontPortion, reqQuery, f) {
+  const partials = {
+    duname: 'duname=',
+    title: 'title=',
+    organisation: 'organisation=',
+    code: 'code='
+  };
+
+  const keys = Object.keys(reqQuery);
+  if (keys.length === 0) {
+    // the req.query object is empty, we will query without a where clause.
+    return f(frontPortion);
+  }
+
+  const conditions = keys
+    .filter(key => reqQuery[key] !== '') // if they are empty, don't include in where clause
+    .map((key, index) => `${partials[key]} $${index + 1}`) // pgp uses base-1 index
+    .reduce((acc, curr) => `${acc} AND ${curr}`);
+
+  //console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
+
+  // make the function call and return the promise
+  return f(
+    `${frontPortion} WHERE ${conditions}`,
+    Object.values(reqQuery).filter(value => value !== '')
+  );
+}
 
 exports.showIncentives = async (req, res, next) => {
   try {
@@ -117,10 +221,7 @@ exports.showIncentives = async (req, res, next) => {
     );
     //console.log('incentives', incentives);
 
-    const points = db.one(
-      'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
-      [req.user.uname]
-    );
+    const points = await calculatePoints(req.user.uname);
     const name = db.one('SELECT name FROM Users WHERE uname=$1', [
       req.user.uname
     ]);
@@ -128,7 +229,7 @@ exports.showIncentives = async (req, res, next) => {
       res.render('incentives', {
         title: 'Incentives',
         incentives: values[0],
-        points: values[1].count,
+        points: values[1],
         name: values[2].name
       });
     });

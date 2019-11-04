@@ -1,0 +1,50 @@
+mixin voucher-card(title, description, points, organisation, code, index)
+  script.
+      function reqConfirmation(event) {
+        var getConfirmation = document.getElementById($(event.target).attr('card-id'));
+        getConfirmation.style.display = "block";
+      }
+      function cancel(event) {
+        var getConfirmation = document.getElementById($(event.target).attr('card-id'));
+        getConfirmation.style.display = "none";
+      }
+      function userConfirms(event) {
+        var getConfirmation = document.getElementById($(event.target).attr('card-id'));
+        getConfirmation.style.display = "none";
+        const title = $(event.target).attr('title');
+        const organisation = $(event.target).attr('organisation');
+        const code = $(event.target).attr('code');
+        $.ajax({
+          url: '/diners/redeem/',
+          data: {
+            title: title,
+            organisation: organisation,
+            code: code
+          },
+          success: () => {
+            location.reload();
+          },
+          error: err => {
+            console.log("error:" + err);
+          }
+        });
+      }
+
+  div.modal(id = index)
+    div.modal-content
+      div.modal-body
+        p Would you like to confirm that you have redeemed #{title} with code #{code}?
+      div.modal-footer
+        a.btn.btn-primary(card-id=index title=title organisation=organisation code=code onclick='userConfirms(event)' type='button' class="btn") Confirm
+        a.btn.btn-primary(card-id=index onclick='cancel(event)' type='button' class="btn") Cancel
+
+  div.card(style='background-color: whitesmoke; display: block; padding: 10px; margin-bottom: 10px;')
+    div.card-body
+      h5.card-title(style='color:#FECA1D;') #{title} by #{organisation}
+      h7.code Code: <b>#{code}</b>
+      br
+      h7.card-text
+        | #{description}
+        br
+        | You redeemed for #{points} points
+      a.btn.btn-primary(card-id=index onclick='reqConfirmation(event)' style='border-color: #FECA1D; background-color: #FECA1D; float:right;') Mark as Redeemed

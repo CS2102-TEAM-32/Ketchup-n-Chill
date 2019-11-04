@@ -9,7 +9,7 @@ block style
       border-spacing: 10px;
     }
     #wrapper {
-      width: 50%;
+      width: 80%;
       display: block;
       margin: auto;
     }
@@ -102,9 +102,60 @@ block style
     }
 
 block append content
-  .container
-    h4(style='text-align:center;') Hello #{name}, you have #{points} points! Search for incentives here:
-    div#wrapper
+  script.
+      function confirmation(event) {
+        var getConfirmation = document.getElementById($(event.target).attr('card-id'));
+        getConfirmation.style.display = "block";
+      }
+      function cancel(event) {
+        var getConfirmation = document.getElementById($(event.target).attr('card-id'));
+        getConfirmation.style.display = "none";
+      }
+      function viewVoucher(event) {
+        var getConfirmation = document.getElementById($(event.target).attr('card-id'));
+        getConfirmation.style.display = "none";
+        const title = $(event.target).attr('title');
+        const organisation = $(event.target).attr('organisation');
+        $.ajax({
+          url: '/diners/claim/',
+          data: {
+            title: title,
+            organisation: organisation
+          },
+          success: (response) => {
+            if (response != 0) {
+              $( "div" ).data( "test", 'Voucher has been added to your list! Your code is: ' + response );
+            }
+            else {
+              $( "div" ).data( "test", 'You do not have enough points to claim this incentive. Dine more to gain more!');
+            }
+            $( "span" ).text( $( "div" ).data( "test" ) );
+            document.getElementById("voucher").style.display = "block";
+          },
+          error: err => {
+            console.log("error:" + err);
+          }
+        });
+      }
+
+  div.modal(id = index)
+    div.modal-content
+      div.modal-body
+        p Would you like to confirm your claim for #{title} for #{points} points?
+      div.modal-footer
+        a.btn.btn-primary(card-id=index title=title organisation=organisation onclick='viewVoucher(event)' type='button' class="btn") Confirm
+        a.btn.btn-primary(card-id=index onclick='cancel(event)' type='button' class="btn") Cancel
+
+  div#voucher.modal
+    div.modal-content
+      div.modal-body
+        p <span></span>
+      div.modal-footer
+        a.btn.btn-primary(href='../diners/vouchers', type='button', class="btn") View my vouchers
+        a.btn.btn-primary(card-id='voucher' onclick='cancel(event)', type='button', class="btn") Continue browsing
+
+  h4(style='text-align:center;') Hello #{name}, you have #{points} points! Search for incentives here:
+  div#wrapper
     div.search-box
       form(method='GET' action='/diners/incentives')
         div.form-row
@@ -115,6 +166,7 @@ block append content
             input.form-control(name='points' type='number', min=1, max=1000, placeholder='points')
           div.form-group.col-md-1
             button.btn.btn-light(type='submit' value='Submit') Search
+
   div#incentives
     include ./components/incentive-card.pug
     - var index = 0
