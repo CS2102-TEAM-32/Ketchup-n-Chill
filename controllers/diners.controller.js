@@ -50,10 +50,8 @@ exports.showVouchers = async (req, res, next) => {
   }
 };
 
-// Not complete, no route coming here yet
 exports.redeemVoucher = async (req, res, next) => {
   try {
-    console.log(req.params.title);
     const voucher = await db.one('SELECT * FROM Vouchers WHERE title = $1 AND organisation = $2 AND redeemed = FALSE LIMIT 1', [
       req.params.title,
       req.params.organisation
@@ -96,15 +94,12 @@ exports.showVouchers = async (req, res, next) => {
 exports.redeemVoucher = async (req, res, next) => {
   try {
     const voucher = await queryDbFromReqQueryForVoucher(
-      "SELECT * FROM Vouchers",
+      "SELECT * FROM Vouchers NATURAL JOIN Incentives",
       req.query,
       db.one
     );
-    const points = db.one(
-      'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
-      [req.user.uname]
-    );
-    if (points.count >= voucher.code) {
+    const points = await calculatePoints(req.user.uname);
+    if (points >= voucher.points) {
       const update = await db.one("UPDATE Vouchers SET duname = $1 WHERE title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
         req.user.uname,
         voucher.title,
@@ -121,6 +116,21 @@ exports.redeemVoucher = async (req, res, next) => {
     next(e);
   }
 };
+
+async function calculatePoints(uname) {
+  const points = db.one(
+    'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
+    [uname]
+  );
+  const existingVouchers = db.one(
+    "SELECT SUM(points) FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1",
+    [uname]
+  );
+  return Promise.all([points, existingVouchers]).then(values => {
+    return values[0].count - values[1].sum;
+  });
+}
+
 
 /*
  helper function to form the query then query the db with it.
@@ -168,10 +178,7 @@ exports.showIncentives = async (req, res, next) => {
     );
     //console.log('incentives', incentives);
 
-    const points = db.one(
-      'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
-      [req.user.uname]
-    );
+    const points = await calculatePoints(req.user.uname);
     const name = db.one('SELECT name FROM Users WHERE uname=$1', [
       req.user.uname
     ]);
@@ -179,7 +186,7 @@ exports.showIncentives = async (req, res, next) => {
       res.render('incentives', {
         title: 'Incentives',
         incentives: values[0],
-        points: values[1].count,
+        points: values[1],
         name: values[2].name
       });
     });
