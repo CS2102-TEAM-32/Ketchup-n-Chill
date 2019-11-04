@@ -30,6 +30,10 @@ router.get(
   '/claim',
   controller.claimVoucher
 );
+router.get(
+  '/redeem',
+  controller.redeemVoucher
+);
 router.get('/account', function (req, res, next) {
   const page = 'account/' + [req.user.uname];
   console.log(page);

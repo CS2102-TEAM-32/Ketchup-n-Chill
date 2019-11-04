@@ -152,6 +152,66 @@ function queryDbFromReqQueryForVoucher(frontPortion, reqQuery, f) {
   );
 }
 
+exports.redeemVoucher = async (req, res, next) => {
+  try {
+    const voucher = await queryDbFromReqQueryForRedemption(
+      "SELECT * FROM Vouchers",
+      req.query,
+      db.one
+    );
+    const update = await db.one("UPDATE Vouchers SET redeemed = TRUE WHERE duname = $1 AND title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
+      req.user.uname,
+      voucher.title,
+      voucher.organisation,
+      voucher.code
+    ]);
+    console.log(update);
+    return res.sendStatus(200);
+  } catch (e) {
+    console.log(e);
+    next(e);
+  }
+};
+
+/*
+ helper function to form the query then query the db with it.
+ takes in a string 'select ... from ...' as the first parameter.
+ the second parameter is the req.query object.
+ the last parameter is a suitable pgp method (i.e none, one, oneOrNone, many, any)
+ forms the conditions in the where clause based on the keys from the req.query object,
+ then forms the full sql query with the given frontPortion,
+ then calls f with the query and the list of values.
+ returns the promise from the method, which you then can call await on.
+*/
+// It's currently case sensitive and doesn't accept when organisation names are > 1 word (cuz no '') so gotta fix that!
+function queryDbFromReqQueryForRedemption(frontPortion, reqQuery, f) {
+  const partials = {
+    duname: 'duname=',
+    title: 'title=',
+    organisation: 'organisation=',
+    code: 'code='
+  };
+
+  const keys = Object.keys(reqQuery);
+  if (keys.length === 0) {
+    // the req.query object is empty, we will query without a where clause.
+    return f(frontPortion);
+  }
+
+  const conditions = keys
+    .filter(key => reqQuery[key] !== '') // if they are empty, don't include in where clause
+    .map((key, index) => `${partials[key]} $${index + 1}`) // pgp uses base-1 index
+    .reduce((acc, curr) => `${acc} AND ${curr}`);
+
+  //console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
+
+  // make the function call and return the promise
+  return f(
+    `${frontPortion} WHERE ${conditions}`,
+    Object.values(reqQuery).filter(value => value !== '')
+  );
+}
+
 exports.showIncentives = async (req, res, next) => {
   try {
     const incentives = await queryDbFromReqQuery(
