@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 
 var controller = require('../controllers/diners.controller');
+var common = require('../controllers/common.controller');
 
-router.get('/', controller.ensureAuthenticated, controller.showAllDiners);
 router.get('/register', controller.registerDiner);
 router.post(
   '/register',
@@ -11,27 +11,29 @@ router.post(
   controller.createDiner
 );
 router.get('/login', controller.getLoginPage);
-router.post('/login', controller.logDinerIn);
-router.get('/logout', controller.ensureAuthenticated, controller.logDinerOut);
 router.get(
   '/reservations',
-  controller.ensureAuthenticated,
+  common.ensureAuthenticatedDiner,
   controller.showReservations
 );
 router.get(
   '/incentives',
-  controller.ensureAuthenticated,
+  common.ensureAuthenticatedDiner,
   controller.showIncentives
 );
-router.delete(
-  '/:uname',
-  controller.ensureAuthenticated,
-  controller.deleteDiner
-);
 router.get(
-  '/:uname',
-  controller.ensureAuthenticated,
-  controller.showDinerProfile
+  '/vouchers',
+  common.ensureAuthenticatedDiner,
+  controller.showVouchers
+);
+router.get('/account', function (req, res, next) {
+  const page = 'account/' + [req.user.uname];
+  console.log(page);
+  res.redirect(page);
+});
+router.delete(
+  common.ensureAuthenticatedDiner,
+  controller.deleteDiner
 );
 
 module.exports = router;

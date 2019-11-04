@@ -1,11 +1,3 @@
-#wrapper {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    padding: 10%;
-}
-
 #title{
     width: 100%;
     align-items: center;
@@ -29,30 +21,7 @@
     border-spacing: 10px;
 }
 
-.btn {
-    float: right;
-}
-
-.container-fluid {
-    padding: 0px;
-    margin: 0px;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-image: url(/images/bg.jpg);
-}
-
-#rest {
-    padding: 20px 100px 20px 100px;
-}
-
-.navbar-light .navbar-nav .nav-link:hover {
-    color: white;
-}
-
-.nav-item:hover {
-    border-bottom-style: solid;
-    border-color: white;
+tr, td {
+  text-align: center;
+  width: 500px;
 }

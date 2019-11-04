@@ -4,54 +4,6 @@ var bcrypt = require('bcryptjs');
 var { check, validationResult } = require('express-validator');
 var passport = require('passport');
 
-exports.showAllDiners = async (req, res, next) => {
-  try {
-    const diners = await db.any('SELECT * FROM Diners');
-    res.render('diners', {
-      title: 'Diners',
-      diners: diners
-    });
-  } catch (e) {
-    next(e);
-  }
-};
-
-exports.showDinerProfile = async (req, res, next) => {
-  try {
-    const diner = db.one('SELECT * FROM Diners NATURAL JOIN Users WHERE uname=$1', [
-      req.params.uname
-    ]);
-    const points = db.one(
-      'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
-      [req.params.uname]
-    );
-    const mostVisited = db.any(
-      'SELECT rname, raddress FROM ReserveTimeslots WHERE duname=$1 GROUP BY rname, raddress ORDER BY count(*) DESC LIMIT 3',
-        [req.params.uname]
-    );
-    const reviews = db.any(
-      'SELECT rname, rating, review FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3',
-        [req.params.uname]
-    );
-    const history = db.any(
-      "SELECT r_date, to_char(r_date, 'DD MON YYYY') AS date, r_time, to_char(r_time, 'HH12.MIPM') AS time, rname, raddress FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3",
-        [req.params.uname]
-    );
-	Promise.all([diner, points, mostVisited, reviews, history]).then(values => {
-    res.render('diner', {
-      title: values[0].uname,
-      diner: values[0],
-      points: values[1],
-      visited: values[2],
-      reviews: values[3],
-      history: values[4]
-    });
-	})
-  } catch (e) {
-    next(e);
-  }
-};
-
 exports.showReservations = async (req, res, next) => {
   try {
     const reservations = db.any(
@@ -64,13 +16,93 @@ exports.showReservations = async (req, res, next) => {
     );
     const duname = req.user.uname;
     Promise.all([reservations, upcoming, duname]).then(values => {
-    res.render('reservations', {
-      title: 'Reservations',
-      reservations: values[0],
-      upcoming: values[1],
-      duname: values[2]
+      res.render('reservations', {
+        title: 'Reservations',
+        reservations: values[0],
+        upcoming: values[1],
+        duname: values[2]
+      });
     });
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.showVouchers = async (req, res, next) => {
+  try {
+    const vouchers = db.any(
+      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=FALSE",
+      [req.user.uname]
+    );
+    const redeemedVouchers = db.any(
+      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=TRUE",
+      [req.user.uname]
+    );
+    Promise.all([vouchers, redeemedVouchers]).then(values => {
+      res.render('vouchers', {
+        title: 'Vouchers',
+        vouchers: values[0],
+        redeemedVouchers: values[1]
+      });
     })
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Not complete, no route coming here yet
+exports.redeemVoucher = async (req, res, next) => {
+  try {
+    const voucher = await db.one('SELECT * FROM Vouchers WHERE title = $1 AND organisation = $2 AND redeemed = FALSE LIMIT 1', [
+      req.params.title,
+      req.params.organisation
+    ]);
+    await db.one('UPDATE Vouchers SET duname = $1 AND redeemed = TRUE WHERE title = $2 AND organisation = $2 RETURNING *', [
+      req.user.uname,
+      voucher.title,
+      voucher.organisation
+    ]);
+    res.sendStatus(JSON.stringify(voucher.code));
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.showVouchers = async (req, res, next) => {
+  try {
+    const vouchers = db.any(
+      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=FALSE",
+      [req.user.uname]
+    );
+    const redeemedVouchers = db.any(
+      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=TRUE",
+      [req.user.uname]
+    );
+    Promise.all([vouchers, redeemedVouchers]).then(values => {
+      res.render('vouchers', {
+        title: 'Vouchers',
+        vouchers: values[0],
+        redeemedVouchers: values[1]
+      });
+    })
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Not complete, no route coming here yet
+exports.redeemVoucher = async (req, res, next) => {
+  try {
+    const voucher = await db.one('SELECT * FROM Vouchers WHERE title = $1 AND organisation = $2 AND redeemed = FALSE LIMIT 1', [
+      req.params.title,
+      req.params.organisation
+    ]);
+    await db.one('UPDATE Vouchers SET duname = $1 AND redeemed = TRUE WHERE title = $2 AND organisation = $2 RETURNING *', [
+      req.user.uname,
+      voucher.title,
+      voucher.organisation
+    ]);
+    res.sendStatus(JSON.stringify(voucher.code));
   } catch (e) {
     next(e);
   }
@@ -78,27 +110,69 @@ exports.showReservations = async (req, res, next) => {
 
 exports.showIncentives = async (req, res, next) => {
   try {
-    const incentives = db.any('SELECT * FROM Incentives');
+    const incentives = await queryDbFromReqQuery(
+      "SELECT * FROM Incentives",
+      req.query,
+      db.any
+    );
+    //console.log('incentives', incentives);
+
     const points = db.one(
       'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
       [req.user.uname]
     );
-    const name = db.one(
-      'SELECT name FROM Users WHERE uname=$1',
-      [req.user.uname]
-    );
+    const name = db.one('SELECT name FROM Users WHERE uname=$1', [
+      req.user.uname
+    ]);
     Promise.all([incentives, points, name]).then(values => {
-    res.render('incentives', {
-      title: 'Incentives',
-      incentives: values[0],
-      points: values[1].count,
-      name: values[2].name
+      res.render('incentives', {
+        title: 'Incentives',
+        incentives: values[0],
+        points: values[1].count,
+        name: values[2].name
+      });
     });
-  })
   } catch (e) {
     next(e);
   }
 };
+
+/*
+ helper function to form the query then query the db with it.
+ takes in a string 'select ... from ...' as the first parameter.
+ the second parameter is the req.query object.
+ the last parameter is a suitable pgp method (i.e none, one, oneOrNone, many, any)
+ forms the conditions in the where clause based on the keys from the req.query object,
+ then forms the full sql query with the given frontPortion,
+ then calls f with the query and the list of values.
+ returns the promise from the method, which you then can call await on.
+*/
+// It's currently case sensitive and doesn't accept when organisation names are > 1 word (cuz no '') so gotta fix that!
+function queryDbFromReqQuery(frontPortion, reqQuery, f) {
+  const partials = {
+    organisation: 'organisation = ',
+    points: 'points ='
+  };
+
+  const keys = Object.keys(reqQuery);
+  if (keys.length === 0) {
+    // the req.query object is empty, we will query without a where clause.
+    return f(frontPortion);
+  }
+
+  const conditions = keys
+    .filter(key => reqQuery[key] !== '') // if they are empty, don't include in where clause
+    .map((key, index) => `${partials[key]} $${index + 1}`) // pgp uses base-1 index
+    .reduce((acc, curr) => `${acc} AND ${curr}`);
+
+  //console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
+
+  // make the function call and return the promise
+  return f(
+    `${frontPortion} WHERE ${conditions}`,
+    Object.values(reqQuery).filter(value => value !== '')
+  );
+}
 
 exports.registerDiner = (req, res, next) => {
   res.render('register', {
@@ -117,34 +191,36 @@ exports.createDiner = async (req, res, next) => {
     return res.sendStatus(400);
   try {
     const hash = bcrypt.hashSync(req.body.pass, bcrypt.genSaltSync(10));
-    const check = await db.any('SELECT * FROM Users WHERE uname=$1', [req.body.uname]);
-      if (check.length == 0) {
-          await db.none('CALL add_diner($1, $2, $3)', [
-              req.body.uname,
-              req.body.name,
-              hash
-          ]);
-          req.flash('success', 'You are now registered!');
-          res.redirect('/restaurantowners/' + req.body.uname);
-      } else {
-          req.flash('danger', 'Username exists, please use another one.');
-          res.render('register', {
-              prevName: req.body.name,
-              prevUname: req.body.uname
-          });
-      }    
-    
+    const check = await db.any('SELECT * FROM Users WHERE uname=$1', [
+      req.body.uname
+    ]);
+    if (check.length == 0) {
+      await db.none('CALL add_diner($1, $2, $3)', [
+        req.body.uname,
+        req.body.name,
+        hash
+      ]);
+      req.flash('success', 'You are now registered!');
+      res.redirect('/login');
+    } else {
+      req.flash('danger', 'Username exists, please use another one.');
+      res.render('register', {
+        prevName: req.body.name,
+        prevUname: req.body.uname
+      });
+    }
   } catch (e) {
     next(e);
   }
 };
 
 exports.deleteDiner = async (req, res, next) => {
+  // TODO: PROCEDURE TO DELETE!!! The following is not correct
   try {
     await db.one('DELETE FROM Diners WHERE uname=$1 RETURNING *', [
-      req.params.uname
+      req.user.uname
     ]);
-    res.sendStatus(200);
+    return res.sendStatus(200);
   } catch (e) {
     next(e);
   }
@@ -160,8 +236,7 @@ exports.registerValidations = [
   check('pass', 'Password must be at least 8 characters.')
     .isLength({ min: 8 })
     .custom((value, { req }) => {
-      if (value !== req.body.pass2)
-        throw new Error('Passwords do not match.');
+      if (value !== req.body.pass2) throw new Error('Passwords do not match.');
       return value;
     }),
   (req, res, next) => {
@@ -177,6 +252,7 @@ exports.registerValidations = [
   }
 ];
 
+/*
 exports.logDinerIn = (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) return next(err);
@@ -187,7 +263,7 @@ exports.logDinerIn = (req, res, next) => {
     req.flash('success', info.message);
     req.logIn(user, err => {
       if (err) return next(err);
-      return res.redirect('/diners/' + user.uname);
+      return res.redirect('/diners/account/' + user.uname);
     });
   })(req, res, next);
 };
@@ -205,3 +281,4 @@ exports.ensureAuthenticated = (req, res, next) => {
   req.flash('danger', 'Please login');
   res.redirect('/diners/login');
 };
+*/

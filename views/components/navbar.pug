@@ -1,5 +1,5 @@
 mixin navbar
-  nav.navbar.navbar-expand-xl.navbar-light.fixed-top.bg-transparent
+  nav.navbar.navbar-expand-xl.navbar-light.bg-transparent#navbar
     a.navbar-brand(href='/home') 
       img.d-inline-block.align-right(src='/images/logo.png' width='60' height='40')
     //Ketchup & Chillᴉ
@@ -9,14 +9,21 @@ mixin navbar
     .collapse.navbar-collapse(id='navbarSupportedContent')
       ul.navbar-nav.mr-auto
         li.nav-item
-          a.nav-link(href='../restaurants') All restaurants
-        li.nav-item
-          a.nav-link(href='../diners/incentives') Incentives
+          a.nav-link(href='/restaurants') All restaurants
+        if !user || user.type === 'diner'
+          li.nav-item
+            a.nav-link(href='/diners/incentives') Incentives
+        else
+          li.nav-item
+            a.nav-link(href='/restaurants/add') Add your restaurant
       ul.navbar-nav.float-right
         if !user
           li.nav-item
-            a.nav-link(href='/diners/login') Login
-        li.nav-item.dropdown
-          a.nav-link.dropdown-toggle(id='navbarDropdownMenuLink' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false') Account
-          .dropdown-menu(aria-labelledby='navbarDropdownMenuLink')
-            a.dropdown-item(href='#') Settings
+            a.nav-link(href='/login') Login
+        else
+          li.nav-item.dropdown
+            a.nav-link.dropdown-toggle(id='navbarDropdownMenuLink' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false') Account
+            .dropdown-menu(aria-labelledby='navbarDropdownMenuLink')
+              if user.type === 'diner'
+                a.dropdown-item(href='/profile') Profile
+              a.dropdown-item(href='/logout') Logout

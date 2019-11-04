@@ -68,11 +68,11 @@ block style
             opacity: 1;
         }
 
-block content
-
+block append content
     <restplate>
         h1(style="color:red") #{values.rname} 
-        form(method='POST' action='/restaurantowners/' + values.uname + '/' + values.rname + '/' + values.raddress.replace("#", "%23").replace("/", "%2F") + '/updateTimeslot')
+        - var encoded = encodeURIComponent(values.raddress);
+        form(method='POST' action='/restaurantowners/' + values.rname + '/' + encoded + '/updateTimeslot')
             <information>
             img(src='/images/restaurant1.jpeg' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group

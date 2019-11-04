@@ -1,38 +1,40 @@
 extends layout
 
 block content
-  div#wrapper
-    div.search-box
-      form(method='GET' action='/restaurants')
-        h3 Book a restaurant
-        div.form-group
-          label Date
-          input.date-input.form-control(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
-        div.form-group
-          label Time
-          input.form-control(name='time' type='time')
-        div.form-row
-          div.form-group.col-md-6
-            label Pax
-            input.form-control(name='pax' type='number', min=1, max=100 value=1)
-          div.form-group.col-md-6
-            label Cuisine
-            input.form-control(name='cuisine' type='text')
-        div.form-group
-          label Location
-          input.form-control(name='location' type='text')
-        div.form-group
-          label Restaurant
-          input.form-control(name='rname' type='text')
-        button.btn.btn-light(type='submit' value='Submit') Search
-  div#rest
-    h1 #[strong Top Restaurants]
-    div#top-restaurants
-      include ./components/restaurant-card.pug
-      each rest in restaurants
-        +restaurant-card(rest.rname, rest.avg, rest.cuisine, rest.raddress)
-      else 
-        p No available top restaurants at the moment. Please check back later. 
+  include ./components/navbar.pug
+  + navbar
+  .container-fluid
+    div#wrapper
+      div.search-box
+        form(method='GET' action='/restaurants')
+          h3 Book a restaurant
+          div.form-group
+            label Date
+            input.date-input.form-control(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
+          div.form-group
+            label Time
+            input.form-control(name='time' type='time')
+          div.form-row
+            div.form-group.col-md-6
+              label Pax
+              input.form-control(name='pax' type='number', min=1, max=100 value=1)
+            div.form-group.col-md-6
+              label Cuisine
+              input.form-control(name='cuisine' type='text')
+          div.form-group
+            label Location
+            input.form-control(name='location' type='text')
+          div.form-group
+            label Restaurant
+            input.form-control(name='rname' type='text')
+          button.btn.btn-light(type='submit' value='Submit') Search
+    div#rest
+      h1 #[strong Top Restaurants]
+      div#top-restaurants
+        include ./components/restaurant-card.pug
+        each rest in restaurants
+          +restaurant-card(rest.rname, rest.avg, rest.cuisine, rest.raddress)
+        else 
+          p No available top restaurants at the moment. Please check back later. 
 block style
   link(rel='stylesheet' href='/stylesheets/home.css')
-    
