@@ -9,10 +9,7 @@ block style
       border-spacing: 10px;
     }
 
-block content
-  br
-  br
-  br
+block append content
   h1 #{duname}'s Reservations
   br
   h4(style='margin-left: 25px;') Upcoming Reservations
@@ -22,7 +19,7 @@ block content
       +reservation-card(reservation.date, reservation.time, reservation.rname, reservation.raddress, reservation.review, reservation.rating, reservation.num_diners, reservation.is_complete)
     else 
       p You have no upcoming reservations. Start exploring restaurants for your next meal!
-      a.btn.btn-primary(href='/diners/logout', style='border-color: #FECA1D; background-color: #FECA1D; margin-left: 20px;') Explore Now
+      a.btn.btn-primary(href='/', style='border-color: #FECA1D; background-color: #FECA1D; margin-left: 20px;') Explore Now
   br
   br
   h4(style='margin-left: 25px;') Past Reservations
