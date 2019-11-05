@@ -31,7 +31,7 @@ ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMED
 1. Ensure that the table has been created 
 2. in PSQL, enter the following code to mass insert into table
 ```
-copy <table_name> from 'directory/file.csv' with csv header;
+\copy <table_name> from '<directory_path>\<file_name>.csv' with csv header;
 ```
 
 ## Additional Information
