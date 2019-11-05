@@ -81,24 +81,25 @@ block style
     }
 
 block append content
-  h1 #{name}'s Vouchers
-  br
-  h4(style='margin-left: 25px;') Unused Vouchers
-  div#reservations
-    include ./components/unredeemed-voucher-card.pug
-    - var id = 0
-    each voucher in vouchers
-      +voucher-card(voucher.title, voucher.description, voucher.points, voucher.organisation, voucher.code, 'vouchercard-' + id++)
-    else
-      p You have no vouchers. Take a look at the incentives we have for you!
-      a.btn.btn-primary(href='/diners/incentives', style='border-color: #FECA1D; background-color: #FECA1D; margin-left: 20px;') View Incentives
-  br
-  br
-  h4(style='margin-left: 25px;') Used Vouchers
-  div#reservations
-    include ./components/voucher-card.pug
-    each voucher in redeemedVouchers
-      +voucher-card(voucher.title, voucher.description, voucher.points, voucher.organisation, voucher.code, 0)
-    else 
-      p You have no used vouchers.
-  img(src='../../images/ketchupandchilli_header.png' style='width:97%; margin-left: 10px; margin-right: 10px;')
+  .container
+    h1 #{name}'s Vouchers
+    br
+    h4(style='margin-left: 25px;') Unused Vouchers
+    div#reservations
+      include ./components/unredeemed-voucher-card.pug
+      - var id = 0
+      each voucher in vouchers
+        +voucher-card(voucher.title, voucher.description, voucher.points, voucher.organisation, voucher.code, 'vouchercard-' + id++)
+      else
+        p You have no vouchers. Take a look at the incentives we have for you!
+        a.btn.btn-primary(href='/diners/incentives', style='border-color: #FECA1D; background-color: #FECA1D; margin-left: 20px;') View Incentives
+    br
+    br
+    h4(style='margin-left: 25px;') Used Vouchers
+    div#reservations
+      include ./components/voucher-card.pug
+      each voucher in redeemedVouchers
+        +voucher-card(voucher.title, voucher.description, voucher.points, voucher.organisation, voucher.code, 0)
+      else 
+        p You have no used vouchers.
+    img(src='../../images/ketchupandchilli_header.png' style='width:97%; margin-left: 10px; margin-right: 10px;')

@@ -138,39 +138,32 @@ block append content
         });
       }
 
-  div.modal(id = index)
-    div.modal-content
-      div.modal-body
-        p Would you like to confirm your claim for #{title} for #{points} points?
-      div.modal-footer
-        a.btn.btn-primary(card-id=index title=title organisation=organisation onclick='viewVoucher(event)' type='button' class="btn") Confirm
-        a.btn.btn-primary(card-id=index onclick='cancel(event)' type='button' class="btn") Cancel
+  .container
+    div#voucher.modal
+      div.modal-content
+        div.modal-body
+          p <span></span>
+        div.modal-footer
+          a.btn.btn-primary(href='../diners/vouchers', type='button', class="btn") View my vouchers
+          a.btn.btn-primary(card-id='voucher' onclick='cancel(event)', type='button', class="btn") Continue browsing
 
-  div#voucher.modal
-    div.modal-content
-      div.modal-body
-        p <span></span>
-      div.modal-footer
-        a.btn.btn-primary(href='../diners/vouchers', type='button', class="btn") View my vouchers
-        a.btn.btn-primary(card-id='voucher' onclick='cancel(event)', type='button', class="btn") Continue browsing
-
-  h4(style='text-align:center;') Hello #{name}, you have #{points} points! Search for incentives here:
-  div#wrapper
-    div.search-box
-      form(method='GET' action='/diners/incentives')
-        div.form-row
-          img(src='../../images/search_icon.png' style='width:25px; height:25px; float:left; margin-right:10px; margin-top: 10px;')
-          div.form-group.col-md-8
-            input.form-control(name='organisation' type='text' placeholder='organisation')
-          div.form-group.col-md-2
-            input.form-control(name='points' type='number', min=1, max=1000, placeholder='points')
-          div.form-group.col-md-1
-            button.btn.btn-light(type='submit' value='Submit') Search
-
-  div#incentives
-    include ./components/incentive-card.pug
-    - var index = 0
-    each incentive in incentives
-      +incentive-card(incentive.title, incentive.description, incentive.organisation, incentive.points, 'card-' + index++)
-    else 
-      p No available incentives at the moment. Please check back later.
+    h4(style='text-align:center;') Hello #{name}, you have #{points} points! Search for incentives here:
+    div#wrapper
+      div.search-box
+        form(method='GET' action='/diners/incentives')
+          div.form-row
+            img(src='../../images/search_icon.png' style='width:25px; height:25px; float:left; margin-right:10px; margin-top: 10px;')
+            div.form-group.col-md-8
+              input.form-control(name='organisation' type='text' placeholder='organisation')
+            div.form-group.col-md-2
+              input.form-control(name='points' type='number', min=1, max=1000, placeholder='points')
+            div.form-group.col-md-1
+              button.btn.btn-light(type='submit' value='Submit') Search
+    br
+    div#incentives
+      include ./components/incentive-card.pug
+      - var index = 0
+      each incentive in incentives
+        +incentive-card(incentive.title, incentive.description, incentive.organisation, incentive.points, 'card-' + index++)
+      else 
+        p No available incentives at the moment. Please check back later.

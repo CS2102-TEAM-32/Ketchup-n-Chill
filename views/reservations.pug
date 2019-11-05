@@ -10,23 +10,24 @@ block style
     }
 
 block append content
-  h1 #{duname}'s Reservations
-  br
-  h4(style='margin-left: 25px;') Upcoming Reservations
-  div#reservations
-    include ./components/reservation-card.pug
-    each reservation in upcoming
-      +reservation-card(reservation.date, reservation.time, reservation.rname, reservation.raddress, reservation.review, reservation.rating, reservation.num_diners, reservation.is_complete)
-    else 
-      p You have no upcoming reservations. Start exploring restaurants for your next meal!
-      a.btn.btn-primary(href='/', style='border-color: #FECA1D; background-color: #FECA1D; margin-left: 20px;') Explore Now
-  br
-  br
-  h4(style='margin-left: 25px;') Past Reservations
-  div#reservations
-    include ./components/reservation-card.pug
-    each reservation in reservations
-      +reservation-card(reservation.date, reservation.time, reservation.rname, reservation.raddress, reservation.review, reservation.rating, reservation.num_diners, reservation.is_complete)
-    else 
-      p You have not made any reservations.
-  img(src='../../images/ketchupandchilli_header.png' style='width:97%; margin-left: 10px; margin-right: 10px;')
+  .container
+    h1 #{duname}'s Reservations
+    br
+    h4(style='margin-left: 25px;') Upcoming Reservations
+    div#reservations
+      include ./components/reservation-card.pug
+      each reservation in upcoming
+        +reservation-card(reservation.date, reservation.time, reservation.rname, reservation.raddress, reservation.review, reservation.rating, reservation.num_diners, reservation.is_complete)
+      else 
+        p You have no upcoming reservations. Start exploring restaurants for your next meal!
+        a.btn.btn-primary(href='/', style='border-color: #FECA1D; background-color: #FECA1D; margin-left: 20px;') Explore Now
+    br
+    br
+    h4(style='margin-left: 25px;') Past Reservations
+    div#reservations
+      include ./components/reservation-card.pug
+      each reservation in reservations
+        +reservation-card(reservation.date, reservation.time, reservation.rname, reservation.raddress, reservation.review, reservation.rating, reservation.num_diners, reservation.is_complete)
+      else 
+        p You have not made any reservations.
+    img(src='../../images/ketchupandchilli_header.png' style='width:97%; margin-left: 10px; margin-right: 10px;')
