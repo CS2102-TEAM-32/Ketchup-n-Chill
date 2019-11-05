@@ -84,7 +84,7 @@ CREATE TABLE FoodItems (
 
 CREATE TABLE Incentives (
 	title varchar(50) NOT NULL,
-	description varchar(300),
+	description varchar(500),
 	organisation varchar(50) NOT NULL,
 	points integer NOT NULL,
 	max_claims integer NOT NULL,
