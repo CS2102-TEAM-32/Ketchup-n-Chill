@@ -13,12 +13,37 @@ exports.showMenu = async (req, res, next) => {
       'SELECT fname, price FROM Menu NATURAL JOIN FoodItems WHERE title=$1 AND rname=$2 AND raddress=$3',
       [req.params.title, req.params.rname, req.params.raddress]
     );
+
     res.render('menu', {
       menu: req.params,
       items
     });
   } catch (e) {
     return res.sendStatus(404);
+  }
+};
+
+exports.editMenu = async (req, res, next) => {
+  // route should be /edit
+  try {
+    // check if menu belongs to user
+    await db.one(
+      'SELECT * FROM Menu NATURAL JOIN OwnedRestaurants WHERE title=$1 AND rname=$2 AND raddress=$3 AND uname=$4',
+      [req.params.title, req.params.rname, req.params.raddress, req.user.uname]
+    );
+
+    // there could be no items in the menu
+    const items = await db.any(
+      'SELECT fname, price FROM Menu NATURAL JOIN FoodItems WHERE title=$1 AND rname=$2 AND raddress=$3',
+      [req.params.title, req.params.rname, req.params.raddress]
+    );
+
+    res.render('edit-menu', {
+      menu: req.params,
+      items
+    });
+  } catch (e) {
+    return res.sendStatus(401);
   }
 };
 
@@ -115,8 +140,62 @@ exports.deleteMenu = async (req, res, next) => {
   }
 };
 
-exports.updateMenu = async (req, res, next) => {
-  // update a menu of a restaurant
+exports.updateMenuItem = async (req, res, next) => {
+  // need rname, raddress, title, name of the food item
+  // req.body: fname, price
+  try {
+    await db.one(
+      'SELECT * FROM OwnedRestaurants NATURAL JOIN Menu NATURAL JOIN FoodItems WHERE uname=$1 AND raddress=$2 AND rname=$3 AND title=$4 AND fname=$5',
+      [
+        req.user.uname,
+        req.params.raddress,
+        req.params.rname,
+        req.params.title,
+        req.params.fname
+      ]
+    );
+
+    db.one('UPDATE FoodItems SET fname=$1, price=$2 WHERE fname=$3', [
+      req.body.fname,
+      req.body.price,
+      req.params.fname
+    ]);
+
+    req.flash('success', 'Updated!');
+    res.sendStatus(200);
+  } catch (e) {
+    res.sendStatus(401); // unauthorised. although there could be a case where there does not exist!
+  }
+};
+
+exports.deleteMenuItem = async (req, res, next) => {
+  try {
+    await db.one(
+      'SELECT * FROM OwnedRestaurants NATURAL JOIN Menu NATURAL JOIN FoodItems WHERE uname=$1 AND raddress=$2 AND rname=$3 AND title=$4 AND fname=$5',
+      [
+        req.user.uname,
+        req.params.raddress,
+        req.params.rname,
+        req.params.title,
+        req.params.fname
+      ]
+    );
+
+    db.one(
+      'DELETE FROM FoodItems WHERE fname=$1 AND raddress=$2 AND rname=$3 AND title=$4 RETURNING *',
+      [
+        req.params.fname,
+        req.params.raddress,
+        req.params.rname,
+        req.params.title
+      ]
+    );
+
+    req.flash('success', 'Deleted!');
+    res.sendStatus(200);
+  } catch (e) {
+    res.sendStatus(401); // unauthorised. although there could be a case where there does not exist!
+  }
 };
 
 /*

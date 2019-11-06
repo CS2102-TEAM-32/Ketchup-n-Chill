@@ -7,4 +7,4 @@ block append content
       div
         p #{item.fname}, $#{item.price}
     br
-    button.btn.btn-danger#delete-menu(raddress=menu.raddress rname=menu.rname title=menu.title) Delete menu
+    a.btn.btn-warning(href='/menus/' + menu.rname + '/' + encodeURIComponent(menu.raddress) + '/' + menu.title + '/edit') Edit menu

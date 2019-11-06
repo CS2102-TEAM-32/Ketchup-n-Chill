@@ -1,0 +1,11 @@
+extends layout
+
+block append content
+  .container
+    h1 #{menu.title}
+    each item in items
+      div
+        p #{item.fname}, $#{item.price}
+        button.btn.btn-danger#delete-item(fname=item.fname raddress=encodeURIComponent(menu.raddress) rname=menu.rname title=menu.title) Delete
+    br
+    button.btn.btn-danger#delete-menu(raddress=encodeURIComponent(menu.raddress) rname=menu.rname title=menu.title) Delete menu

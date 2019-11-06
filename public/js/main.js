@@ -15,7 +15,6 @@ $(document).ready(() => {
 
 $(document).ready(() => {
   $('#delete-menu').on('click', e => {
-    console.log('clicked');
     const title = $(e.target).attr('title');
     const raddress = $(e.target).attr('raddress');
     const rname = $(e.target).attr('rname');
@@ -24,6 +23,25 @@ $(document).ready(() => {
       url: '/menus/' + rname + '/' + raddress + '/' + title,
       success: () => {
         window.location.href = '/home';
+      },
+      error: err => {
+        console.log(err);
+      }
+    });
+  });
+});
+
+$(document).ready(() => {
+  $('#delete-item').on('click', e => {
+    const fname = $(e.target).attr('fname');
+    const title = $(e.target).attr('title');
+    const raddress = $(e.target).attr('raddress');
+    const rname = $(e.target).attr('rname');
+    $.ajax({
+      type: 'DELETE',
+      url: '/menus/' + rname + '/' + raddress + '/' + title + '/' + fname,
+      success: () => {
+        window.location.reload();
       },
       error: err => {
         console.log(err);
