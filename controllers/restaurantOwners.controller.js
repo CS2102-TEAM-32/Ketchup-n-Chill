@@ -183,19 +183,17 @@ exports.deleteTimeslots = async (req, res, next) => {
 
         var temp = [req.params.rname, req.params.raddress, date, time];
         console.log('date is: ' + date + ', time is: ' + time + ', rname: ' + req.params.rname + ', raddres: ' + req.params.raddress);
-        const t = await db.one('DELETE FROM HasTimeslots WHERE rname=$1 AND raddress=$2 AND date=$3 AND time=$4 RETURNING *', temp);
-        req.flash('success', "Timeslots deleted");
-        //let encoded = encodeURIComponent(req.params.raddress);
-        //res.redirect('/restaurantowners/' + req.params.rname + '/' + encoded + '/edittimeslot');
-        //console.log(t);
-        res.sendStatus(200);
+        const t = await db.one('DELETE FROM HasTimeslots WHERE rname=$1 AND raddress=$2 AND date=$3 AND time=$4 RETURNING *', temp).then(() => {
+            req.flash('success', "Timeslot deleted");
+            res.sendStatus(200);
+        }).catch (e => {
+            req.flash('danger', 'No timeslot deleted because there are existing reservations for that timeslot.');
+            res.sendStatus(200);
+        });      
     } catch (e) {
         console.log(e);
         //next(e);
-
     }
-    
-    
 };
 
 exports.registerRestaurantOwner = (req, res, next) => {
