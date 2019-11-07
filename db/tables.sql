@@ -154,7 +154,8 @@ BEFORE DELETE ON HasTimeslots
 FOR EACH ROW EXECUTE PROCEDURE checkExistingReservation();
 -- Set Up --
 
--- Call when trying to add to ReserveTimeslots
+-- Called from trigger to check if there is a HasTimeslot and if the numPax of ReserveTimeslot is not more 
+-- than HasTimeSlot
 CREATE OR REPLACE FUNCTION check_pax()
 RETURNS TRIGGER AS $$ 
 DECLARE 
@@ -192,13 +193,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Trigger to call upon insertion/update of ReserveTimeslot 
 CREATE TRIGGER check_reservetimeslots
 BEFORE INSERT OR UPDATE ON ReserveTimeslots
 FOR EACH ROW EXECUTE PROCEDURE check_pax();
 
--- Test data
--- 51 pax exceed 50 
+-- Test data for check_reservetimeslots trigger
+-- ReserveTimeslots 51 pax exceed HasTimeslot of 50 pax, fail to add
 INSERT INTO ReserveTimeslots VALUES('2019-11-06', '10:00', 'A Night In Paris', '554 Cambridge Crossing', 'kh', 'gr8', '4', '51');
 DELETE FROM ReserveTimeslots WHERE r_date = '2019-11-06';
--- No such timeslot
+-- No such timeslot, fail to add
 INSERT INTO ReserveTimeslots VALUES('2019-12-28', '10:00', 'A Night In Paris', '554 Cambridge Crossing', 'kh', 'gr8', '4', '51');
