@@ -4,8 +4,11 @@ const db = require('../db/index');
 exports.showRestaurants = async (req, res, next) => {
   try {
     let restaurants;
-    if (Object.entries(req.query).length === 0) { // no query
-      restaurants = await db.many('SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants ORDER BY rname');
+    if (Object.entries(req.query).length === 0) {
+      // no query
+      restaurants = await db.many(
+        'SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants ORDER BY rname'
+      );
     } else {
       restaurants = await queryDbFromReqQuery(
         'SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants NATURAL JOIN HasTimeslots',
@@ -19,7 +22,7 @@ exports.showRestaurants = async (req, res, next) => {
       restaurants: restaurants
     });
   } catch (e) {
-    next(e);
+    res.sendStatus(500);
   }
 };
 
@@ -37,15 +40,18 @@ exports.addRestaurant = async (req, res, next) => {
   }
 
   try {
-    await db.one('INSERT INTO OwnedRestaurants VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [
-      req.user.uname,
-      req.body.address,
-      req.body.name,
-      req.body.cuisine,
-      req.body.phone_num,
-      req.body.opening_hr,
-      req.body.closing_hr
-    ]);
+    await db.one(
+      'INSERT INTO OwnedRestaurants VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [
+        req.user.uname,
+        req.body.address,
+        req.body.name,
+        req.body.cuisine,
+        req.body.phone_num,
+        req.body.opening_hr,
+        req.body.closing_hr
+      ]
+    );
 
     // no errors thrown
     req.flash('success', 'Your restaurant has been added!');
@@ -54,21 +60,24 @@ exports.addRestaurant = async (req, res, next) => {
     // errors thrown
     // insert failed due to duplicate primary keys...
     console.log(e);
-    req.flash('danger', 'Something went wrong; please try again. Perhaps your restaurant has been registered already?');
+    req.flash(
+      'danger',
+      'Something went wrong; please try again. Perhaps your restaurant has been registered already?'
+    );
     return res.redirect('/restaurants/add');
   }
 };
 
 exports.showRestaurantAddPage = async (req, res, next) => {
   res.render('restaurantowners-add-restaurant');
-}
+};
 
 exports.showRestaurantProfile = async (req, res, next) => {
   console.log(req.params);
   try {
     const restaurant = await db.one(
       'SELECT * FROM OwnedRestaurants WHERE rname=$1 AND raddress=$2',
-      [req.params.rname, req.params.raddress],
+      [req.params.rname, req.params.raddress]
     );
 
     res.render('restaurant', {
@@ -144,11 +153,12 @@ function queryDbFromReqQuery(frontPortion, reqQuery, f) {
     date: 'date =',
     time: 'time =',
     pax: 'num_available >=', // help!
-    cuisine: 'cuisine =',
-    rname: 'rname ='
+    cuisine: 'upper(cuisine) LIKE',
+    rname: 'upper(rname) LIKE'
   };
 
   const keys = Object.keys(reqQuery);
+  console.log('keys', keys);
   if (keys.length === 0) {
     // the req.query object is empty, we will query without a where clause.
     return f(frontPortion);
@@ -161,6 +171,15 @@ function queryDbFromReqQuery(frontPortion, reqQuery, f) {
 
   // console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
 
+  Object.keys(reqQuery).forEach(key => {
+    if (key === 'cuisine' || key === 'rname') {
+      // for these queries we form a pattern
+      reqQuery[key] = '%' + reqQuery[key].toUpperCase() + '%';
+    }
+  });
+
+  console.log('modified', reqQuery);
+
   // make the function call and return the promise
   return f(
     `${frontPortion} WHERE ${conditions}`,
@@ -172,14 +191,14 @@ exports.bookRestaurant = async (req, res, next) => {
   try {
     // Need to fix this part
     const booking = await queryDbFromReqQueryForBooking(
-      "SELECT * FROM HasTimeslots",
+      'SELECT * FROM HasTimeslots',
       req.query,
       db.oneOrNone
     );
     console.log(booking);
     if (booking != null) {
       // do DB stuff here to insert into reservetimeslot
-/*      const update = await db.one("INSERT INTO ReserveTimeslot SET duname = $1 WHERE title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
+      /*      const update = await db.one("INSERT INTO ReserveTimeslot SET duname = $1 WHERE title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
         req.user.uname,
         booking.r_date,
         booking.r_time,
@@ -188,8 +207,7 @@ exports.bookRestaurant = async (req, res, next) => {
         booking.
       ]);*/
       res.json(1);
-    }
-    else {
+    } else {
       res.json(0);
     }
   } catch (e) {
