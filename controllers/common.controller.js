@@ -76,32 +76,30 @@ showDinerProfile = async (req, res, next) => {
     const diner = db.one('SELECT * FROM Diners NATURAL JOIN Users WHERE uname=$1', [
       req.user.uname
     ]);
-    const points = db.one(
-      'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
-      [req.user.uname]
-    );
+    const points = calculatePoints(req.user.uname);
     const mostVisited = db.any(
       'SELECT rname, raddress FROM ReserveTimeslots WHERE duname=$1 GROUP BY rname, raddress ORDER BY count(*) DESC LIMIT 3',
         [req.user.uname]
     );
     const reviews = db.any(
-      'SELECT rname, rating, review FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3',
+      'SELECT rname, rating, review FROM ReserveTimeslots WHERE duname=$1 AND is_complete = TRUE AND (review IS NOT NULL OR rating IS NOT NULL) ORDER BY r_date DESC, r_time DESC LIMIT 3',
         [req.user.uname]
     );
     const history = db.any(
-      "SELECT r_date, to_char(r_date, 'DD MON YYYY') AS date, r_time, to_char(r_time, 'HH12.MIPM') AS time, rname, raddress FROM ReserveTimeslots WHERE duname=$1 ORDER BY r_date DESC, r_time DESC LIMIT 3",
+      "SELECT r_date, to_char(r_date, 'DD MON YYYY') AS date, r_time, to_char(r_time, 'HH12.MIPM') AS time, rname, raddress FROM ReserveTimeslots WHERE duname=$1 AND is_complete = TRUE ORDER BY r_date DESC, r_time DESC LIMIT 3",
         [req.user.uname]
     );
-	Promise.all([diner, points, mostVisited, reviews, history]).then(values => {
-    res.render('diner', {
-      title: values[0].uname,
-      diner: values[0],
-      points: values[1],
-      visited: values[2],
-      reviews: values[3],
-      history: values[4]
-    });
-	})
+    Promise.all([diner, points, mostVisited, reviews, history]).then(values => {
+    console.log(reviews);
+      res.render('diner', {
+        title: values[0].uname,
+        diner: values[0],
+        points: values[1],
+        visited: values[2],
+        reviews: values[3],
+        history: values[4]
+      });
+    })
   } catch (e) {
     next(e);
   }
@@ -135,3 +133,17 @@ showGenericHomePage = async (req, res, next) => {
     next(e);
   }
 };
+
+async function calculatePoints(uname) {
+  const points = db.one(
+    'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1 AND is_complete = TRUE',
+    [uname]
+  );
+  const existingVouchers = db.one(
+    "SELECT SUM(points) FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1",
+    [uname]
+  );
+  return Promise.all([points, existingVouchers]).then(values => {
+    return values[0].count - values[1].sum;
+  });
+}
