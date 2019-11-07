@@ -153,3 +153,54 @@ CREATE TRIGGER checkDeleteSuccess
 BEFORE DELETE ON HasTimeslots 
 FOR EACH ROW EXECUTE PROCEDURE checkExistingReservation();
 -- Set Up --
+
+-- Called from trigger to check if there is a HasTimeslot and if the numPax of ReserveTimeslot is not more 
+-- than HasTimeSlot
+CREATE OR REPLACE FUNCTION check_pax()
+RETURNS TRIGGER AS $$ 
+DECLARE 
+	totalPaxSoFar integer;
+	newTotal integer;
+	numTimeslots integer;
+	maxPax integer;
+BEGIN
+	SELECT SUM(num_diners) INTO totalPaxSoFar
+	FROM ReserveTimeslots R
+	WHERE R.r_date = NEW.r_date AND R.r_time = NEW.r_time AND R.rname = NEW.rname AND R.raddress = NEW.raddress;
+	
+	SELECT T.num_available INTO maxPax
+	FROM HasTimeslots T
+	WHERE T.rname = NEW.rname AND T.raddress = NEW.raddress AND T.date = NEW.r_date AND T.time = NEW.r_time;
+
+	SELECT COUNT(*) INTO numTimeslots 
+	FROM HasTimeSlots T 
+	WHERE T.date = NEW.r_date AND T.time = NEW.r_time AND T.raddress = NEW.raddress AND T.rname = NEW.rname;
+
+	IF totalPaxSoFar IS NULL THEN
+		totalPaxSoFar := 0;
+	END IF;
+
+	newTotal := totalPaxSoFar + NEW.num_diners;
+	IF numTimeslots = 0 THEN
+		RAISE NOTICE 'No such timeslot';
+		RETURN NULL; 
+	ELSIF newTotal <= maxPax AND numTimeslots > 0 THEN
+		RETURN NEW; 
+	ELSE
+		RAISE NOTICE 'Total Existing Pax % Exceeds Max Pax of %', newTotal, maxPax;
+		RETURN NULL;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to call upon insertion/update of ReserveTimeslot 
+CREATE TRIGGER check_reservetimeslots
+BEFORE INSERT OR UPDATE ON ReserveTimeslots
+FOR EACH ROW EXECUTE PROCEDURE check_pax();
+
+-- Test data for check_reservetimeslots trigger
+-- ReserveTimeslots 51 pax exceed HasTimeslot of 50 pax, fail to add
+INSERT INTO ReserveTimeslots VALUES('2019-11-06', '10:00', 'A Night In Paris', '554 Cambridge Crossing', 'kh', 'gr8', '4', '51');
+DELETE FROM ReserveTimeslots WHERE r_date = '2019-11-06';
+-- No such timeslot, fail to add
+INSERT INTO ReserveTimeslots VALUES('2019-12-28', '10:00', 'A Night In Paris', '554 Cambridge Crossing', 'kh', 'gr8', '4', '51');
