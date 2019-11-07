@@ -89,7 +89,7 @@ exports.showRestaurantTimeslot = async (req, res, next) => {
     console.log(req.params);
     try {
         const timeslots = await db.many(
-            'SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress =$2 AND num_available > 0',
+            'SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress =$2',
             [req.params.rname, req.params.raddress]
         );
 
