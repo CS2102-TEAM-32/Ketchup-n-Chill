@@ -35,6 +35,8 @@ router.get(
     controller.editTimeslots
 );
 
+router.delete('/:rname/:raddress/:date/:time', common.ensureAuthenticatedRestaurantOwner, controller.deleteTimeslots);
+
 router.post('/:rname/:raddress/updatetimeslot', common.ensureAuthenticatedRestaurantOwner, controller.updateTimeslot);
 
 module.exports = router;
