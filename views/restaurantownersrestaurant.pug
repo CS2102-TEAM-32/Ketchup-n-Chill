@@ -88,8 +88,8 @@ block append content
                     each timeslot, i in timeslots
                         tr 
                             td= i+1
-                            td #{timeslot.date}
-                            td #{timeslot.time}
+                            td= moment(timeslot.date).format('DD MMMM YYYY')
+                            td= moment(timeslot.time, 'HH:mm:ss').format('hh:mm A')
                             td #{timeslot.num_available}
         
     </restplate>

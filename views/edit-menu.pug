@@ -10,7 +10,7 @@ block append content
             span(style='font-size:25px;font-weight:bold;') #{item.fname}
             span , 
             span $#{item.price}
-          button.btn.btn-danger#delete-item(style='float:right;' fname=item.fname raddress=encodeURIComponent(menu.raddress) rname=menu.rname title=menu.title) Delete
+          button.btn.btn-danger.delete-item(style='float:right;' fname=item.fname raddress=encodeURIComponent(menu.raddress) rname=menu.rname title=menu.title) Delete
     br
     div(style='margin:auto; text-align:center;')
       button.btn.btn-danger#delete-menu(style='margin:10px;' raddress=encodeURIComponent(menu.raddress) rname=menu.rname title=menu.title) Delete menu

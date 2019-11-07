@@ -64,12 +64,40 @@ block append content
             img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label(for='opening_hr') Opening Hour:
-                input#opening_hr.form-control(type='text', value=details.opening_hr, name='opening_hr')
+                input#opening_hr.form-control(type='time', value=details.opening_hr, name='opening_hr' list='limittimelist')
+                datalist#limittimelist
+                    option(value="09:00")
+                    option(value="10:00")
+                    option(value="11:00")
+                    option(value="12:00")
+                    option(value="13:00")
+                    option(value="14:00")
+                    option(value="15:00")
+                    option(value="16:00")
+                    option(value="17:00")
+                    option(value="18:00")
+                    option(value="19:00")
+                    option(value="20:00")
+                    option(value="21:00")
             br
             img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label(for='closing_hr') Closing Hour:
-                input#closing_hr.form-control(type='text', value=details.closing_hr, name='closing_hr')
+                input#closing_hr.form-control(type='time', value=details.closing_hr, name='closing_hr' list='limittimelist')
+                datalist#limittimelist
+                    option(value="09:00")
+                    option(value="10:00")
+                    option(value="11:00")
+                    option(value="12:00")
+                    option(value="13:00")
+                    option(value="14:00")
+                    option(value="15:00")
+                    option(value="16:00")
+                    option(value="17:00")
+                    option(value="18:00")
+                    option(value="19:00")
+                    option(value="20:00")
+                    option(value="21:00")
             br
             img(src='/images/telephone.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
