@@ -19,7 +19,7 @@ exports.showRestaurants = async (req, res, next) => {
       restaurants: restaurants
     });
   } catch (e) {
-    next(e);
+    res.sendStatus(500);
   }
 };
 
@@ -139,11 +139,12 @@ function queryDbFromReqQuery(frontPortion, reqQuery, f) {
     date: 'date =',
     time: 'time =',
     pax: 'num_available >=', // help!
-    cuisine: 'cuisine =',
-    rname: 'rname ='
+    cuisine: 'cuisine LIKE',
+    rname: 'rname LIKE'
   };
 
   const keys = Object.keys(reqQuery);
+  console.log('keys', keys);
   if (keys.length === 0) {
     // the req.query object is empty, we will query without a where clause.
     return f(frontPortion);
@@ -155,6 +156,14 @@ function queryDbFromReqQuery(frontPortion, reqQuery, f) {
     .reduce((acc, curr) => `${acc} AND ${curr}`);
 
   // console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
+
+  Object.keys(reqQuery).forEach(key => {
+    if (key === 'cuisine' || key === 'rname') { // for these queries we form a pattern
+      reqQuery[key] = '%' + reqQuery[key] + '%'
+    }
+  })
+
+  console.log('modified', reqQuery);
 
   // make the function call and return the promise
   return f(
