@@ -78,7 +78,7 @@ CREATE TABLE FoodItems (
 	title VARCHAR(100),
 	rname VARCHAR(100),
 	raddress TEXT,
-	PRIMARY KEY (fname, price, title, rname, raddress),
+	PRIMARY KEY (fname, title, rname, raddress),
 	FOREIGN KEY (title, rname, raddress) REFERENCES Menu (title, rname, raddress) ON DELETE CASCADE
 );
 
@@ -131,20 +131,4 @@ INSERT INTO Users VALUES (uname, name, pass);
 INSERT INTO RestaurantOwners VALUES (uname);
 END; $$ LANGUAGE plpgsql;
 
--- Sample testing for Top 3 Restaurants --
-INSERT INTO Users(uname,name, pass) values  ('kh', 'kayheen', '123'), ('wy', 'wenyi', '456'), ('Twayne', 'Thomas Wayne', '123'), ('Bwayne', 'Bruce Wayne', '123');
-INSERT INTO Diners values ('kh');
-INSERT INTO RestaurantOwners values ('wy'), ('Twayne'), ('Bwayne');
--- rname, address, uname, cuisine, phone_num, opening_hr, closing_hr
-INSERT INTO OwnedRestaurants values ('wy', 'fudstreet', 'Popeyes', 'Fast Food', '9111 0000', '0900', '2100'), ('wy', '1street', 'Bibimbap', 'Korean', '9123 4567', '0900', '2200');
-INSERT INTO OwnedRestaurants values('Twayne', '51 Ang Mo Kio Ave 3, #01-04 51@AMK, Singapore 569922', 'Bangkok Jam', 'Thai', '9114 4444', '0800', '2100');
-INSERT INTO OwnedRestaurants values('Bwayne', '#01, 490 Lor 6 Toa Payoh, 11, Singapore 310490', 'Mcdonalds', 'Fast Food', '9114 4445', '0800', '2100');
-INSERT INTO HasTimeslots values ('2019-10-19', '10:00', 'Popeyes', 'fudstreet', 10), ('2019-10-19', '12:00', 'Popeyes', 'fudstreet', 10), ('2019-10-19', '14:00', 'Bibimbap', '1street', 10);
-INSERT INTO ReserveTimeslots values ('2019-10-19', '10:00', 'Popeyes', 'fudstreet', 'kh', 'gr8', '3', '2', TRUE), ('2019-10-19', '12:00', 'Popeyes', 'fudstreet', 'kh', 'gr9', '4','3', TRUE), ('2019-10-19', '14:00', 'Bibimbap', '1street', 'kh', 'gr10', '5', '2', TRUE);
-INSERT INTO ReserveTimeslots values ('2019-10-19', '10:00', 'Bangkok Jam', '51 Ang Mo Kio Ave 3, #01-04 51@AMK, Singapore 569922', 'kh', 'gr10', '3', '2', TRUE); 
--- Sample testing for home page search
-INSERT INTO HasTimeslots VALUES ('2019-12-12', '10:00', 'Popeyes', 'fudstreet', '10'); -- Simple test for search, search using date: 12 December 2019, time: 10:00AM (or none), etc
-INSERT INTO HasTimeslots VALUES ('2019-12-25', '12:00', 'Bibimbap', '1street', '15'); -- Another test for search
-INSERT INTO HasTimeslots VALUES ('2019-10-19', '10:00', 'Bangkok Jam', '51 Ang Mo Kio Ave 3, #01-04 51@AMK, Singapore 569922', '18');
-INSERT INTO HasTimeslots VALUES ('2019-11-03', '10:00', 'Bangkok Jam', '51 Ang Mo Kio Ave 3, #01-04 51@AMK, Singapore 569922', '18');
-
+-- Set Up --
