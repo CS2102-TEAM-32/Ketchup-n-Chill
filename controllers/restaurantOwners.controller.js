@@ -176,6 +176,28 @@ exports.updateTimeslot = async (req, res, next) => {
     }
 };
 
+exports.deleteTimeslots = async (req, res, next) => {
+    try {
+        var date = moment(new Date(req.params.date)).format("YYYY-MM-DD");
+        var time = moment(req.params.time, "HH:mm").format("HH:mm");
+
+        var temp = [req.params.rname, req.params.raddress, date, time];
+        console.log('date is: ' + date + ', time is: ' + time + ', rname: ' + req.params.rname + ', raddres: ' + req.params.raddress);
+        const t = await db.one('DELETE FROM HasTimeslots WHERE rname=$1 AND raddress=$2 AND date=$3 AND time=$4 RETURNING *', temp);
+        req.flash('success', "Timeslots deleted");
+        //let encoded = encodeURIComponent(req.params.raddress);
+        //res.redirect('/restaurantowners/' + req.params.rname + '/' + encoded + '/edittimeslot');
+        //console.log(t);
+        res.sendStatus(200);
+    } catch (e) {
+        console.log(e);
+        //next(e);
+
+    }
+    
+    
+};
+
 exports.registerRestaurantOwner = (req, res, next) => {
     res.render('registerowner', {
         title: 'Register as Restaurant Owner'
