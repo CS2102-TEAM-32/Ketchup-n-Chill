@@ -18,6 +18,14 @@ router.get(
 
 router.get('/:rname/:raddress/:title', controller.showMenu);
 
+router.get('/:rname/:raddress/:title/edit', controller.editMenu);
+
+router.delete(
+  '/:rname/:raddress/:title/:fname',
+  common.ensureAuthenticatedRestaurantOwner,
+  controller.deleteMenuItem
+);
+
 router.delete(
   '/:rname/:raddress/:title',
   common.ensureAuthenticatedRestaurantOwner,

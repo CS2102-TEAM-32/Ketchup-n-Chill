@@ -15,22 +15,19 @@ block content
           p(style="color:white;padding:20%;" align="center") Currently, there are no restaurants under you! Scroll down to create your own restaurant! 
     div#rest
       h1 #[strong All My Restaurants]
-      br
-      table(id="restaurants" align="center" width="100%")
-        tbody
-          -var i = 1;
-          each rest, i in allRestaurants 
-            tr 
-              td= i+1 + '.'
-              td #{rest.rname}
-              td
-                a(href='/restaurants/' +  rest.rname +'/' + encodeURIComponent(rest.raddress)) view listing
-              td
-                a(href='/restaurants/' + rest.rname + '/' + encodeURIComponent(rest.raddress) + '/menus') view menus
-              td
-                a(href='/restaurantowners/' +  rest.rname +'/' + encodeURIComponent(rest.raddress) + '/edit') edit
-              td
-                a(href='/menus/' + rest.rname + '/' + encodeURIComponent(rest.raddress) + '/add') add a menu
+      div.row
+        each restaurant in allRestaurants
+          div.col-sm-3
+            .card(style='width:18rem;height:25rem;')
+              img.card-img-top(src='/images/restaurant-icon.png')
+              .card-body(style='padding:0;')
+                h5.card-title(style='text-align:center;') #{restaurant.rname}
+                p.card-text(style='padding:0px;color:green;height:40px;overflow:auto;') #{restaurant.raddress}
+              .card-body(style='padding:0;text-align:center;')
+                div
+                  a.card-link(href='/restaurantowners/' +  restaurant.rname +'/' + encodeURIComponent(restaurant.raddress)) Edit
+                  a.card-link(href='/menus/' + restaurant.rname + '/' + encodeURIComponent(restaurant.raddress) + '/add') Add Menu
+                a.card-link(href='/restaurants/' + restaurant.rname + '/' + encodeURIComponent(restaurant.raddress) style='padding:5px;') View Listing
 
 block style
   link(rel='stylesheet' href='/stylesheets/home.css')

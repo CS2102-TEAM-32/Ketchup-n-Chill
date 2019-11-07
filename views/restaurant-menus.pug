@@ -2,11 +2,10 @@ extends layout
 
 block append content
   .container
-    h1 Menus
-    ul
+    h1(style='text-align:center;') Menus
+    div(style='display:flex;justify-content:center;')
       if menus.length !== 0
         each menu in menus
-          li
-            a(href='/menus/' + restaurant.rname + '/' + encodeURIComponent(restaurant.raddress) + '/' + menu.title) #{menu.title}
+          a.btn.btn-link(style='text-align:center;font-size:32px;margin:1%;' href='/menus/' + restaurant.rname + '/' + encodeURIComponent(restaurant.raddress) + '/' + menu.title) #{menu.title}
       else
         p No menus to display for now... Check back again in a few days!
