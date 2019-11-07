@@ -100,11 +100,11 @@ exports.showRestaurantTimeslot = async (req, res, next) => {
         return res.render('timeslots', {
             timeslotDict: timeslotList,
             timeslotDates: timeslotDates,
-            restName: timeslotList[0].rname
+            restName: req.params.rname,
+            restAddress: req.params.raddress
         });
     } catch (e) {
-        console.log(e);
-        return res.sendStatus(404);
+        return res.redirect('/restaurants/' + req.params.rname + '/' + req.params(raddress));
     }
 };
 

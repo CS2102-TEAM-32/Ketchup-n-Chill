@@ -14,7 +14,6 @@ block style
         }
         table td {
             padding: 12px 15px;
-            font
         }
         table th {
             padding: 12px 15px;
@@ -39,19 +38,44 @@ block style
             display: table;
         }
 
+        a:link {
+            color: green;
+            background-color: transparent;
+            text-decoration: none;
+        }
+
+        a:visited {
+            color: grey;
+            background-color: transparent;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: red;
+            background-color: transparent;
+            text-decoration: underline;
+        }
+
+        a:active {
+            color: yellow;
+            background-color: transparent;
+            text-decoration: underline;
+        }
+
+
 
 block append content
     .container
         h1(style='text-align:center; padding-top:20px') #{restName}
         div
-            table
-                thead
-                    tr
-                        th Date
-                        th(colspan="10") Time
+            if timeslotDict.length != 0
+                table
+                    thead
+                        tr
+                            th Date
+                            th(colspan="30") Time
 
-                tbody
-                    if timeslotDict.length != 0
+                    tbody
                         each nextDate in timeslotDates
                             - var dateNow = moment(Date.now()).format('DD MMMM YYYY')
                             - var dateVar = moment(nextDate.date).format('DD MMMM YYYY')
@@ -63,3 +87,8 @@ block append content
                                                 if timeslotDate == dateVar
                                                     td=moment(timeslot.time, 'HH:mm:ss').format('HH:mm')
                                         
+
+            else
+                h2(style='text-align:center') No timeslots for #{restName} yet, please check back again.
+                div
+                    a(href="/restaurants/" + restName + '/' + encodeURIComponent(restAddress))="Click here to go back to Restaurant Profile"
