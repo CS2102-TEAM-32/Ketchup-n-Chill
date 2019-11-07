@@ -130,7 +130,152 @@ block style
       color: rgba(255, 255, 255, 0.8);
     }
 
+    /* The Modal (background) */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      padding-top: 100px; /* Location of the box */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+      position: relative;
+      background-color: #fefefe;
+      margin: auto;
+      padding: 0;
+      border: 1px solid #888;
+      width: 80%;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+      -webkit-animation-name: animatetop;
+      -webkit-animation-duration: 0.4s;
+      animation-name: animatetop;
+      animation-duration: 0.4s
+    }
+
+    /* Add Animation */
+    @-webkit-keyframes animatetop {
+      from {top:-300px; opacity:0} 
+      to {top:0; opacity:1}
+    }
+
+    @keyframes animatetop {
+      from {top:-300px; opacity:0}
+      to {top:0; opacity:1}
+    }
+
+    /* The Close Button */
+    .close {
+      color: white;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 16px;
+    }
+
+    .modal-footer {
+      padding: 2px 16px;
+      background-color: #FECA1D;
+      color: white;
+      float: left;
+    }
+
 block append content
+  script.
+    function confirmation() {
+      var date = document.getElementById('date-input').value;
+      console.log(date);
+      var time = document.getElementById('time-input').value;
+      console.log(time);
+      var pax = document.getElementById('pax-input').value;
+      console.log(pax);
+
+      document.getElementById('confirmation').style.display = "block";
+      $( "div" ).data( "test", 'Booking on ' + date + ' at ' + time + ' for ' + pax + ' pax.');
+      $( "span" ).text( $( "div" ).data( "test" ) );
+    }
+    function cancel() {
+      document.getElementById('confirmation').style.display = "none";
+    }
+    function cancelAndRefresh() {
+      document.getElementById('confirmed').style.display = "none";
+      document.getElementById('rejected').style.display = "none";
+      location.reload();
+    }
+    function returnConfirmation(event) {
+      var date = document.getElementById('date-input').value;
+      var time = document.getElementById('time-input').value;
+      var pax = document.getElementById('pax-input').value;
+      const rname = $(event.target).attr('rname');
+      const raddr = $(event.target).attr('raddr');
+
+      document.getElementById('confirmation').style.display = "none";
+      $.ajax({
+        url: '/restaurants/book/',
+        data: {
+          date: date,
+          time: time,
+          //pax: pax,
+          rname: rname,
+          raddr: raddr
+        },
+        success: (response) => {
+          // No error
+          if (response != 0) {
+            document.getElementById("confirmed").style.display = "block";
+          }
+          else {
+            document.getElementById("rejected").style.display = "block";
+          }
+        },
+        error: err => {
+          console.log("error:" + err);
+        }
+      });
+    }
+
+  div#confirmation.modal
+    div.modal-content
+      div.modal-body
+        p Would you like to confirm your booking for #{restName}?
+        <span></span>
+      div.modal-footer
+        a.btn.btn-primary(rname=restName raddr = restAddr title=title organisation=organisation onclick='returnConfirmation(event)' type='button' class="btn") Confirm
+        a.btn.btn-primary(onclick='cancel()' type='button' class="btn") Cancel
+
+  div#confirmed.modal
+    div.modal-content
+      div.modal-body
+        p Booking confirmed!
+      div.modal-footer
+        a.btn.btn-primary(href='/diners/reservations', type='button', class="btn") View my reservations
+        a.btn.btn-primary(onclick='cancelAndRefresh()', type='button', class="btn") Continue browsing
+
+  div#rejected.modal
+    div.modal-content
+      div.modal-body
+        p Booking rejected.
+      div.modal-footer
+        a.btn.btn-primary(href='/diners/reservations', type='button', class="btn") View my reservations
+        a.btn.btn-primary(onclick='cancelAndRefresh()', type='button', class="btn") Continue browsing
+
   .container
     <restplate>
       h1(style="color:red") #{restName}
@@ -165,16 +310,8 @@ block append content
     br
     h1(style="color:mustard; text-align:center" ) Book Restaurant Now
     <plate>
-      form(method='GET')
-        row
-          form-group
-            span.form-label Date
-                input.date-input.form-control(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
-    span.form-label Time
-      input.form-control(name='time' type='time')
-    span.form-label Pax
-      input.form-control(name='pax' type='number', min=1, max=100 value=1)
-    form-btn
-      button.submit-btn Book Now
-        </plate>
-
+      input.date-input(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMM YYYY' id='date-input')
+      input(name='time' type='time' id='time-input')
+      input(name='pax' type='number', min=1, max=100 value=1 id='pax-input')
+      a.btn.btn-primary(card-id=index onclick='confirmation()' style='border-color: #FECA1D; background-color: #FECA1D; float:right;') Book Now
+    </plate>
