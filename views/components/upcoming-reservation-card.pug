@@ -1,0 +1,163 @@
+mixin upcoming-reservation-card(duname, date, time, rname, raddress, review, rating, num_diners, index)
+  script.
+    function getDetails(event) {
+      document.getElementById('edit' + $(event.target).attr('card-id')).style.display = "block";
+    }
+    function cancel(event) {
+      document.getElementById('edit' + $(event.target).attr('card-id')).style.display = "none";
+      document.getElementById('rejected').style.display = "none";
+    }
+    function refresh() {
+      location.reload();
+    }
+    function editReservation(event) {
+      document.getElementById('edit' + $(event.target).attr('card-id')).style.display = "none";
+      const requiredId = $(event.target).attr('card-id');
+      var date = document.getElementById(requiredId + '-date').getAttribute('data-date');
+      var oldDate = $(event.target).attr('date');
+      if (date == 'Invalid date') {
+        date = oldDate;
+      }
+      date = moment(date).format('MM-DD-YYYY');
+      oldDate = moment(oldDate).format('MM-DD-YYYY');
+      var time = document.getElementById(requiredId + '-time').value;
+      var oldTime = $(event.target).attr('time');
+      if (time.length == 0) {
+        time = oldTime;
+      }
+      time = moment(time, 'HH:mm A').format('HH:mm:ss');
+      oldTime = moment(oldTime, 'HH:mm A').format('HH:mm:ss');
+      var pax = document.getElementById(requiredId + '-pax').value;
+      var oldPax = $(event.target).attr('pax');
+      if (pax.length == 0) {
+        pax = oldPax;
+      }
+      var rname = $(event.target).attr('rname');
+      const raddress = $(event.target).attr('raddress');
+      const duname = $(event.target).attr('duname');
+
+      $.ajax({
+        url: '/diners/editreservation/',
+        data: {
+          r_date: date,
+          r_time: time,
+          num_diners: pax,
+          old_r_date: oldDate,
+          old_r_time: oldTime,
+          rname: rname,
+          raddress: raddress,
+          old_num_diners: oldPax,
+          duname: duname
+        },
+        success: (response) => {
+          console.log(response);
+          // No error
+          if (response != 0) {
+            document.getElementById("confirmed").style.display = "block";
+          }
+          else {
+            document.getElementById("rejected").style.display = "block";
+          }
+        },
+        error: err => {
+          console.log("error:" + err);
+        }
+      });
+    }
+    function cancelReservation(event) {
+      document.getElementById('cancel' + $(event.target).attr('card-id')).style.display = "none";
+      const rname = $(event.target).attr('rname');
+      const raddress = $(event.target).attr('raddress');
+      var r_date = $(event.target).attr('date');
+      r_date = moment(r_date).format('MM-DD-YYYY');
+      var r_time = $(event.target).attr('time');
+      r_time = moment(r_time, 'HH:mm A').format('HH:mm:ss');
+      const duname = $(event.target).attr('duname');
+      const pax = $(event.target).attr('pax');
+
+      $.ajax({
+        url: '/diners/cancelreservation/',
+        data: {
+          r_date: r_date,
+          r_time: r_time,
+          num_diners: pax,
+          rname: rname,
+          raddress: raddress,
+          duname: duname
+        },
+        success: (response) => {
+          console.log(response);
+          document.getElementById("cancellationConfirmed").style.display = "block";
+        },
+        error: err => {
+          console.log("error:" + err);
+        }
+      });
+    }
+    function confirmCancellation(event) {
+      document.getElementById('cancel' + $(event.target).attr('card-id')).style.display = "block";
+    }
+
+  div#confirmed.modal
+    div.modal-content
+      div.modal-body
+        p Reservation changed!
+      div.modal-footer
+        a.btn.btn-primary(onclick='refresh()', type='button', class="btn") Ok
+
+  div#rejected.modal
+    div.modal-content
+      div.modal-body
+        p Unable to change to desired reservation.
+      div.modal-footer
+        a.btn.btn-primary(card-id = index onclick='cancel(event)', type='button', class="btn") Ok
+
+  div#cancellationConfirmed.modal
+    div.modal-content
+      div.modal-body
+        p Cancellation confirmed!
+      div.modal-footer
+        a.btn.btn-primary(onclick='refresh()', type='button', class="btn") Ok
+
+  div.modal(id = 'cancel' + index)
+    div.modal-content
+      div.modal-body
+        p Would you like to cancel your booking?
+        p #{rname}, #{raddress}
+        p #{date} #{time} for #{num_diners}
+      div.modal-footer
+        a.btn.btn-primary(card-id=index rname=rname raddress=raddress date=date time=time pax=num_diners duname=duname onclick='cancelReservation(event)' type='button' class="btn") Confirm
+        a.btn.btn-primary(card-id=index onclick='refresh()' type='button' class="btn") Return to Reservations
+
+  div.modal(id = 'edit' + index)
+    div.modal-content
+      div.modal-body
+        p Make changes to reservation for: 
+        p #{rname}, #{raddress}: #{date}, #{time} for #{num_diners} pax
+        h7 Date:
+        input.date-input(name='date' type='date' min=date data-date='' data-date-format='DD MMM YYYY' id=index+'-date')
+        br
+        h7 Time:
+        input(name='time' type='time' id=index+'-time')
+        br
+        h7 Number of pax:
+        input(name='pax' type='number', min=1, max=100 id=index+'-pax')
+        br
+        h7(style='font-size: 80%') Please leave blank if no changes
+        br
+        h7 If you'd like to book another restaurant instead, please cancel this reservation and book again.
+      div.modal-footer
+        a.btn.btn-primary(card-id=index rname=rname raddress=raddress date=date time=time pax=num_diners duname=duname onclick='editReservation(event)' type='button' class="btn") Confirm
+        a.btn.btn-primary(card-id=index onclick='cancel(event)' type='button' class="btn") Cancel
+
+  div.card(style='background-color: whitesmoke; display: block; padding: 10px; margin-bottom: 10px;')
+    div.card-body
+      img(src='../../images/plate-cutlery.png' style='width:180px; height:180px; float: left; margin-right: 20px; border-radius:2px;')
+      - rname = rname || 'No reservations to display'
+      h5(style='color:#FECA1D;') #{rname}
+      h5(style='color:#FECA1D; font-size: 90%;') #{raddress} 
+      h5(style='font-size: 90%;') #{date} #{time}
+      h5(style='font-size: 90%;') #{num_diners} pax 
+      br
+      a.btn.btn-primary(card-id=index onclick='getDetails(event)' style='border-color: #FECA1D; background-color: #FECA1D; font-size: 90%; margin-right: 20px;') Edit Reservation
+      a.btn.btn-primary(card-id=index onclick='confirmCancellation(event)' style='border-color: #FECA1D; background-color: #FECA1D; font-size: 90%;') Cancel Reservation

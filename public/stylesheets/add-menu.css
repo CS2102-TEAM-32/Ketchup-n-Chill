@@ -32,3 +32,8 @@ ul {
 ul li {
   list-style: none;
 }
+
+li input {
+  margin:10px;
+  font-size:14px;
+}

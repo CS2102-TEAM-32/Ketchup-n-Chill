@@ -7,13 +7,13 @@ block content
     div#wrapper
       div.search-box
         form(method='GET' action='/restaurants')
-          h3 Book a restaurant
+          h3 Find a restaurant
           div.form-group
             label Date
             input.date-input.form-control(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
           div.form-group
             label Time
-            input.form-control(name='time' type='time' value=time list='limittimelist' min=time)
+            input.time-input.form-control(name='time' type='time' value=time list='limittimelist' min=time onkeypress='return false;')
             datalist#limittimelist
               option(value="09:00")
               option(value="10:00")
@@ -35,9 +35,6 @@ block content
             div.form-group.col-md-6
               label Cuisine
               input.form-control(name='cuisine' type='text')
-          div.form-group
-            label Location
-            input.form-control(name='location' type='text')
           div.form-group
             label Restaurant
             input.form-control(name='rname' type='text')
