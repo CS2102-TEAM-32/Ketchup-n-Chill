@@ -51,9 +51,12 @@ block append content
                         th Time
 
                 tbody
-                    each timeslot in timeslotList
-                        tr
-                            td
-                                p #{timeslot.date}
-                            td
-                                p #{timeslot.time}
+                    if timeslotList.length != 0
+                        each timeslot in timeslotList
+                            - var dateNow = moment(Date.now()).format('DD MMMM YYYY')
+                            - var dateTimeslot = moment(timeslot.date).format('DD MMMM YYYY')
+                            if dateTimeslot >= dateNow
+                                tr
+                                    td= moment(timeslot.date).format('DD MMMM YYYY')
+                                    td= moment(timeslot.time, 'HH:mm:ss').format('HH:mm')
+                                        

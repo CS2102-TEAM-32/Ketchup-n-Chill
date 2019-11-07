@@ -95,7 +95,7 @@ exports.showRestaurantTimeslot = async (req, res, next) => {
 
         return res.render('timeslots', {
             timeslotList: timeslots,
-            restName: timeslots[0].rname
+            restName: timeslots[0].rname,
         });
     } catch (e) {
         console.log(e);
