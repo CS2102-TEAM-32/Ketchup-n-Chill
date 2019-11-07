@@ -1,0 +1,15 @@
+extends layout
+
+block append content
+  .container
+    if reservations.length === 0
+      h1(style='text-align:center;') No Reservations... For now!
+    else 
+      each reservation in reservations
+        div(style='border-style:solid;border-width:5px;border-color:black;')
+          p #{reservation.rname}
+          p #{reservation.r_date}
+          p #{reservation.r_time}
+          p #{reservation.raddress}
+          p #{duname}
+          button.btn.btn-danger.mark-reservation-complete(rname=reservation.rname r_date=reservation.r_date r_time=reservation.r_time raddress=reservation.raddress duname=reservation.duname) Mark Complete

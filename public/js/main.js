@@ -14,6 +14,23 @@ $(document).ready(() => {
 });
 
 $(document).ready(() => {
+  $('.mark-reservation-complete').on('click', e => {
+    const rname = $(e.target).attr('rname');
+    const r_date = moment($(e.target).attr('r_date')).format('YYYY-MM-DD');
+    const r_time = $(e.target).attr('r_time');
+    const raddress = $(e.target).attr('raddress');
+    const duname = $(e.target).attr('duname');
+    $.ajax({
+      type: 'POST',
+      data: { rname, r_date, r_time, raddress, duname },
+      url: '/reservations/',
+      success: () => window.location.reload(),
+      error: err => console.log(err)
+    })
+  })
+})
+
+$(document).ready(() => {
   $('#delete-menu').on('click', e => {
     const title = $(e.target).attr('title');
     const raddress = $(e.target).attr('raddress');
@@ -32,7 +49,8 @@ $(document).ready(() => {
 });
 
 $(document).ready(() => {
-  $('#delete-item').on('click', e => {
+  $('.delete-item').on('click', e => {
+    console.log("click");
     const fname = $(e.target).attr('fname');
     const title = $(e.target).attr('title');
     const raddress = $(e.target).attr('raddress');
