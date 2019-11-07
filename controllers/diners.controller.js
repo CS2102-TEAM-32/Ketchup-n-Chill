@@ -11,7 +11,7 @@ exports.showReservations = async (req, res, next) => {
       [req.user.uname]
     );
     const upcoming = db.any(
-      "SELECT duname, r_date, to_char(r_date, 'DD MON YYYY') AS date, r_time, to_char(r_time, 'HH12.MIPM') AS time, rname, raddress, review, rating, num_diners, is_complete FROM ReserveTimeslots WHERE duname=$1 AND r_date > current_date OR (r_date = current_date AND r_time < current_time) ORDER BY r_date DESC, r_time DESC",
+      "SELECT duname, r_date, to_char(r_date, 'DD MON YYYY') AS date, r_time, to_char(r_time, 'HH12.MIPM') AS time, rname, raddress, review, rating, num_diners, is_complete FROM ReserveTimeslots WHERE duname=$1 AND r_date > current_date OR (r_date = current_date AND r_time < current_time) ORDER BY r_date ASC, r_time ASC",
       [req.user.uname]
     );
     const duname = req.user.uname;
@@ -28,6 +28,131 @@ exports.showReservations = async (req, res, next) => {
   }
 };
 
+exports.cancelReservation = async (req, res, next) => {
+  try {
+    await queryDbFromReqQueryForDeleteReservation(
+      "DELETE FROM ReserveTimeslots",
+      req.query,
+      db.none
+    );
+    res.sendStatus(200);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+/*
+ helper function to form the query then query the db with it.
+ takes in a string 'select ... from ...' as the first parameter.
+ the second parameter is the req.query object.
+ the last parameter is a suitable pgp method (i.e none, one, oneOrNone, many, any)
+ forms the conditions in the where clause based on the keys from the req.query object,
+ then forms the full sql query with the given frontPortion,
+ then calls f with the query and the list of values.
+ returns the promise from the method, which you then can call await on.
+*/
+// It's currently case sensitive and doesn't accept when organisation names are > 1 word (cuz no '') so gotta fix that!
+function queryDbFromReqQueryForDeleteReservation(frontPortion, reqQuery, f) {
+  const partials = {
+    r_date: 'r_date=',
+    r_time: 'r_time=',
+    num_diners: 'num_diners=',
+    rname: 'rname=',
+    raddress: 'raddress=',
+    duname: 'duname='
+  };
+
+  const keys = Object.keys(reqQuery);
+  if (keys.length === 0) {
+    // the req.query object is empty, we will query without a where clause.
+    return f(frontPortion);
+  }
+
+  const conditions = keys
+    .filter(key => reqQuery[key] !== '') // if they are empty, don't include in where clause
+    .map((key, index) => `${partials[key]} $${index + 1}`) // pgp uses base-1 index
+    .reduce((acc, curr) => `${acc} AND ${curr}`);
+
+  console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
+
+  // make the function call and return the promise
+  return f(
+    `${frontPortion} WHERE ${conditions}`,
+    Object.values(reqQuery).filter(value => value !== '')
+  );
+}
+
+exports.editReservation = async (req, res, next) => {
+  try {
+    const editSuccess = await queryDbFromReqQueryForEditReservation(
+      "UPDATE ReserveTimeslots",
+      req.query,
+      db.oneOrNone
+    );
+    if (editSuccess == null) {
+      res.json(0);
+    }
+    else {
+      res.json(1);
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+/*
+ helper function to form the query then query the db with it.
+ takes in a string 'select ... from ...' as the first parameter.
+ the second parameter is the req.query object.
+ the last parameter is a suitable pgp method (i.e none, one, oneOrNone, many, any)
+ forms the conditions in the where clause based on the keys from the req.query object,
+ then forms the full sql query with the given frontPortion,
+ then calls f with the query and the list of values.
+ returns the promise from the method, which you then can call await on.
+*/
+// It's currently case sensitive and doesn't accept when organisation names are > 1 word (cuz no '') so gotta fix that!
+function queryDbFromReqQueryForEditReservation(frontPortion, reqQuery, f) {
+  const setPartial = {
+    r_date: 'r_date=',
+    r_time: 'r_time=',
+    num_diners: 'num_diners='
+  };
+
+  const wherePartial = {
+    old_r_date: 'r_date=',
+    old_r_time: 'r_time=',
+    rname: 'rname=',
+    raddress: 'raddress=',
+    old_num_diners: 'num_diners=',
+    duname: 'duname='
+  };
+
+  const setKeys = ['r_date', 'r_time', 'num_diners'];
+  const keys = ['old_r_date', 'old_r_time', 'rname', 'raddress', 'old_num_diners', 'duname']
+  if (keys.length === 0) {
+    // the req.query object is empty, we will query without a where clause.
+    return f(frontPortion);
+  }
+
+  const setConditions = setKeys
+    .filter(setKey => reqQuery[setKey] !== '') // if they are empty, don't include in where clause
+    .map((setKey, index) => `${setPartial[setKey]} $${index + 1}`) // pgp uses base-1 index
+    .reduce((acc, curr) => `${acc}, ${curr}`);
+
+  const whereConditions = keys
+    .filter(key => reqQuery[key] !== '') // if they are empty, don't include in where clause
+    .map((key, index) => `${wherePartial[key]} $${index + 4}`) // pgp uses base-1 index
+    .reduce((acc, curr) => `${acc} AND ${curr}`);
+
+  console.log(`${frontPortion} SET ${setConditions} WHERE ${whereConditions} RETURNING *`,
+    Object.values(reqQuery).filter(value => value !== ''));
+  // make the function call and return the promise
+  return f(
+    `${frontPortion} SET ${setConditions} WHERE ${whereConditions} RETURNING *`,
+    Object.values(reqQuery).filter(value => value !== '')
+  );
+}
+
 exports.showVouchers = async (req, res, next) => {
   try {
     const vouchers = db.any(
@@ -43,30 +168,6 @@ exports.showVouchers = async (req, res, next) => {
         title: 'Vouchers',
         vouchers: values[0],
         redeemedVouchers: values[1]
-      });
-    });
-  } catch (e) {
-    next(e);
-  }
-};
-
-exports.showVouchers = async (req, res, next) => {
-  try {
-    const name = req.user.uname;
-    const vouchers = db.any(
-      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=FALSE",
-      [req.user.uname]
-    );
-    const redeemedVouchers = db.any(
-      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=TRUE",
-      [req.user.uname]
-    );
-    Promise.all([name, vouchers, redeemedVouchers]).then(values => {
-      res.render('vouchers', {
-        title: 'Vouchers',
-        name: values[0],
-        vouchers: values[1],
-        redeemedVouchers: values[2]
       });
     });
   } catch (e) {
@@ -95,14 +196,14 @@ exports.claimVoucher = async (req, res, next) => {
       res.json(0);
     }
   } catch (e) {
-    console.log(e);
     next(e);
   }
 };
 
+// Repeat, in common.controller
 async function calculatePoints(uname) {
   const points = db.one(
-    'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1',
+    'SELECT COUNT(*) FROM ReserveTimeslots WHERE duname=$1 AND is_complete = TRUE',
     [uname]
   );
   const existingVouchers = db.one(
@@ -165,10 +266,8 @@ exports.redeemVoucher = async (req, res, next) => {
       voucher.organisation,
       voucher.code
     ]);
-    console.log(update);
     return res.sendStatus(200);
   } catch (e) {
-    console.log(e);
     next(e);
   }
 };

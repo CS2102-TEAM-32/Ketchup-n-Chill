@@ -1,0 +1,21 @@
+mixin past-reservation-card(date, time, rname, raddress, review, rating, num_diners, is_complete)
+  div.card(style='background-color: whitesmoke; display: block; padding: 10px; margin-bottom: 10px;')
+    div.card-body
+      - rname = rname || 'No reservations to display'
+      h5(style='color:#FECA1D;') #{rname}
+      h5(style='color:#FECA1D; font-size: 90%;') #{raddress} 
+      h5(style='font-size: 90%;') #{date} #{time}
+      h5(style='font-size: 90%;') #{num_diners} pax 
+      br
+      h7(style='font-size: 90%;') 
+        | <b>You rated:</b> #{rating}/5
+        br
+        | <b>You reviewed:</b> #{review}
+      br
+      br
+      h7.complete(style='font-size: 12px;')
+        img(src='../../images/cutesauce.png' style='width:70px; height:50px; float: left; margin-right: 10px; border-radius:2px;')
+        if is_complete
+          | This reservation has been completed.
+        else
+          | Incomplete reservation.
