@@ -2,9 +2,12 @@ extends layout
 
 block append content
   .container
-    h1 #{menu.title}
-    each item in items
-      div
-        p #{item.fname}, $#{item.price}
+    h1(style='text-align:center;') #{menu.title}
+    div(style='margin: 0 20%;')
+      each item in items
+        div(style='padding:20px;text-align:center;')
+          div(style='display:inline-block;')
+            span(style='font-size:25px;font-weight:bold;') #{item.fname}
+            span , 
+            span(style='color:orange;') $#{item.price}
     br
-    a.btn.btn-warning(href='/menus/' + menu.rname + '/' + encodeURIComponent(menu.raddress) + '/' + menu.title + '/edit') Edit menu

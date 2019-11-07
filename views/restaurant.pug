@@ -302,7 +302,7 @@ block append content
       img(src='/images/telephone.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
       p <b>Contact Number:</b>
       p  #{phoneNum}
-      a(href='/restaurants/' + restName + '/' + restAddr + '/menus') View menus
+      a(href='/restaurants/' + restName + '/' + encodeURIComponent(restAddr) + '/menus') View menus
       br
       a(href='/restaurants/' + restName + '/' + restAddr + '/timeslots') View Available Timeslots
       </information>

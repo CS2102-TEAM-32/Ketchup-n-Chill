@@ -3,8 +3,8 @@ const db = require('../db/index');
 exports.showMenu = async (req, res, next) => {
   try {
     // find the menu; there should be one menu
-    await db.one(
-      'SELECT * FROM Menu WHERE title=$1 AND rname=$2 AND raddress=$3',
+    const restaurantOwner = await db.one(
+      'SELECT uname FROM Menu NATURAL JOIN OwnedRestaurants WHERE title=$1 AND rname=$2 AND raddress=$3',
       [req.params.title, req.params.rname, req.params.raddress]
     );
 
@@ -14,10 +14,17 @@ exports.showMenu = async (req, res, next) => {
       [req.params.title, req.params.rname, req.params.raddress]
     );
 
-    res.render('menu', {
-      menu: req.params,
-      items
-    });
+    if (req.user && req.user.uname === restaurantOwner.uname) { // if logged in and is the restaurant owner
+      res.render('edit-menu', {
+        menu: req.params,
+        items
+      });
+    } else {
+      res.render('menu', {
+        menu: req.params,
+        items
+      })
+    }
   } catch (e) {
     return res.sendStatus(404);
   }
@@ -50,18 +57,30 @@ exports.editMenu = async (req, res, next) => {
 exports.showAddMenuPage = async (req, res, next) => {
   // check whether it belongs to the restaurant owner first
   try {
-    await db.one(
+    const restaurantPromise = db.one(
       'SELECT * FROM OwnedRestaurants WHERE raddress=$1 AND rname=$2 AND uname=$3',
       [req.params.raddress, req.params.rname, req.user.uname]
     );
+    const menusPromise = db.manyOrNone(
+      'SELECT * FROM Menu WHERE rname=$1 AND raddress=$2',
+      [req.params.rname, req.params.raddress]
+    );
+
+    const resolvedPromises = await Promise.all([
+      restaurantPromise,
+      menusPromise
+    ]);
+    console.log(resolvedPromises);
+
+    res.render('add-menu', {
+      rname: req.params.rname,
+      raddress: req.params.raddress,
+      menus: resolvedPromises[1]
+    });
   } catch (e) {
+    console.log(e);
     return res.send(401);
   }
-
-  res.render('add-menu', {
-    rname: req.params.rname,
-    raddress: req.params.raddress
-  });
 };
 
 exports.addMenu = async (req, res, next) => {
@@ -85,20 +104,41 @@ exports.addMenu = async (req, res, next) => {
     return res.redirect('back');
   }
 
-  // create the new menu
+  // look for the menu
   try {
-    menu = await db.one('INSERT INTO Menu VALUES ($1, $2, $3) RETURNING *', [
-      req.body.title,
-      req.params.rname,
-      req.params.raddress
-    ]);
-  } catch (e) {
-    req.flash(
-      'danger',
-      'Something went wrong! Do you have a similarly named menu already?'
+    // if there is a menu, add to that
+    menu = await db.one(
+      'SELECT * FROM Menu WHERE title=$1 AND raddress=$2 AND rname=$3',
+      [req.body.title, req.params.raddress, req.params.rname]
     );
-    return res.redirect('back');
+  } catch (e) {
+    // no menu could be found, a new one should be created
+    menu = await db
+      .one('INSERT INTO Menu VALUES ($1, $2, $3) RETURNING *', [
+        req.body.title,
+        req.params.rname,
+        req.params.raddress
+      ])
+      .catch(e => {
+        req.flash('danger', 'Something went wrong!');
+        return res.redirect('back');
+      });
   }
+
+  // create the new menu
+  // try {
+  //   menu = await db.one('INSERT INTO Menu VALUES ($1, $2, $3) RETURNING *', [
+  //     req.body.title,
+  //     req.params.rname,
+  //     req.params.raddress
+  //   ]);
+  // } catch (e) {
+  //   req.flash(
+  //     'danger',
+  //     'Something went wrong! Do you have a similarly named menu already?'
+  //   );
+  //   return res.redirect('back');
+  // }
 
   // create new items
   xs.map(obj => {

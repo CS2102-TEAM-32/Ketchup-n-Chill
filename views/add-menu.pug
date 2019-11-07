@@ -7,7 +7,10 @@ block append content
       .information
         .form-group
           label Menu name:
-          input(type=text name='title')
+          input(type=text name='title' list='menu-names')
+          datalist(id='menu-names')
+            each menu in menus
+              option #{menu.title}
         br
         ul#fieldList
           li
