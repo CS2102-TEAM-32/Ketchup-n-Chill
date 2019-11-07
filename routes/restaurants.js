@@ -18,6 +18,11 @@ router.get(
   controller.showRestaurantAddPage
 );
 
+router.get(
+  '/book',
+  controller.bookRestaurant
+);
+
 router.get('/:rname/:raddress', controller.showRestaurantProfile);
 router.get('/:rname/:raddress/menus', controller.showRestaurantMenus);
 router.get('/:rname/:raddress/timeslots', controller.showRestaurantTimeslot);
