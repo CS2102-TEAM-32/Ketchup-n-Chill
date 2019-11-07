@@ -13,7 +13,7 @@ block content
             input.date-input.form-control(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMMM YYYY')
           div.form-group
             label Time
-            input.form-control(name='time' type='time' value=time list='limittimelist' min=time)
+            input.time-input.form-control(name='time' type='time' value=time list='limittimelist' min=time onkeypress='return false;')
             datalist#limittimelist
               option(value="09:00")
               option(value="10:00")

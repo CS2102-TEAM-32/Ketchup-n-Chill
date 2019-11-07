@@ -68,6 +68,10 @@
   display: none;
 }
 
+.time-input::-webkit-inner-spin-button {
+  display: none;
+}
+
 .date-input::-webkit-calendar-picker-indicator {
   position: absolute;
   top: 10px;
