@@ -1,0 +1,17 @@
+extends layout
+
+block append content
+  .container
+    if reservations.length === 0
+      h1(style='text-align:center;padding-top:20%;') No Reservations left today.
+    else 
+      each reservation in reservations
+        div(style='border-style:solid;border-width:5px;border-color:black;padding:30px;')
+          div(style='display:inline-block;')
+            h1(style='display:inline;font-size:52px;') #{reservation.rname}
+            h4(style='display:inline;') at #{reservation.raddress}
+            p(style='padding:0;margin:0;') Username: #{reservation.uname}
+            p(style='padding:0;margin:0;') Date: #{moment(reservation.r_date).format('DD MMMM')}
+            p(style='padding:0;margin:0;') Time: #{moment(reservation.r_time, 'HH:mm:ss').format('LT')}
+            br
+          button.btn.btn-success.mark-reservation-complete(rname=reservation.rname r_date=reservation.r_date r_time=reservation.r_time raddress=reservation.raddress duname=reservation.duname style='float:right;margin:15px;') Mark Complete
