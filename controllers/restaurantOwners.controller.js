@@ -158,11 +158,15 @@ exports.updateTimeslot = async (req, res, next) => {
                     }  
                 }
                 //console.log(values);
-                const query = pgp.helpers.insert(values, col);
-                await db.none(query).catch(error => {
-                    console.log("ERROR:", error.message || error);
-                });
-                req.flash('success', "Entries updated!");
+                if (values.length == 0) {
+                    req.flash('danger', "No entries were added because incompatible timeslots were provided.");
+                } else {
+                    const query = pgp.helpers.insert(values, col);
+                    await db.none(query).catch(error => {
+                        console.log("ERROR:", error.message || error);
+                    });
+                    req.flash('success', "Entries updated!");
+                }
                 let encoded = encodeURIComponent(req.params.raddress);
                 res.redirect('/restaurantowners/' + req.params.rname + '/' + encoded + '/edittimeslot');
             }
