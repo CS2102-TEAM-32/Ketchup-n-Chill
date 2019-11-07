@@ -116,7 +116,7 @@ exports.showRestaurantMenus = async (req, res, next) => {
       [req.params.rname, req.params.raddress]
     );
     const menus = await db.any(
-      'SELECT * FROM Menu WHERE rname=$1 AND raddress=$2',
+      'SELECT * FROM Menu NATURAL JOIN OwnedRestaurants WHERE rname=$1 AND raddress=$2',
       [req.params.rname, req.params.raddress]
     );
 

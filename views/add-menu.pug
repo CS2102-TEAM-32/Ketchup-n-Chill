@@ -1,21 +1,30 @@
 extends layout
 
 block append content
-  h1 Add menu to #{rname} at #{raddress}
+  h1(style='text-align:center;') #{rname}
+  h4(style='text-align:center;') #{raddress}
+  br
+  h5(style='text-align:center; padding:0px;margin:0px;') Add Item
   .restplate
     form(method='POST' action='/menus/' + rname + '/' + encodeURIComponent(raddress))
       .information
-        .form-group
-          label Menu name:
-          input(type=text name='title')
+        .form-group(style='text-align:center;')
+          label(style='padding-bottom:0;margin-bottom:0;') Menu
+          p(style='font-size:10px;padding:0;margin:0;') Select the menu to add an item to,
+          p(style='font-size:10px;padding:0;margin:0;') or create a menu using a unique menu name.
+          input(type=text name='title' list='menu-names')
+          datalist(id='menu-names')
+            each menu in menus
+              option #{menu.title}
         br
-        ul#fieldList
+        ul#fieldList(style='text-align:center;')
           li
-            input(type=text name='item' placeholder='item')
-          li
-            input(type=text name='price' placeholder='price')
-      button.btn.btn-light#addMore Add another item
-      button.btn.btn-light(type='submit' value='Submit') Submit
+            input(type=text name='item' placeholder='item' style='margin:10px;font-size:14px;')
+            input(type=text name='price' placeholder='price' style='margin:10px;font-size:14px;')
+        br
+      button.btn.btn-primary#addMore Add another item
+      br
+      button.btn.btn-success(type='submit' value='Submit') Submit
 
 block style
   link(rel='stylesheet' href='/stylesheets/add-menu.css')

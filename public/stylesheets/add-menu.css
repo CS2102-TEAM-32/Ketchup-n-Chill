@@ -4,22 +4,24 @@
 }
 
 .restplate {
-  padding: 10px;
+  padding: 20px;
   float: top;
   width: 50%;
   text-align: center;
   border-style: solid;
   border-width: 0.05px;
   border-color: #feca1d;
-  margin-top: 30px;
+  background-color: #feca1d;
+  margin-top: 5px;
   margin-left: auto;
   margin-right: auto;
   display: block;
+  border-radius: 20px;
 }
 
 .btn {
   float: center;
-  background-color: #FECA1D;
+  margin:5px;
 }
 
 ul {
