@@ -88,14 +88,19 @@ exports.showRestaurantProfile = async (req, res, next) => {
 exports.showRestaurantTimeslot = async (req, res, next) => {
     console.log(req.params);
     try {
-        const timeslots = await db.many(
+        const timeslotDates = await db.any(
+            'SELECT DISTINCT date FROM HasTimeslots WHERE rname=$1 AND raddress =$2 ORDER BY date',
+            [req.params.rname, req.params.raddress]
+        );
+        const timeslotList = await db.any(
             'SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress =$2',
             [req.params.rname, req.params.raddress]
         );
 
         return res.render('timeslots', {
-            timeslotList: timeslots,
-            restName: timeslots[0].rname,
+            timeslotDict: timeslotList,
+            timeslotDates: timeslotDates,
+            restName: timeslotList[0].rname
         });
     } catch (e) {
         console.log(e);

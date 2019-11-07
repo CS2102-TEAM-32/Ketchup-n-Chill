@@ -4,7 +4,7 @@ block style
     style(type="text/css").
         table {
             margin: auto;
-            width: 75%;
+            width: 100%;
         }
         table thead {
             background-color: #e22512;
@@ -48,15 +48,18 @@ block append content
                 thead
                     tr
                         th Date
-                        th Time
+                        th(colspan="10") Time
 
                 tbody
-                    if timeslotList.length != 0
-                        each timeslot in timeslotList
+                    if timeslotDict.length != 0
+                        each nextDate in timeslotDates
                             - var dateNow = moment(Date.now()).format('DD MMMM YYYY')
-                            - var dateTimeslot = moment(timeslot.date).format('DD MMMM YYYY')
-                            if dateTimeslot >= dateNow
-                                tr
-                                    td= moment(timeslot.date).format('DD MMMM YYYY')
-                                    td= moment(timeslot.time, 'HH:mm:ss').format('HH:mm')
+                            - var dateVar = moment(nextDate.date).format('DD MMMM YYYY')
+                                if dateVar >= dateNow
+                                    tr
+                                        td= dateVar
+                                        each timeslot in timeslotDict
+                                            - var timeslotDate = moment(timeslot.date).format('DD MMMM YYYY')
+                                                if timeslotDate == dateVar
+                                                    td=moment(timeslot.time, 'HH:mm:ss').format('HH:mm')
                                         
