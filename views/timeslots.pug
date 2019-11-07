@@ -4,7 +4,7 @@ block style
     style(type="text/css").
         table {
             margin: auto;
-            width: 75%;
+            width: 100%;
         }
         table thead {
             background-color: #e22512;
@@ -14,7 +14,6 @@ block style
         }
         table td {
             padding: 12px 15px;
-            font
         }
         table th {
             padding: 12px 15px;
@@ -39,21 +38,60 @@ block style
             display: table;
         }
 
+        a:link {
+            color: green;
+            background-color: transparent;
+            text-decoration: none;
+        }
+
+        a:visited {
+            color: grey;
+            background-color: transparent;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: red;
+            background-color: transparent;
+            text-decoration: underline;
+        }
+
+        a:active {
+            color: yellow;
+            background-color: transparent;
+            text-decoration: underline;
+        }
+        p {
+            text-size:px;
+        }
+
 
 block append content
     .container
         h1(style='text-align:center; padding-top:20px') #{restName}
-        div
-            table
-                thead
-                    tr
-                        th Date
-                        th Time
-
-                tbody
-                    each timeslot in timeslotList
+        div(style='display:flex;justify-content:center;')
+            if timeslotDict.length != 0
+                table
+                    thead
                         tr
-                            td
-                                p #{timeslot.date}
-                            td
-                                p #{timeslot.time}
+                            th Date
+                            th(colspan="30") Time
+
+                    tbody
+                        each nextDate in timeslotDates
+                            - var dateNow = moment(Date.now()).format('DD MMMM YYYY')
+                            - var dateVar = moment(nextDate.date).format('DD MMMM YYYY')
+                                if dateVar >= dateNow
+                                    tr
+                                        td= dateVar
+                                        each timeslot in timeslotDict
+                                            - var timeslotDate = moment(timeslot.date).format('DD MMMM YYYY')
+                                                if timeslotDate == dateVar
+                                                    td=moment(timeslot.time, 'HH:mm:ss').format('HH:mm')
+                                        
+
+            else
+                p(style='text-align:center') No timeslots for #{restName} yet, please check back again.
+                br
+                a(href="/restaurants/" + restName + '/' + encodeURIComponent(restAddress))="Click here to go back to Restaurant Profile"
+
