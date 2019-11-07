@@ -61,13 +61,15 @@ block style
             background-color: transparent;
             text-decoration: underline;
         }
-
+        p {
+            text-size:px;
+        }
 
 
 block append content
     .container
         h1(style='text-align:center; padding-top:20px') #{restName}
-        div
+        div(style='display:flex;justify-content:center;')
             if timeslotDict.length != 0
                 table
                     thead
@@ -89,6 +91,7 @@ block append content
                                         
 
             else
-                h2(style='text-align:center') No timeslots for #{restName} yet, please check back again.
-                div
-                    a(href="/restaurants/" + restName + '/' + encodeURIComponent(restAddress))="Click here to go back to Restaurant Profile"
+                p(style='text-align:center') No timeslots for #{restName} yet, please check back again.
+                br
+                a(href="/restaurants/" + restName + '/' + encodeURIComponent(restAddress))="Click here to go back to Restaurant Profile"
+
