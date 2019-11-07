@@ -72,6 +72,7 @@ exports.showRestaurantProfile = async (req, res, next) => {
     );
 
     res.render('restaurant', {
+      userIsDiner: req.user,
       restName: restaurant.rname,
       restAddr: restaurant.raddress,
       restaurantOwner: restaurant.uname,

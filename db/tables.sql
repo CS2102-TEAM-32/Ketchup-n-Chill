@@ -131,4 +131,30 @@ INSERT INTO Users VALUES (uname, name, pass);
 INSERT INTO RestaurantOwners VALUES (uname);
 END; $$ LANGUAGE plpgsql;
 
--- Set Up --
+-- Call when trying to add to ReserveTimeslots
+CREATE OR REPLACE FUNCTION check_pax()
+RETURNS TRIGGER AS $$ 
+DECLARE 
+	totalPaxSoFar integer;
+	maxPax integer;
+BEGIN
+	SELECT SUM(num_diners) INTO totalPaxSoFar
+	FROM ReserveTimeslots R
+	GROUP BY (R.r_date, R.r_time, R.rname, R.raddress)
+	HAVING r_date = NEW.r_date AND r_time = NEW.r_time AND rname = NEW.rname AND raddress = NEW.raddress;
+	
+	SELECT T.num_diners INTO maxPax
+	FROM HasTimeslots T
+	WHERE T.rname = NEW.rname AND T.raddress = NEW.raddress AND T.date = NEW.r_date AND T.time = NEW.r_time;
+
+	IF totalPaxSoFar + NEW.num_diners > maxPax THEN
+		RETURN NULL; 
+	ELSE
+		RETURN NEW;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_reservetimeslots()
+BEFORE INSERT OR UPDATE ON ReserveTimeslots
+FOR EACH ROW EXECUTE PROCEDURE check_pax()
