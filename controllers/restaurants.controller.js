@@ -95,21 +95,26 @@ exports.showRestaurantProfile = async (req, res, next) => {
 };
 
 exports.showRestaurantTimeslot = async (req, res, next) => {
-  console.log(req.params);
-  try {
-    const timeslots = await db.many(
-      'SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress =$2 AND num_available > 0',
-      [req.params.rname, req.params.raddress]
-    );
+    console.log(req.params);
+    try {
+        const timeslotDates = await db.any(
+            'SELECT DISTINCT date FROM HasTimeslots WHERE rname=$1 AND raddress =$2 ORDER BY date',
+            [req.params.rname, req.params.raddress]
+        );
+        const timeslotList = await db.any(
+            'SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress =$2',
+            [req.params.rname, req.params.raddress]
+        );
 
-    return res.render('timeslots', {
-      timeslotList: timeslots,
-      restName: timeslots[0].rname
-    });
-  } catch (e) {
-    console.log(e);
-    return res.sendStatus(404);
-  }
+        return res.render('timeslots', {
+            timeslotDict: timeslotList,
+            timeslotDates: timeslotDates,
+            restName: req.params.rname,
+            restAddress: req.params.raddress
+        });
+    } catch (e) {
+        return res.redirect('/restaurants/' + req.params.rname + '/' + req.params(raddress));
+    }
 };
 
 exports.showRestaurantMenus = async (req, res, next) => {

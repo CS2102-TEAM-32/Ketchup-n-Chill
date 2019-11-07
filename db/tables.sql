@@ -131,4 +131,25 @@ INSERT INTO Users VALUES (uname, name, pass);
 INSERT INTO RestaurantOwners VALUES (uname);
 END; $$ LANGUAGE plpgsql;
 
+-- Called from trigger to check if there exist a ReservedTimeslot upon deletion of an existing timeslot 
+CREATE OR REPLACE FUNCTION checkExistingReservation() 
+RETURNS TRIGGER AS $$
+DECLARE count NUMERIC;
+BEGIN 
+	RAISE NOTICE 'Trigger called';
+	SELECT COUNT(*) INTO count FROM ReserveTimeslots R 
+		WHERE OLD.rname = R.rname AND OLD.raddress = R.raddress 
+			AND OLD.time = R.r_time AND OLD.date = R.r_date;
+	IF count > 0 THEN 
+		RETURN NULL;
+	ELSE 
+		RETURN OLD;
+	END IF;
+END; 
+$$ LANGUAGE plpgsql;
+
+-- Trigger to call upon deletion of a timeslot. 
+CREATE TRIGGER checkDeleteSuccess
+BEFORE DELETE ON HasTimeslots 
+FOR EACH ROW EXECUTE PROCEDURE checkExistingReservation();
 -- Set Up --

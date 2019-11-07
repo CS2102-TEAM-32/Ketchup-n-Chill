@@ -176,6 +176,26 @@ exports.updateTimeslot = async (req, res, next) => {
     }
 };
 
+exports.deleteTimeslots = async (req, res, next) => {
+    try {
+        var date = moment(new Date(req.params.date)).format("YYYY-MM-DD");
+        var time = moment(req.params.time, "HH:mm").format("HH:mm");
+
+        var temp = [req.params.rname, req.params.raddress, date, time];
+        console.log('date is: ' + date + ', time is: ' + time + ', rname: ' + req.params.rname + ', raddres: ' + req.params.raddress);
+        const t = await db.one('DELETE FROM HasTimeslots WHERE rname=$1 AND raddress=$2 AND date=$3 AND time=$4 RETURNING *', temp).then(() => {
+            req.flash('success', "Timeslot deleted");
+            res.sendStatus(200);
+        }).catch (e => {
+            req.flash('danger', 'No timeslot deleted because there are existing reservations for that timeslot.');
+            res.sendStatus(200);
+        });      
+    } catch (e) {
+        console.log(e);
+        //next(e);
+    }
+};
+
 exports.registerRestaurantOwner = (req, res, next) => {
     res.render('registerowner', {
         title: 'Register as Restaurant Owner'
@@ -223,7 +243,7 @@ exports.createRestaurantOwner = async (req, res, next) => {
                 hash
             ]);
             req.flash('success', 'You are now registered!');
-            res.redirect('/restaurantowners/');
+            res.redirect('/login');
         } else {
             req.flash('danger', 'Username exists, please use another one.');
             res.render('registerowner', {

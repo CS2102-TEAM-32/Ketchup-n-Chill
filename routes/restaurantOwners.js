@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var controller = require('../controllers/restaurantOwners.controller');
+var commoncontroller = require('../controllers/index.controller')
 var common = require('../controllers/common.controller');
 
 router.get('/register', controller.registerRestaurantOwner);
@@ -10,6 +11,8 @@ router.post(
     controller.registerValidations,
     controller.createRestaurantOwner
 );
+
+router.get('/login', commoncontroller.getLoginPage);
 
 router.post('/:rname/:raddress', controller.updateRestaurant);
 
@@ -31,6 +34,8 @@ router.get(
     common.ensureAuthenticatedRestaurantOwner,
     controller.editTimeslots
 );
+
+router.delete('/:rname/:raddress/:date/:time', common.ensureAuthenticatedRestaurantOwner, controller.deleteTimeslots);
 
 router.post('/:rname/:raddress/updatetimeslot', common.ensureAuthenticatedRestaurantOwner, controller.updateTimeslot);
 

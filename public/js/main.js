@@ -68,6 +68,25 @@ $(document).ready(() => {
   });
 });
 
+$(document).ready(() => {
+    $('.delete-timeslot').on('click', e => {
+        const rname = $(e.target).attr('rname');
+        const raddress = $(e.target).attr('raddress');
+        const date = moment($(e.target).attr('date')).format('YYYY-MM-DD');
+        const time = $(e.target).attr('time');
+        $.ajax({
+            type: 'DELETE',
+            url: '/restaurantowners/' + rname + '/' + raddress + '/' + date + '/' + time,
+            success: () => {
+                window.location.reload();
+            },
+            error: err => {
+                console.log(err);
+            }
+        });
+    });
+});
+
 $('.date-input')
   .on('change', function() {
     this.setAttribute(

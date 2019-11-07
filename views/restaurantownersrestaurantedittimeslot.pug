@@ -169,6 +169,7 @@ block append content
 
     </restplate>
     div#timeslots
+        - var encoded = encodeURIComponent(values.raddress);
         h1(align="center") Current Timeslots:
         table(id="currtimes", align="center", width: "100%", font-size: "30px")
             thead 
@@ -177,6 +178,7 @@ block append content
                     th Date
                     th Time
                     th Pax
+                    th 
             tbody
                 each timeslot, i in timeslots
                     tr 
@@ -184,3 +186,5 @@ block append content
                         td= moment(timeslot.date).format('DD MMMM YYYY')
                         td= moment(timeslot.time, 'HH:mm:ss').format('hh:mm A')
                         td #{timeslot.num_available}
+                        td  
+                            button.btn.delete-timeslot(style='float:right;' raddress=encoded rname=values.rname date=timeslot.date time=timeslot.time) Delete
