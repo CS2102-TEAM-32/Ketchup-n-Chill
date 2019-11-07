@@ -21,7 +21,7 @@ block style
     }
     plate {
       float: top;
-      width: 50%;
+      width: 60%;
       text-align: center;
       border-style: solid;
       border-width: 0.05px;
@@ -237,7 +237,7 @@ block append content
         data: {
           date: date,
           time: time,
-          //pax: pax,
+          pax: pax,
           rname: rname,
           raddr: raddr
         },
@@ -316,22 +316,23 @@ block append content
     if userIsDiner!= null && userIsDiner.type == 'diner'
       h1(style="color:mustard; text-align:center" ) Book Restaurant Now
       <plate>
-        input.date-input(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMM YYYY' id='date-input')
-        input(name='time' type='time' id='time-input' list='limittimelist')
-        datalist#limittimelist
-          option(value="09:00")
-          option(value="10:00")
-          option(value="11:00")
-          option(value="12:00")
-          option(value="13:00")
-          option(value="14:00")
-          option(value="15:00")
-          option(value="16:00")
-          option(value="17:00")
-          option(value="18:00")
-          option(value="19:00")
-          option(value="20:00")
-          option(value="21:00")
-        input(name='pax' type='number', min=1, max=100 value=1 id='pax-input')
-        a.btn.btn-primary(card-id=index onclick='confirmation()' style='border-color: #FECA1D; background-color: #FECA1D; float:right;') Book Now
+        form(method='POST' action='/restaurants/book/')
+          input.date-input(name='date' type='date' value=date min=date data-date='' data-date-format='DD MMM YYYY' id='date-input')
+          input(name='time' type='time' id='time-input' list='limittimelist')
+          datalist#limittimelist
+            option(value="09:00")
+            option(value="10:00")
+            option(value="11:00")
+            option(value="12:00")
+            option(value="13:00")
+            option(value="14:00")
+            option(value="15:00")
+            option(value="16:00")
+            option(value="17:00")
+            option(value="18:00")
+            option(value="19:00")
+            option(value="20:00")
+            option(value="21:00")
+          input(name='pax' type='number', min=1, max=100 value=1 id='pax-input')
+          a.btn.btn-primary(card-id=index onclick='confirmation()' style='border-color: #FECA1D; background-color: #FECA1D; float:right;') Book Now
       </plate>

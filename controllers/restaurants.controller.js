@@ -171,23 +171,20 @@ function queryDbFromReqQuery(frontPortion, reqQuery, f) {
 
 exports.bookRestaurant = async (req, res, next) => {
   try {
-    // Need to fix this part
-    const booking = await queryDbFromReqQueryForBooking(
-      "SELECT * FROM HasTimeslots",
-      req.query,
-      db.oneOrNone
-    );
-    console.log(booking);
-    if (booking != null) {
-      // do DB stuff here to insert into reservetimeslot
-/*      const update = await db.one("INSERT INTO ReserveTimeslot SET duname = $1 WHERE title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
+    console.log(req.body);
+    console.log(req.query);
+    // date, time, rname, raddress, duname, review, rating, num_diners
+    const update = await db.one('INSERT INTO ReserveTimeslots VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [
+        req.query.date,
+        req.query.time,
+        req.query.rname,
+        req.query.raddr,
         req.user.uname,
-        booking.r_date,
-        booking.r_time,
-        booking.rname,
-        booking.raddr,
-        booking.
-      ]);*/
+        null,
+        null,
+        req.query.pax
+    ]);
+    if (update != null) {
       res.json(1);
     }
     else {

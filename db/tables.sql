@@ -154,30 +154,51 @@ BEFORE DELETE ON HasTimeslots
 FOR EACH ROW EXECUTE PROCEDURE checkExistingReservation();
 -- Set Up --
 
-- Call when trying to add to ReserveTimeslots
+-- Call when trying to add to ReserveTimeslots
 CREATE OR REPLACE FUNCTION check_pax()
 RETURNS TRIGGER AS $$ 
 DECLARE 
 	totalPaxSoFar integer;
+	newTotal integer;
+	numTimeslots integer;
 	maxPax integer;
-BEGIN
-	SELECT SUM(num_diners) INTO totalPaxSoFar
+BEGINea
+	SELECT SUM(R.num_diners) INTO totalPaxSoFar
 	FROM ReserveTimeslots R
-	GROUP BY (R.r_date, R.r_time, R.rname, R.raddress)
-	HAVING r_date = NEW.r_date AND r_time = NEW.r_time AND rname = NEW.rname AND raddress = NEW.raddress;
+	WHERE R.r_date = NEW.r_date AND R.r_time = NEW.r_time AND R.rname = NEW.rname AND R.raddress = NEW.raddress;
 	
-	SELECT T.num_diners INTO maxPax
+	SELECT T.num_available INTO maxPax
 	FROM HasTimeslots T
 	WHERE T.rname = NEW.rname AND T.raddress = NEW.raddress AND T.date = NEW.r_date AND T.time = NEW.r_time;
 
-	IF totalPaxSoFar + NEW.num_diners > maxPax THEN
+	SELECT COUNT(*) INTO numTimeslots 
+	FROM HasTimeSlots T 
+	WHERE T.date = NEW.r_date AND T.time = NEW.r_time AND T.raddress = NEW.raddress AND T.rname = NEW.rname;
+
+	IF totalPaxSoFar IS NULL THEN
+		totalPaxSoFar := 0;
+	END IF;
+
+	newTotal := totalPaxSoFar + NEW.num_diners;
+	IF numTimeslots = 0 THEN
+		RAISE NOTICE 'No such timeslot';
 		RETURN NULL; 
+	ELSIF newTotal <= maxPax AND numTimeslots > 0 THEN
+		RETURN NEW; 
 	ELSE
-		RETURN NEW;
+		RAISE NOTICE 'Total Existing Pax % Exceeds Max Pax of %', newTotal, maxPax;
+		RETURN NULL;
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER check_reservetimeslots()
+CREATE TRIGGER check_reservetimeslots
 BEFORE INSERT OR UPDATE ON ReserveTimeslots
-FOR EACH ROW EXECUTE PROCEDURE check_pax()
+FOR EACH ROW EXECUTE PROCEDURE check_pax();
+
+-- Test data
+-- 51 pax exceed 50 
+INSERT INTO ReserveTimeslots VALUES('2019-11-06', '10:00', 'A Night In Paris', '554 Cambridge Crossing', 'kh', 'gr8', '4', '51');
+DELETE FROM ReserveTimeslots WHERE r_date = '2019-11-06';
+-- No such timeslot
+INSERT INTO ReserveTimeslots VALUES('2019-12-28', '10:00', 'A Night In Paris', '554 Cambridge Crossing', 'kh', 'gr8', '4', '51');
