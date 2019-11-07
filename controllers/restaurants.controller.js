@@ -139,8 +139,8 @@ function queryDbFromReqQuery(frontPortion, reqQuery, f) {
     date: 'date =',
     time: 'time =',
     pax: 'num_available >=', // help!
-    cuisine: 'cuisine LIKE',
-    rname: 'rname LIKE'
+    cuisine: 'upper(cuisine) LIKE',
+    rname: 'upper(rname) LIKE'
   };
 
   const keys = Object.keys(reqQuery);
@@ -159,7 +159,7 @@ function queryDbFromReqQuery(frontPortion, reqQuery, f) {
 
   Object.keys(reqQuery).forEach(key => {
     if (key === 'cuisine' || key === 'rname') { // for these queries we form a pattern
-      reqQuery[key] = '%' + reqQuery[key] + '%'
+      reqQuery[key] = '%' + reqQuery[key].toUpperCase() + '%'
     }
   })
 
