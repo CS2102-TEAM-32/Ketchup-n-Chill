@@ -171,10 +171,10 @@ function queryDbFromReqQuery(frontPortion, reqQuery, f) {
 
 exports.bookRestaurant = async (req, res, next) => {
   try {
-    console.log(req.body);
-    console.log(req.query);
+    //console.log(req.body);
+    //console.log(req.query);
     // date, time, rname, raddress, duname, review, rating, num_diners
-    const update = await db.one('INSERT INTO ReserveTimeslots VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [
+    const update = await db.oneOrNone('INSERT INTO ReserveTimeslots VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [
         req.query.date,
         req.query.time,
         req.query.rname,
@@ -184,7 +184,8 @@ exports.bookRestaurant = async (req, res, next) => {
         null,
         req.query.pax
     ]);
-    if (update != null) {
+    console.log(update);
+    if (update!= null) {
       res.json(1);
     }
     else {

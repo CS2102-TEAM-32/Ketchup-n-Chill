@@ -162,8 +162,8 @@ DECLARE
 	newTotal integer;
 	numTimeslots integer;
 	maxPax integer;
-BEGINea
-	SELECT SUM(R.num_diners) INTO totalPaxSoFar
+BEGIN
+	SELECT SUM(num_diners) INTO totalPaxSoFar
 	FROM ReserveTimeslots R
 	WHERE R.r_date = NEW.r_date AND R.r_time = NEW.r_time AND R.rname = NEW.rname AND R.raddress = NEW.raddress;
 	
