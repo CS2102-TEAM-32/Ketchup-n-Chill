@@ -18,8 +18,14 @@ mixin navbar
             a.nav-link(href='/restaurants/add') Add your restaurant
       ul.navbar-nav.float-right
         if !user
+          li.nav-item.dropdown
+            a.nav-link.dropdown-toggle(id='navbarDropdownMenuLink' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false') Register 
+            .dropdown-menu(aria-labelledby='navbarDropdownMenuLink')
+                a.dropdown-item(href='/diners/register') Diner 
+                a.dropdown-item(href='/restaurantowners/register') Restaurant Owner 
           li.nav-item
             a.nav-link(href='/login') Login
+
         else
           li.nav-item.dropdown
             a.nav-link.dropdown-toggle(id='navbarDropdownMenuLink' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false') Account
