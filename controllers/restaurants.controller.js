@@ -186,6 +186,12 @@ exports.bookRestaurant = async (req, res, next) => {
       return;
     }
 
+    var numPax = req.query.pax;
+    if (numPax <= 0) {
+      res.json(5);
+      return;
+    }
+
     const update = await db.oneOrNone('INSERT INTO ReserveTimeslots VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [
       req.query.date,
       req.query.time,
