@@ -439,7 +439,7 @@ exports.showIncentives = async (req, res, next) => {
 // It's currently case sensitive and doesn't accept when organisation names are > 1 word (cuz no '') so gotta fix that!
 function queryDbFromReqQuery(frontPortion, reqQuery, f) {
   const partials = {
-    organisation: 'organisation = ',
+    organisation: 'upper(organisation) LIKE',
     points: 'points ='
   };
 
@@ -448,6 +448,13 @@ function queryDbFromReqQuery(frontPortion, reqQuery, f) {
     // the req.query object is empty, we will query without a where clause.
     return f(frontPortion);
   }
+
+  Object.keys(reqQuery).forEach(key => {
+    if (key === 'organisation') {
+      // for these queries we form a pattern
+      reqQuery[key] = '%' + reqQuery[key].toUpperCase() + '%';
+    }
+  });
 
   const conditions = keys
     .filter(key => reqQuery[key] !== '') // if they are empty, don't include in where clause
