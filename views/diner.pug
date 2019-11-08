@@ -46,6 +46,9 @@ block append content
       p #{diner.name}
       br
       if user.uname === diner.uname
+        a.btn.btn-primary(href='/diners/vouchers') View my Vouchers
+        br
+        br
         a.btn.btn-primary(href='/logout') Log Out
         br
         br
@@ -93,7 +96,7 @@ block append content
               p No review for this experience.
             else
               p #{review.review}
-          a.btn.btn-primary(href='#' style='border-color: #FECA1D; background-color: #FECA1D;') View all my reviews
+          a.btn.btn-primary(href='/diners/reviews' style='border-color: #FECA1D; background-color: #FECA1D;') View all my reviews
         br
         br
         hr

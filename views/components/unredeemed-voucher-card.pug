@@ -1,4 +1,4 @@
-mixin voucher-card(title, description, points, organisation, code, index)
+mixin unredeemed-voucher-card(title, description, points, organisation, code, index)
   script.
       function reqConfirmation(event) {
         var getConfirmation = document.getElementById($(event.target).attr('card-id'));

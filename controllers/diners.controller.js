@@ -144,6 +144,78 @@ function queryDbFromReqQueryForEditReservation(frontPortion, reqQuery, f) {
     .map((key, index) => `${wherePartial[key]} $${index + 4}`) // pgp uses base-1 index
     .reduce((acc, curr) => `${acc} AND ${curr}`);
 
+  //console.log(`${frontPortion} SET ${setConditions} WHERE ${whereConditions} RETURNING *`,
+    //Object.values(reqQuery).filter(value => value !== ''));
+  // make the function call and return the promise
+  return f(
+    `${frontPortion} SET ${setConditions} WHERE ${whereConditions} RETURNING *`,
+    Object.values(reqQuery).filter(value => value !== '')
+  );
+}
+
+exports.addReview = async (req, res, next) => {
+  try {
+    const addSuccess = await queryDbFromReqQueryForAddReview(
+      "UPDATE ReserveTimeslots",
+      req.query,
+      db.oneOrNone
+    );
+    if (addSuccess == null) {
+      res.json(1);
+    }
+    else {
+      res.json(0);
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+/*
+ helper function to form the query then query the db with it.
+ takes in a string 'select ... from ...' as the first parameter.
+ the second parameter is the req.query object.
+ the last parameter is a suitable pgp method (i.e none, one, oneOrNone, many, any)
+ forms the conditions in the where clause based on the keys from the req.query object,
+ then forms the full sql query with the given frontPortion,
+ then calls f with the query and the list of values.
+ returns the promise from the method, which you then can call await on.
+*/
+// It's currently case sensitive and doesn't accept when organisation names are > 1 word (cuz no '') so gotta fix that!
+function queryDbFromReqQueryForAddReview(frontPortion, reqQuery, f) {
+  const setPartial = {
+    rating: 'rating=',
+    review: 'review='
+  };
+
+  const wherePartial = {
+    r_date: 'r_date=',
+    r_time: 'r_time=',
+    rname: 'rname=',
+    raddress: 'raddress=',
+    duname: 'duname='
+  };
+
+  const setKeys = ['rating', 'review'];
+  const keys = ['r_date', 'r_time', 'rname', 'raddress', 'duname'];
+
+  const setConditions = setKeys
+    .filter(setKey => reqQuery[setKey] !== '') // if they are empty, don't include in where clause
+    .map((setKey, index) => `${setPartial[setKey]} $${index + 1}`) // pgp uses base-1 index
+    .reduce((acc, curr) => `${acc}, ${curr}`);
+
+  var offset = 1;
+  if (reqQuery['rating'] !== '') {
+    offset++;
+  }
+  if (reqQuery['review'] !== '') {
+    offset++;
+  }
+  const whereConditions = keys
+    .filter(key => reqQuery[key] !== '') // if they are empty, don't include in where clause
+    .map((key, index) => `${wherePartial[key]} $${index + offset}`) // pgp uses base-1 index
+    .reduce((acc, curr) => `${acc} AND ${curr}`);
+
   console.log(`${frontPortion} SET ${setConditions} WHERE ${whereConditions} RETURNING *`,
     Object.values(reqQuery).filter(value => value !== ''));
   // make the function call and return the promise
@@ -156,7 +228,7 @@ function queryDbFromReqQueryForEditReservation(frontPortion, reqQuery, f) {
 exports.showVouchers = async (req, res, next) => {
   try {
     const vouchers = db.any(
-      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=FALSE",
+      "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND (redeemed=FALSE OR redeemed IS NULL)",
       [req.user.uname]
     );
     const redeemedVouchers = db.any(
@@ -166,9 +238,26 @@ exports.showVouchers = async (req, res, next) => {
     Promise.all([vouchers, redeemedVouchers]).then(values => {
       res.render('vouchers', {
         title: 'Vouchers',
+        name: req.user.uname,
         vouchers: values[0],
         redeemedVouchers: values[1]
       });
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.showReviews = async (req, res, next) => {
+  try {
+    const reviews = await db.any(
+      "SELECT r_date, to_char(r_date, 'DD MON YYYY') AS date, r_time, to_char(r_time, 'HH12.MIPM') AS time, rname, raddress, duname, review, rating FROM ReserveTimeslots WHERE duname=$1 AND (review IS NOT NULL OR rating IS NOT NULL)",
+      [req.user.uname]
+    );
+    res.render('reviews', {
+      title: 'Reviews',
+      name: req.user.uname,
+      reviews: reviews
     });
   } catch (e) {
     next(e);
@@ -180,20 +269,30 @@ exports.claimVoucher = async (req, res, next) => {
     const voucher = await queryDbFromReqQueryForVoucher(
       "SELECT * FROM Vouchers NATURAL JOIN Incentives",
       req.query,
-      db.one
+      db.oneOrNone
     );
-    const points = await calculatePoints(req.user.uname);
-    if (points >= voucher.points) {
-      const update = await db.one("UPDATE Vouchers SET duname = $1 WHERE title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
+    console.log(voucher);
+    // Voucher out of stock
+    if (voucher == null) {
+      res.json(1);
+    }
+    else {
+      console.log("HERE");
+      const update = await db.oneOrNone("UPDATE Vouchers SET duname = $1 WHERE title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
         req.user.uname,
         voucher.title,
         voucher.organisation,
         voucher.code
       ]);
-      res.json(voucher.code);
-    }
-    else {
-      res.json(0);
+      console.log(update);
+      // Successful claim, returns voucher code
+      if (update != null) {
+        res.json(voucher.code);
+      }
+      // Not enough points to claim
+      else {
+        res.json(2);
+      }
     }
   } catch (e) {
     next(e);
@@ -350,7 +449,7 @@ exports.showIncentives = async (req, res, next) => {
 // It's currently case sensitive and doesn't accept when organisation names are > 1 word (cuz no '') so gotta fix that!
 function queryDbFromReqQuery(frontPortion, reqQuery, f) {
   const partials = {
-    organisation: 'organisation = ',
+    organisation: 'upper(organisation) LIKE',
     points: 'points ='
   };
 
@@ -359,6 +458,13 @@ function queryDbFromReqQuery(frontPortion, reqQuery, f) {
     // the req.query object is empty, we will query without a where clause.
     return f(frontPortion);
   }
+
+  Object.keys(reqQuery).forEach(key => {
+    if (key === 'organisation') {
+      // for these queries we form a pattern
+      reqQuery[key] = '%' + reqQuery[key].toUpperCase() + '%';
+    }
+  });
 
   const conditions = keys
     .filter(key => reqQuery[key] !== '') // if they are empty, don't include in where clause

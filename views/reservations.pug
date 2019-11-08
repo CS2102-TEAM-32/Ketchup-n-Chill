@@ -93,8 +93,9 @@ block append content
     h4(style='margin-left: 25px;') Past Reservations
     div#reservations
       include ./components/past-reservation-card.pug
+      - var index = 0
       each reservation in reservations
-        +past-reservation-card(reservation.date, reservation.time, reservation.rname, reservation.raddress, reservation.review, reservation.rating, reservation.num_diners, reservation.is_complete)
+        +past-reservation-card(duname, reservation.date, reservation.time, reservation.rname, reservation.raddress, reservation.review, reservation.rating, reservation.num_diners, reservation.is_complete, 'review-' + index++)
       else 
         p You have not made any reservations.
     img(src='../../images/ketchupandchilli_header.png' style='width:97%; margin-left: 10px; margin-right: 10px;')

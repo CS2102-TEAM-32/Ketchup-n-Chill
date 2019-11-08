@@ -89,7 +89,7 @@ block append content
       include ./components/unredeemed-voucher-card.pug
       - var id = 0
       each voucher in vouchers
-        +voucher-card(voucher.title, voucher.description, voucher.points, voucher.organisation, voucher.code, 'vouchercard-' + id++)
+        +unredeemed-voucher-card(voucher.title, voucher.description, voucher.points, voucher.organisation, voucher.code, 'vouchercard-' + id++)
       else
         p You have no vouchers. Take a look at the incentives we have for you!
         a.btn.btn-primary(href='/diners/incentives', style='border-color: #FECA1D; background-color: #FECA1D; margin-left: 20px;') View Incentives
