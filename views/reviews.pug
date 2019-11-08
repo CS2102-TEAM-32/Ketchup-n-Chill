@@ -1,0 +1,23 @@
+extends layout
+
+block style
+  style(type="text/css").
+    #reviews {
+      display: inline-table;
+      width: 100%;
+      table-layout: auto;
+      border-spacing: 10px;
+    }
+
+block append content
+  .container
+    h1 #{name}'s Reviews
+    br
+    h4(style='margin-left: 25px;') All Reviews
+    div#reviews
+      include ./components/review-card.pug
+      each review in reviews
+        +review-card(review.date, review.time, review.rname, review.raddress, review.review, review.rating)
+      else 
+        p You have no review. Go to the Reservations page to make your reviews!
+        a.btn.btn-primary(href='/diners/reservations', style='border-color: #FECA1D; background-color: #FECA1D; margin-left: 20px;') View Reservations

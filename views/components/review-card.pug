@@ -1,0 +1,19 @@
+mixin review-card(date, time, rname, raddress, review, rating)
+  div.card(style='background-color: whitesmoke; display: block; padding: 10px; margin-bottom: 10px;')
+    img(src='../../images/cutesauce.png' style='width:100px; height:80px; float: left; margin-left: 50px; margin-right: 50px; margin-top: 20px; border-radius:2px;')
+    div.card-body
+      - rname = rname || 'No reviews to display'
+      h5(style='color:#FECA1D;') #{rname}
+      h5(style='color:#FECA1D; font-size: 90%;') #{raddress} 
+      h5(style='font-size: 90%;') #{date} #{time}
+      br
+      h7(style='font-size: 90%;') 
+        if rating != null
+          | <b>You rated:</b> #{rating}/5
+        else
+          | You have not provided any ratings.
+        br
+        if review != null
+          | <b>You reviewed:</b> #{review}
+        else
+          | You have not provided any review.

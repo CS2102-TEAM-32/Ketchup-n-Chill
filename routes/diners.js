@@ -27,6 +27,11 @@ router.get(
   controller.showVouchers
 );
 router.get(
+  '/reviews',
+  common.ensureAuthenticatedDiner,
+  controller.showReviews
+);
+router.get(
   '/claim',
   controller.claimVoucher
 );

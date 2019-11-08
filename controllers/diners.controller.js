@@ -220,11 +220,10 @@ function queryDbFromReqQueryForAddReview(frontPortion, reqQuery, f) {
 
 exports.showVouchers = async (req, res, next) => {
   try {
-    const vouchers = await db.any(
+    const vouchers = db.any(
       "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND (redeemed=FALSE OR redeemed IS NULL)",
       [req.user.uname]
     );
-    console.log(vouchers);
     const redeemedVouchers = db.any(
       "SELECT title, organisation, description, points, code, duname, redeemed FROM Vouchers NATURAL JOIN Incentives WHERE duname=$1 AND redeemed=TRUE",
       [req.user.uname]
@@ -236,6 +235,22 @@ exports.showVouchers = async (req, res, next) => {
         vouchers: values[0],
         redeemedVouchers: values[1]
       });
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.showReviews = async (req, res, next) => {
+  try {
+    const reviews = await db.any(
+      "SELECT r_date, to_char(r_date, 'DD MON YYYY') AS date, r_time, to_char(r_time, 'HH12.MIPM') AS time, rname, raddress, duname, review, rating FROM ReserveTimeslots WHERE duname=$1 AND (review IS NOT NULL OR rating IS NOT NULL)",
+      [req.user.uname]
+    );
+    res.render('reviews', {
+      title: 'Reviews',
+      name: req.user.uname,
+      reviews: reviews
     });
   } catch (e) {
     next(e);
