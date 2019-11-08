@@ -109,7 +109,7 @@ block append content
             img(src='/images/cuisine.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label Start Time:
-                input.time-input.form-control(name='stime' type='time' list='limittimelist')
+                input.time-input.form-control(name='stime' type='time' list='limittimelist' onkeypress='return false;')
                 datalist#limittimelist
                     option(value="09:00")
                     option(value="10:00")
@@ -128,7 +128,7 @@ block append content
             img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label End Time:
-                input.time-input.form-control(name='etime' type='time' list='limittimelist')
+                input.time-input.form-control(name='etime' type='time' list='limittimelist' onkeypress='return false;')
                 datalist#limittimelist
                     option(value="09:00")
                     option(value="10:00")
