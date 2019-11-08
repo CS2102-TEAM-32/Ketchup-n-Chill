@@ -144,6 +144,71 @@ function queryDbFromReqQueryForEditReservation(frontPortion, reqQuery, f) {
     .map((key, index) => `${wherePartial[key]} $${index + 4}`) // pgp uses base-1 index
     .reduce((acc, curr) => `${acc} AND ${curr}`);
 
+  //console.log(`${frontPortion} SET ${setConditions} WHERE ${whereConditions} RETURNING *`,
+    //Object.values(reqQuery).filter(value => value !== ''));
+  // make the function call and return the promise
+  return f(
+    `${frontPortion} SET ${setConditions} WHERE ${whereConditions} RETURNING *`,
+    Object.values(reqQuery).filter(value => value !== '')
+  );
+}
+
+exports.addReview = async (req, res, next) => {
+  try {
+    const addSuccess = await queryDbFromReqQueryForAddReview(
+      "UPDATE ReserveTimeslots",
+      req.query,
+      db.oneOrNone
+    );
+    if (addSuccess == null) {
+      res.json(1);
+    }
+    else {
+      res.json(0);
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+/*
+ helper function to form the query then query the db with it.
+ takes in a string 'select ... from ...' as the first parameter.
+ the second parameter is the req.query object.
+ the last parameter is a suitable pgp method (i.e none, one, oneOrNone, many, any)
+ forms the conditions in the where clause based on the keys from the req.query object,
+ then forms the full sql query with the given frontPortion,
+ then calls f with the query and the list of values.
+ returns the promise from the method, which you then can call await on.
+*/
+// It's currently case sensitive and doesn't accept when organisation names are > 1 word (cuz no '') so gotta fix that!
+function queryDbFromReqQueryForAddReview(frontPortion, reqQuery, f) {
+  const setPartial = {
+    rating: 'rating=',
+    review: 'review='
+  };
+
+  const wherePartial = {
+    r_date: 'r_date=',
+    r_time: 'r_time=',
+    rname: 'rname=',
+    raddress: 'raddress=',
+    duname: 'duname='
+  };
+
+  const setKeys = ['rating', 'review'];
+  const keys = ['r_date', 'r_time', 'rname', 'raddress', 'duname'];
+
+  const setConditions = setKeys
+    .filter(setKey => reqQuery[setKey] !== '') // if they are empty, don't include in where clause
+    .map((setKey, index) => `${setPartial[setKey]} $${index + 1}`) // pgp uses base-1 index
+    .reduce((acc, curr) => `${acc}, ${curr}`);
+
+  const whereConditions = keys
+    .filter(key => reqQuery[key] !== '') // if they are empty, don't include in where clause
+    .map((key, index) => `${wherePartial[key]} $${index + 3}`) // pgp uses base-1 index
+    .reduce((acc, curr) => `${acc} AND ${curr}`);
+
   console.log(`${frontPortion} SET ${setConditions} WHERE ${whereConditions} RETURNING *`,
     Object.values(reqQuery).filter(value => value !== ''));
   // make the function call and return the promise

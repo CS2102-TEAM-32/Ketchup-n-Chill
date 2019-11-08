@@ -1,5 +1,94 @@
-mixin past-reservation-card(date, time, rname, raddress, review, rating, num_diners, is_complete)
+mixin past-reservation-card(duname, date, time, rname, raddress, review, rating, num_diners, is_complete, index)
+  script.
+    function getReview(event) {
+      console.log(event);
+      document.getElementById($(event.target).attr('card-id')).style.display = "block";
+    }
+    function cancel(event) {
+      document.getElementById($(event.target).attr('card-id')).style.display = "none";
+    }
+    function returnToPage() {
+      document.getElementById('noInputReview').style.display = "none";
+    }
+    function confirmReview(event) {
+      document.getElementById($(event.target).attr('card-id')).style.display = "none";
+      const requiredId = $(event.target).attr('card-id');
+      const rating = document.getElementById('rating-'+ requiredId).value;
+      const review = document.getElementById('review-' + requiredId).value;
+      console.log(rating);
+      console.log(review);
+      if (rating.length == 0 && review.length == 0) {
+        document.getElementById('noInputReview').style.display = "block";
+      }
+      else {
+        const rname = $(event.target).attr('rname');
+        const raddress = $(event.target).attr('raddress');
+        var date = $(event.target).attr('date');
+        date = moment(date).format('MM-DD-YYYY');
+        var time = $(event.target).attr('time');
+        time = moment(time, 'HH:mm A').format('HH:mm:ss');
+        const duname = $(event.target).attr('duname');
+        $.ajax({
+          url: '/diners/addreview/',
+          data: {
+            rating: rating,
+            review: review,
+            r_date: date,
+            r_time: time,
+            rname: rname,
+            raddress: raddress,
+            duname: duname
+          },
+          success: (response) => {
+            console.log(response);
+            // No error
+            if (response == 0) {
+              document.getElementById('addComplete').style.display = "block";
+            }
+            else {
+              // something went wrong
+            }
+          },
+          error: err => {
+            console.log("error:" + err);
+          }
+        });
+      }
+    }
+    function refresh() {
+      location.reload();
+    }
+
+  div#noInputReview.modal
+    div.modal-content
+      div.modal-body
+        p Unable to review as there were no rating and review input.
+      div.modal-footer
+        a.btn.btn-primary(onclick='returnToPage()', type='button', class="btn") Ok
+
+  div#addComplete.modal
+    div.modal-content
+      div.modal-body
+        p Review added!
+      div.modal-footer
+        a.btn.btn-primary(onclick='refresh()', type='button', class="btn") Ok
+
+  div.modal(id = index)
+    div.modal-content
+      div.modal-body
+        p Review your experience at #{rname}, #{raddress} on #{date} #{time} for #{num_diners} pax.
+        br
+        h7 Rating: 
+          input(name='rating' type='number' placeholder='/5' min=1 max=5 id='rating-' + index)
+          br
+        h7 Review: 
+          input(name='review' type='text' placeholder='Type your review here' id='review-' + index)
+      div.modal-footer
+        a.btn.btn-primary(card-id=index duname=duname rname=rname raddress=raddress date=date time=time num_diners=num_diners onclick='confirmReview(event)', type='button', class="btn") Confirm review
+        a.btn.btn-primary(card-id=index onclick='cancel(event)', type='button', class="btn") Cancel
+
   div.card(style='background-color: whitesmoke; display: block; padding: 10px; margin-bottom: 10px;')
+    img(src='../../images/dinner-table.png' style='width:120px; height:120px; float: left; margin-left: 50px; margin-right: 50px; margin-top: 20px; border-radius:2px;')
     div.card-body
       - rname = rname || 'No reservations to display'
       h5(style='color:#FECA1D;') #{rname}
@@ -7,14 +96,29 @@ mixin past-reservation-card(date, time, rname, raddress, review, rating, num_din
       h5(style='font-size: 90%;') #{date} #{time}
       h5(style='font-size: 90%;') #{num_diners} pax 
       br
+      br
       h7(style='font-size: 90%;') 
-        | <b>You rated:</b> #{rating}/5
-        br
-        | <b>You reviewed:</b> #{review}
+        if is_complete && rating != null && review != null
+          if rating != null
+            | <b>You rated:</b> #{rating}/5
+          else
+            | You have not provided any ratings.
+          br
+          if review != null
+            | <b>You reviewed:</b> #{review}
+          else
+            | You have not provided any reviews.
+        else if is_complete
+          | You have not provided your review for this dining experience.
+          | Review now to help other users!
+          br
+          br
+          a.btn.btn-primary(card-id=index onclick='getReview(event)' style='font-weight: bold; border-color: #FECA1D; background-color: #FECA1D; font-size: 95%; margin-right: 20px;') Review now
+        else
+          | Unable to review as the reservation is not yet complete.
       br
       br
       h7.complete(style='font-size: 12px;')
-        img(src='../../images/cutesauce.png' style='width:70px; height:50px; float: left; margin-right: 10px; border-radius:2px;')
         if is_complete
           | This reservation has been completed.
         else

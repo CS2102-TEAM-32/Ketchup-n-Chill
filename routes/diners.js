@@ -35,6 +35,10 @@ router.get(
   controller.redeemVoucher
 );
 router.get(
+  '/addreview',
+  controller.addReview
+);
+router.get(
   '/editreservation',
   controller.editReservation
 );
