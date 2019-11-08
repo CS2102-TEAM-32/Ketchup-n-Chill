@@ -46,6 +46,9 @@ block append content
       p #{diner.name}
       br
       if user.uname === diner.uname
+        a.btn.btn-primary(href='/diners/vouchers') View my Vouchers
+        br
+        br
         a.btn.btn-primary(href='/logout') Log Out
         br
         br
