@@ -204,3 +204,46 @@ INSERT INTO ReserveTimeslots VALUES('2019-11-06', '10:00', 'A Night In Paris', '
 DELETE FROM ReserveTimeslots WHERE r_date = '2019-11-06';
 -- No such timeslot, fail to add
 INSERT INTO ReserveTimeslots VALUES('2019-12-28', '10:00', 'A Night In Paris', '554 Cambridge Crossing', 'kh', 'gr8', '4', '51');
+
+-- Called by trigger upon update of Vouchers table
+CREATE OR REPLACE FUNCTION valid_claim()
+RETURNS TRIGGER AS $$
+DECLARE 
+	exists NUMERIC;
+	diner_points NUMERIC;
+	used_points NUMERIC;
+	available_points NUMERIC;
+	required_points NUMERIC;
+BEGIN
+	-- Checks if the voucher is an existing voucher
+	SELECT COUNT(*) into exists FROM Vouchers WHERE duname=NEW.duname AND code=NEW.code AND title=NEW.title AND organisation=NEW.organisation;
+	IF (exists IS NOT NULL) THEN
+		RETURN NEW; -- allow because it's not a new voucher
+	END IF;
+
+	-- Gets the number of points the diner has
+	SELECT COUNT(*) into diner_points FROM ReserveTimeslots WHERE duname=NEW.duname AND is_complete = TRUE;
+	SELECT SUM(points) into used_points FROM Vouchers NATURAL JOIN Incentives WHERE duname=NEW.duname;
+	IF (diner_points IS NULL) THEN
+		RETURN NULL;
+	END IF;
+	IF (used_points IS NULL) THEN
+		used_points := 0;
+	END IF;
+	available_points := diner_points - used_points;
+
+	-- Gets the number of points required to claim the incentive which cannot be null
+	SELECT points into required_points FROM Vouchers NATURAL JOIN Incentives WHERE title=NEW.title AND organisation=NEW.organisation AND code=NEW.code;
+
+	IF (available_points >= required_points) THEN
+		RETURN NEW; -- allow
+	ELSE
+		RETURN NULL; -- prevent
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger activates when user tries to claim a specific voucher
+CREATE TRIGGER claim_incentive
+BEFORE UPDATE ON Vouchers
+FOR EACH ROW EXECUTE PROCEDURE valid_claim();

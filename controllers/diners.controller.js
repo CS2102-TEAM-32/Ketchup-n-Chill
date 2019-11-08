@@ -269,20 +269,30 @@ exports.claimVoucher = async (req, res, next) => {
     const voucher = await queryDbFromReqQueryForVoucher(
       "SELECT * FROM Vouchers NATURAL JOIN Incentives",
       req.query,
-      db.one
+      db.oneOrNone
     );
-    const points = await calculatePoints(req.user.uname);
-    if (points >= voucher.points) {
-      const update = await db.one("UPDATE Vouchers SET duname = $1 WHERE title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
+    console.log(voucher);
+    // Voucher out of stock
+    if (voucher == null) {
+      res.json(1);
+    }
+    else {
+      console.log("HERE");
+      const update = await db.oneOrNone("UPDATE Vouchers SET duname = $1 WHERE title = $2 AND organisation = $3 AND code = $4 RETURNING *", [
         req.user.uname,
         voucher.title,
         voucher.organisation,
         voucher.code
       ]);
-      res.json(voucher.code);
-    }
-    else {
-      res.json(0);
+      console.log(update);
+      // Successful claim, returns voucher code
+      if (update != null) {
+        res.json(voucher.code);
+      }
+      // Not enough points to claim
+      else {
+        res.json(2);
+      }
     }
   } catch (e) {
     next(e);
