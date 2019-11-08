@@ -101,16 +101,16 @@ mixin past-reservation-card(duname, date, time, rname, raddress, review, rating,
       br
       br
       h7(style='font-size: 90%;') 
-        if is_complete && rating != null && review != null
+        if is_complete && !(rating === null && review === null)
           if rating != null
             | <b>You rated:</b> #{rating}/5
           else
-            | You have not provided any ratings.
+            | No rating.
           br
           if review != null
             | <b>You reviewed:</b> #{review}
           else
-            | You have not provided any reviews.
+            | No review.
         else if is_complete
           | You have not provided your review for this dining experience.
           | Review now to help other users!

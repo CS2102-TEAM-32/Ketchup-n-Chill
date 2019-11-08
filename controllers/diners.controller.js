@@ -204,9 +204,16 @@ function queryDbFromReqQueryForAddReview(frontPortion, reqQuery, f) {
     .map((setKey, index) => `${setPartial[setKey]} $${index + 1}`) // pgp uses base-1 index
     .reduce((acc, curr) => `${acc}, ${curr}`);
 
+  var offset = 1;
+  if (reqQuery['rating'] !== '') {
+    offset++;
+  }
+  if (reqQuery['review'] !== '') {
+    offset++;
+  }
   const whereConditions = keys
     .filter(key => reqQuery[key] !== '') // if they are empty, don't include in where clause
-    .map((key, index) => `${wherePartial[key]} $${index + 3}`) // pgp uses base-1 index
+    .map((key, index) => `${wherePartial[key]} $${index + offset}`) // pgp uses base-1 index
     .reduce((acc, curr) => `${acc} AND ${curr}`);
 
   console.log(`${frontPortion} SET ${setConditions} WHERE ${whereConditions} RETURNING *`,
