@@ -77,7 +77,16 @@ block style
             margin-top: 30px;
             margin-left:auto;
             margin-right:auto;
-            display:block;
+            display:table;
+        }
+
+        .time-input::-webkit-inner-spin-button {
+            display: none;
+        }
+
+        tr:nth-child(even) {
+            background-color: #FECA1D;
+            //border: 2px solid #FECA1D
         }
 
 
@@ -100,7 +109,7 @@ block append content
             img(src='/images/cuisine.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label Start Time:
-                input.form-control(name='stime' type='time' list='limittimelist')
+                input.time-input.form-control(name='stime' type='time' list='limittimelist')
                 datalist#limittimelist
                     option(value="09:00")
                     option(value="10:00")
@@ -119,7 +128,7 @@ block append content
             img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label End Time:
-                input.form-control(name='etime' type='time' list='limittimelist')
+                input.time-input.form-control(name='etime' type='time' list='limittimelist')
                 datalist#limittimelist
                     option(value="09:00")
                     option(value="10:00")
@@ -164,27 +173,30 @@ block append content
                 div.checkbox-inline
                     input.checkbox-input#create-shift-sun(type='checkbox', name='days', value=0)
                     label(for='create-shift-sun') Sunday
-            button.btn.btn-light(type='submit' value='Submit') Add
+            button.btn.btn-light(type='submit' value='Submit') Add Timeslots
             </information>
 
     </restplate>
     div#timeslots
         - var encoded = encodeURIComponent(values.raddress);
         h1(align="center") Current Timeslots:
-        table(id="currtimes", align="center", width: "100%", font-size: "30px")
-            thead 
-                tr
-                    th No.
-                    th Date
-                    th Time
-                    th Pax
-                    th 
-            tbody
-                each timeslot, i in timeslots
-                    tr 
-                        td= i+1
-                        td= moment(timeslot.date).format('DD MMMM YYYY')
-                        td= moment(timeslot.time, 'HH:mm:ss').format('hh:mm A')
-                        td #{timeslot.num_available}
-                        td  
-                            button.btn.delete-timeslot(style='float:right;' raddress=encoded rname=values.rname date=timeslot.date time=timeslot.time) Delete
+        if timeslots.length != 0 
+            table(id="currtimes", align="center", width: "100%", font-size: "30px" style: "display:flex;")
+                thead 
+                    tr
+                        th No.
+                        th Date
+                        th Time
+                        th Pax
+                        th 
+                tbody
+                    each timeslot, i in timeslots
+                        tr 
+                            td(style="padding-right: 20px")= i+1
+                            td(style="padding-right:50px; padding-left:50px")= moment(timeslot.date).format('DD MMMM YYYY')
+                            td(style="padding-right:20px; padding-right:20px")= moment(timeslot.time, 'HH:mm:ss').format('hh:mm A')
+                            td(style="padding:15px") #{timeslot.num_available}
+                            td  
+                                button.btn.delete-timeslot(style='float:right; border: 1px solid #1c1500; background-color:#dc143c' raddress=encoded rname=values.rname date=timeslot.date time=timeslot.time) Delete
+        else 
+            p(style='text-align:center') No timeslots for #{values.rname} yet, please add a new timeslot above!
