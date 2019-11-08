@@ -1,5 +1,5 @@
 const db = require('../db/index');
-
+const moment = require('moment');
 /* show all restaurants or selected restaurants based on req.query */
 exports.showRestaurants = async (req, res, next) => {
   try {
@@ -174,26 +174,44 @@ exports.bookRestaurant = async (req, res, next) => {
     //console.log(req.body);
     //console.log(req.query);
     // date, time, rname, raddress, duname, review, rating, num_diners
+    var dateNow = Date.now();
+    var bookingDate = req.query.date;
+    var dateNowFormat = moment(dateNow).format("YYYY-MM-DD");
+    var bookingDateFormat = moment(bookingDate).format("YYYY-MM-DD");
+    console.log("Today's date is " + dateNowFormat);
+    console.log("Booking date is " + bookingDateFormat);
+    if (bookingDateFormat < dateNowFormat) {
+      // Reject booking if booking date already passed
+      res.json(3);
+      return;
+    }
+
     const update = await db.oneOrNone('INSERT INTO ReserveTimeslots VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [
-        req.query.date,
-        req.query.time,
-        req.query.rname,
-        req.query.raddr,
-        req.user.uname,
-        null,
-        null,
-        req.query.pax
+      req.query.date,
+      req.query.time,
+      req.query.rname,
+      req.query.raddr,
+      req.user.uname,
+      null,
+      null,
+      req.query.pax
     ]);
     console.log(update);
-    if (update!= null) {
+    if (update != null) {
+      // If successful, then give confirmation message
       res.json(1);
-    }
-    else {
+    } else {
+      // Not successful, either because timeslot does not exist or num_available maxed
       res.json(0);
     }
   } catch (e) {
     console.log(e);
-    next(e);
+    if (e.code == '23505') {
+      // Duplicate slots booked, give error message. Reject booking
+      res.json(4);
+    }
+    // No paramaters passed in.
+    res.json(2);
   }
 };
 

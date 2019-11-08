@@ -243,8 +243,17 @@ block append content
         },
         success: (response) => {
           // No error
-          if (response != 0) {
+          if (response == 1) {
             document.getElementById("confirmed").style.display = "block";
+          }
+          else if (response == 2) {
+            document.getElementById("noparameters").style.display="block";
+          }
+          else if (response == 3) {
+            document.getElementById("datepassed").style.display = "block";
+          }
+          else if (response == 4) {
+            document.getElementById("slotbooked").style.display="block";
           }
           else {
             document.getElementById("rejected").style.display = "block";
@@ -276,7 +285,35 @@ block append content
   div#rejected.modal
     div.modal-content
       div.modal-body
+        p Timeslot does not exist or slot is full.
         p Booking rejected.
+      div.modal-footer
+        a.btn.btn-primary(href='/diners/reservations', type='button', class="btn") View my reservations
+        a.btn.btn-primary(onclick='cancelAndRefresh()', type='button', class="btn") Continue browsing
+
+  div#noparameters.modal
+    div.modal-content
+      div.modal-body
+        p Incorrect date and/or time passed in.
+        p Please check. Booking rejected.
+      div.modal-footer
+        a.btn.btn-primary(href='/diners/reservations', type='button', class="btn") View my reservations
+        a.btn.btn-primary(onclick='cancelAndRefresh()', type='button', class="btn") Continue browsing
+
+  div#slotbooked.modal
+    div.modal-content
+      div.modal-body
+        p Slot already booked. Please edit or delete and re-book again.
+        p Booking rejected.
+      div.modal-footer
+        a.btn.btn-primary(href='/diners/reservations', type='button', class="btn") View my reservations
+        a.btn.btn-primary(onclick='cancelAndRefresh()', type='button', class="btn") Continue browsing
+
+  div#datepassed.modal
+    div.modal-content
+      div.modal-body
+        p  Booking date has passed.
+        p  Please choose a date from today onwards. Booking rejected.
       div.modal-footer
         a.btn.btn-primary(href='/diners/reservations', type='button', class="btn") View my reservations
         a.btn.btn-primary(onclick='cancelAndRefresh()', type='button', class="btn") Continue browsing
