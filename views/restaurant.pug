@@ -255,6 +255,9 @@ block append content
           else if (response == 4) {
             document.getElementById("slotbooked").style.display="block";
           }
+          else if (response == 5) {
+            document.getElementById("numpax").style.display = "block";
+          }
           else {
             document.getElementById("rejected").style.display = "block";
           }
@@ -304,6 +307,15 @@ block append content
     div.modal-content
       div.modal-body
         p Slot already booked. Please edit or delete and re-book again.
+        p Booking rejected.
+      div.modal-footer
+        a.btn.btn-primary(href='/diners/reservations', type='button', class="btn") View my reservations
+        a.btn.btn-primary(onclick='cancelAndRefresh()', type='button', class="btn") Continue browsing
+
+  div#numpax.modal
+    div.modal-content
+      div.modal-body
+        p Number of pax must be at least one. Please check.
         p Booking rejected.
       div.modal-footer
         a.btn.btn-primary(href='/diners/reservations', type='button', class="btn") View my reservations
