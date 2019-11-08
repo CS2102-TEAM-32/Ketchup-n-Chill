@@ -39,6 +39,10 @@ block style
             text-align: center;
         }
 
+        .time-input::-webkit-inner-spin-button {
+            display: none;
+        }
+
 
 block append content
 
@@ -64,7 +68,7 @@ block append content
             img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label(for='opening_hr') Opening Hour:
-                input#opening_hr.form-control(type='time', value=details.opening_hr, name='opening_hr' list='limittimelist')
+                input#opening_hr.time-input.form-control(type='time', value=details.opening_hr, name='opening_hr' list='limittimelist')
                 datalist#limittimelist
                     option(value="09:00")
                     option(value="10:00")
@@ -83,7 +87,7 @@ block append content
             img(src='/images/time.png' style='width:30px; height:30px; float:left; margin: 5px 20px;')
             div.form-group
                 label(for='closing_hr') Closing Hour:
-                input#closing_hr.form-control(type='time', value=details.closing_hr, name='closing_hr' list='limittimelist')
+                input#closing_hr.time-input.form-control(type='time', value=details.closing_hr, name='closing_hr' list='limittimelist')
                 datalist#limittimelist
                     option(value="09:00")
                     option(value="10:00")
