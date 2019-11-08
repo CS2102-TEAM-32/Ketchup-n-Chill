@@ -1,7 +1,6 @@
 mixin past-reservation-card(duname, date, time, rname, raddress, review, rating, num_diners, is_complete, index)
   script.
     function getReview(event) {
-      console.log(event);
       document.getElementById($(event.target).attr('card-id')).style.display = "block";
     }
     function cancel(event) {
@@ -15,8 +14,6 @@ mixin past-reservation-card(duname, date, time, rname, raddress, review, rating,
       const requiredId = $(event.target).attr('card-id');
       const rating = document.getElementById('rating-'+ requiredId).value;
       const review = document.getElementById('review-' + requiredId).value;
-      console.log(rating);
-      console.log(review);
       if (rating.length == 0 && review.length == 0) {
         document.getElementById('noInputReview').style.display = "block";
       }
@@ -40,13 +37,12 @@ mixin past-reservation-card(duname, date, time, rname, raddress, review, rating,
             duname: duname
           },
           success: (response) => {
-            console.log(response);
             // No error
             if (response == 0) {
               document.getElementById('addComplete').style.display = "block";
             }
             else {
-              // something went wrong
+              document.getElementById('somethingWentWrong').style.display = "block";
             }
           },
           error: err => {
@@ -65,6 +61,13 @@ mixin past-reservation-card(duname, date, time, rname, raddress, review, rating,
         p Unable to review as there were no rating and review input.
       div.modal-footer
         a.btn.btn-primary(onclick='returnToPage()', type='button', class="btn") Ok
+
+  div#somethingWentWrong.modal
+    div.modal-content
+      div.modal-body
+        p Sorry, something went wrong. Please try again.
+      div.modal-footer
+        a.btn.btn-primary(onclick='refresh()', type='button', class="btn") Ok
 
   div#addComplete.modal
     div.modal-content
