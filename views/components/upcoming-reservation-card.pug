@@ -3,7 +3,7 @@ mixin upcoming-reservation-card(duname, date, time, rname, raddress, review, rat
     function getDetails(event) {
       document.getElementById('edit' + $(event.target).attr('card-id')).style.display = "block";
     }
-    function cancel(event) {
+    function cancelModal(event) {
       document.getElementById('edit' + $(event.target).attr('card-id')).style.display = "none";
       document.getElementById('rejected').style.display = "none";
     }
@@ -50,7 +50,6 @@ mixin upcoming-reservation-card(duname, date, time, rname, raddress, review, rat
           duname: duname
         },
         success: (response) => {
-          console.log(response);
           // No error
           if (response != 0) {
             document.getElementById("confirmed").style.display = "block";
@@ -86,7 +85,6 @@ mixin upcoming-reservation-card(duname, date, time, rname, raddress, review, rat
           duname: duname
         },
         success: (response) => {
-          console.log(response);
           document.getElementById("cancellationConfirmed").style.display = "block";
         },
         error: err => {
@@ -110,7 +108,7 @@ mixin upcoming-reservation-card(duname, date, time, rname, raddress, review, rat
       div.modal-body
         p Unable to change to desired reservation.
       div.modal-footer
-        a.btn.btn-primary(card-id = index onclick='cancel(event)', type='button', class="btn") Ok
+        a.btn.btn-primary(card-id = index onclick='cancelModal(event)', type='button', class="btn") Ok
 
   div#cancellationConfirmed.modal
     div.modal-content
@@ -148,7 +146,7 @@ mixin upcoming-reservation-card(duname, date, time, rname, raddress, review, rat
         h7 If you'd like to book another restaurant instead, please cancel this reservation and book again.
       div.modal-footer
         a.btn.btn-primary(card-id=index rname=rname raddress=raddress date=date time=time pax=num_diners duname=duname onclick='editReservation(event)' type='button' class="btn") Confirm
-        a.btn.btn-primary(card-id=index onclick='cancel(event)' type='button' class="btn") Cancel
+        a.btn.btn-primary(card-id=index onclick='cancelModal(event)' type='button' class="btn") Cancel
 
   div.card(style='background-color: whitesmoke; display: block; padding: 10px; margin-bottom: 10px;')
     div.card-body
