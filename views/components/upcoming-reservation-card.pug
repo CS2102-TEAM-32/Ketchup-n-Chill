@@ -4,6 +4,7 @@ mixin upcoming-reservation-card(duname, date, time, rname, raddress, review, rat
       document.getElementById('edit' + $(event.target).attr('card-id')).style.display = "block";
     }
     function cancelModal(event) {
+      document.getElementById('cancel' + $(event.target).attr('card-id')).style.display = "none";
       document.getElementById('edit' + $(event.target).attr('card-id')).style.display = "none";
       document.getElementById('rejected').style.display = "none";
     }
@@ -125,7 +126,7 @@ mixin upcoming-reservation-card(duname, date, time, rname, raddress, review, rat
         p #{date} #{time} for #{num_diners}
       div.modal-footer
         a.btn.btn-primary(card-id=index rname=rname raddress=raddress date=date time=time pax=num_diners duname=duname onclick='cancelReservation(event)' type='button' class="btn") Confirm
-        a.btn.btn-primary(card-id=index onclick='refresh()' type='button' class="btn") Return to Reservations
+        a.btn.btn-primary(card-id=index onclick='cancelModal(event)' type='button' class="btn") Return to Reservations
 
   div.modal(id = 'edit' + index)
     div.modal-content
