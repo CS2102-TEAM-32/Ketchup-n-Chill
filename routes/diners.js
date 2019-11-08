@@ -27,12 +27,21 @@ router.get(
   controller.showVouchers
 );
 router.get(
+  '/reviews',
+  common.ensureAuthenticatedDiner,
+  controller.showReviews
+);
+router.get(
   '/claim',
   controller.claimVoucher
 );
 router.get(
   '/redeem',
   controller.redeemVoucher
+);
+router.get(
+  '/addreview',
+  controller.addReview
 );
 router.get(
   '/editreservation',
