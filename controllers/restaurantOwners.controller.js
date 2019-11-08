@@ -15,7 +15,8 @@ exports.showRestaurant = async (req, res, next) => {
         res.render('restaurantownersrestaurant', {
             title: [req.user.uname] + "'s " + [req.params.rname],
             details: restaurantDetails,
-            timeslots: timeslots
+            timeslots: timeslots,
+            length: timeslots.length
         });
     } catch (e) {
         next(e);
@@ -41,6 +42,7 @@ exports.editTimeslots = async (req, res, next) => {
         res.render('restaurantownersrestaurantedittimeslot', {
             title: 'Edit timeslots for ' + [req.params.rname],
             timeslots: timeslots,
+            length: timeslots.length,
             date: moment().format('YYYY-MM-DD'),
             values: { uname : req.user.uname, rname: req.params.rname, raddress: req.params.raddress }
         });
