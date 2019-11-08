@@ -216,8 +216,9 @@ DECLARE
 	required_points NUMERIC;
 BEGIN
 	-- Checks if the voucher is an existing voucher
-	SELECT COUNT(*) into exists FROM Vouchers WHERE duname=NEW.duname AND code=NEW.code AND title=NEW.title AND organisation=NEW.organisation;
-	IF (exists IS NOT NULL) THEN
+	SELECT COUNT(*) into exists FROM Vouchers WHERE (duname IS NOT NULL) AND duname=NEW.duname AND code=NEW.code AND title=NEW.title AND organisation=NEW.organisation;
+	RAISE NOTICE 'this is %', exists;
+	IF (exists = 0) THEN
 		RETURN NEW; -- allow because it's not a new voucher
 	END IF;
 
