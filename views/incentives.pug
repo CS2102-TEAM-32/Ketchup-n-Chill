@@ -11,7 +11,7 @@ block style
     #wrapper {
       width: 80%;
       display: block;
-      margin: auto;
+      margin:auto;
     }
     .search-box {
       padding-top: 10px;
@@ -20,9 +20,10 @@ block style
       background-color: whitesmoke;
       border-style: solid;
       border-width: 1px;
-      border-color: #FECA1D;
+      border-color: lightgray;
       border-radius: 10px;
       width: 100%;
+      box-shadow: 0px 5px 20px -5px rgba(0, 0, 0, 0.3);
     }
     .btn {
       text-align: center;
@@ -151,11 +152,16 @@ block append content
           a.btn.btn-primary(href='../diners/vouchers', type='button', class="btn") View my vouchers
           a.btn.btn-primary(card-id='voucher' onclick='cancel(event)', type='button', class="btn") Continue browsing
 
-    h4(style='text-align:center;') Hello #{name}, you have #{points} points! Search for incentives here:
+    br
+    h2(style='margin-left:3%;') Hello, #{name}
+    h4(style='margin-left:3%; text-align:left; font-size:20px;') You have #{points} points
+    br
     div#wrapper
       div.search-box
+        h7(style='margin-left:15px; font-weight:bold;') Search for incentives
+        br
         form(method='GET' action='/diners/incentives')
-          div.form-row
+          div.form-row(style='margin-top:10px;')
             img(src='../../images/search_icon.png' style='width:25px; height:25px; float:left; margin-right:10px; margin-top: 10px;')
             div.form-group.col-md-8
               input.form-control(name='organisation' type='text' placeholder='organisation')
@@ -164,6 +170,7 @@ block append content
             div.form-group.col-md-1
               button.btn.btn-light(type='submit' value='Submit') Search
     br
+    hr
     div#incentives
       include ./components/incentive-card.pug
       - var index = 0

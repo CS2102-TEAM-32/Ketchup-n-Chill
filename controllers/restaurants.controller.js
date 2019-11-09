@@ -28,45 +28,48 @@ exports.showRestaurants = async (req, res, next) => {
 };
 
 exports.addRestaurant = async (req, res, next) => {
-  if (
-    !req.body.name ||
-    !req.body.address ||
-    !req.body.cuisine ||
-    !req.body.opening_hr ||
-    !req.body.closing_hr ||
-    !req.body.phone_num
-  ) {
-    req.flash('danger', 'Fields must not be blank!');
-    res.redirect('/restaurants/add');
-  }
+    var unacceptable = /^[_A-z0-9]*((-|\s|,|')*[_A-z0-9])*$/;
+    
+    if (
+        !req.body.name ||
+        !req.body.address ||
+        !req.body.cuisine ||
+        !req.body.opening_hr ||
+        !req.body.closing_hr ||
+        !req.body.phone_num
+    ) {
+        req.flash('danger', 'Fields must not be blank!');
+        res.redirect('/restaurants/add');
+    } else if (req.body.name.match(unacceptable) == null  || req.body.cuisine.match(unacceptable) == null || req.body.phone_num.match(unacceptable) == null) {
+        req.flash('danger', "Name, cuisine and phone number cannot contain any unacceptable characters such as: ;,\/ ?:@&=+$#");
+        res.redirect('/restaurants/add');
+    } else if ((moment(req.body.opening_hr, "HH:mm")).isSameOrAfter(moment(req.body.closing_hr, "HH:mm"))) {
+        req.flash('danger', 'Closing hours must be after opening hours!');
+        res.redirect('/restaurants/add');
+    } else {
 
-  try {
-    await db.one(
-      'INSERT INTO OwnedRestaurants VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [
-        req.user.uname,
-        req.body.address,
-        req.body.name,
-        req.body.cuisine,
-        req.body.phone_num,
-        req.body.opening_hr,
-        req.body.closing_hr
-      ]
-    );
+        try {
+            await db.one('INSERT INTO OwnedRestaurants VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [
+                req.user.uname,
+                req.body.address,
+                req.body.name,
+                req.body.cuisine,
+                req.body.phone_num,
+                req.body.opening_hr,
+                req.body.closing_hr
+            ]);
 
-    // no errors thrown
-    req.flash('success', 'Your restaurant has been added!');
-    return res.redirect('/home');
-  } catch (e) {
-    // errors thrown
-    // insert failed due to duplicate primary keys...
-    console.log(e);
-    req.flash(
-      'danger',
-      'Something went wrong; please try again. Perhaps your restaurant has been registered already?'
-    );
-    return res.redirect('/restaurants/add');
-  }
+            // no errors thrown
+            req.flash('success', 'Your restaurant has been added!');
+            return res.redirect('/home');
+        } catch (e) {
+            // errors thrown
+            // insert failed due to duplicate primary keys...
+            console.log(e);
+            req.flash('danger', 'Something went wrong; please try again. Perhaps your restaurant has been registered already?');
+            return res.redirect('/restaurants/add');
+        }
+    }
 };
 
 exports.showRestaurantAddPage = async (req, res, next) => {
@@ -74,22 +77,27 @@ exports.showRestaurantAddPage = async (req, res, next) => {
 };
 
 exports.showRestaurantProfile = async (req, res, next) => {
-  console.log(req.params);
   try {
-    const restaurant = await db.one(
+    const restaurant = db.one(
       'SELECT * FROM OwnedRestaurants WHERE rname=$1 AND raddress=$2',
       [req.params.rname, req.params.raddress]
     );
-
-    res.render('restaurant', {
-      userIsDiner: req.user,
-      restName: restaurant.rname,
-      restAddr: restaurant.raddress,
-      restaurantOwner: restaurant.uname,
-      phoneNum: restaurant.phone_num,
-      cuis: restaurant.cuisine,
-      openinghr: restaurant.opening_hr,
-      closinghr: restaurant.closing_hr
+    const reviews = db.any(
+      "SELECT rating, review, r_date, to_char(r_date, 'DD MON YYYY') AS date, r_time, to_char(r_time, 'HH12.MIPM') AS time FROM ReserveTimeslots WHERE rname=$1 AND raddress=$2 AND ((rating IS NOT NULL) OR (review IS NOT NULL)) ORDER BY r_date ASC, r_time ASC LIMIT 3",
+        [req.params.rname, req.params.raddress],
+      );
+    Promise.all([restaurant, reviews]).then(values => {
+      res.render('restaurant', {
+        userIsDiner: req.user,
+        restName: values[0].rname,
+        restAddr: values[0].raddress,
+        restaurantOwner: values[0].uname,
+        phoneNum: values[0].phone_num,
+        cuis: values[0].cuisine,
+        openinghr: values[0].opening_hr,
+        closinghr: values[0].closing_hr,
+        reviews: values[1]
+      });
     });
   } catch (e) {
     next(e);
@@ -97,28 +105,38 @@ exports.showRestaurantProfile = async (req, res, next) => {
 };
 
 exports.showRestaurantTimeslot = async (req, res, next) => {
-  console.log(req.params);
-  try {
-    const timeslotDates = await db.any(
-      'SELECT DISTINCT date FROM HasTimeslots WHERE rname=$1 AND raddress =$2 ORDER BY date',
-      [req.params.rname, req.params.raddress]
-    );
-    const timeslotList = await db.any(
-      'SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress =$2',
-      [req.params.rname, req.params.raddress]
-    );
+    console.log(req.params);
+    try {
+        const timeslotDates = await db.any(
+            'SELECT DISTINCT date FROM HasTimeslots WHERE rname=$1 AND raddress =$2 ORDER BY date',
+            [req.params.rname, req.params.raddress]
+        );
+        const timeslotList = await db.any(
+            'SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress =$2',
+            [req.params.rname, req.params.raddress]
+        );
 
-    return res.render('timeslots', {
-      timeslotDict: timeslotList,
-      timeslotDates: timeslotDates,
-      restName: req.params.rname,
-      restAddress: req.params.raddress
-    });
-  } catch (e) {
-    return res.redirect(
-      '/restaurants/' + req.params.rname + '/' + req.params(raddress)
-    );
-  }
+        var dateNow = moment().format("YYYY-MM-DD");
+        var length = timeslotDates.length;
+        var count = 0;
+        var actualDates = [];
+        while (count < length) {
+            var currDate = timeslotDates[count].date; 
+            if (moment(dateNow).isSameOrBefore(moment(currDate))) {
+                actualDates.push(timeslotDates[count]);
+            }
+            count += 1;
+        }
+
+        return res.render('timeslots', {
+            timeslotDict: timeslotList,
+            timeslotDates: actualDates,
+            restName: req.params.rname,
+            restAddress: req.params.raddress
+        });
+    } catch (e) {
+        return res.redirect('/restaurants/' + req.params.rname + '/' + req.params(raddress));
+    }
 };
 
 exports.showRestaurantMenus = async (req, res, next) => {
