@@ -6,13 +6,17 @@ block style
             float: top;
             width: 50%;
             text-align: center;
-            border-style: solid;
-            border-width: 0.05px;
-            border-color: #FECA1D;
+            //border-style: solid;
+            //border-width: 0.05px;
+            //border-color: #FECA1D;
             margin-top: 30px;
             margin-left:auto;
             margin-right:auto;
             display:block;
+            background-color: whitesmoke;
+            border-radius: 10px;
+            padding-top: 30px;
+            padding-bottom:30px;
         }
         plate {
             float: top;
@@ -107,6 +111,6 @@ block append content
             div.form-group
                 label(for='phone_num') Contact Number:
                 input#phone_num.form-control(type='text', value=details.phone_num, name='phone_num')
-            button.btn.btn-light(type='submit' value='Submit') Confirm changes
+            button.btn.btn-danger(type='submit' value='Submit' style='background:red') Confirm changes
             </information>
     </restplate>
