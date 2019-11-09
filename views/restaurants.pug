@@ -9,29 +9,30 @@ block style
     table thead {
       background-color: #e22512;
       color: #ffffff;
-      text-align: center;
+      text-align: left;
       font-weight: bold;
     }
     table td {
-      padding: 12px 15px;
-      font
+      padding: 2px;
     }
     table th {
-      padding: 12px 15px;
-      font-size: 20px;
+      padding: 10px;
+      font-size: 18px;
     }
     table tbody tr {
       border-bottom: 1px solid #dddddd;
     }
     table tbody tr:nth-of-type(even) {
-      background-color: #f3f3f3;
+      background-color: whitesmoke;
     }
     table tbody tr:last-of-type {
       border-bottom: 2px solid #980403;
     }
     table td {
       text-align:center;
-
+      font-size: 15px;
+      text-align: left;
+      padding-left: 10px;
     }
     table td:hover {
       transform: scale(1.06);
@@ -47,7 +48,8 @@ block style
 
 block append content
   .container
-    h1(style='text-align:center; padding-top:20px') All Restaurants
+    h1(style='text-align:center; padding-top:20px; font-size:35px;') All Restaurants
+    br
     div
       table
         thead

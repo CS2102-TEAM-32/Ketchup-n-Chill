@@ -5,7 +5,6 @@ block style
     #nameplate {
       float: left;
       width: 35%;
-      text-align: center;
       border-style: solid;
       border-width: 0.05px;
       border-color: #FECA1D;
@@ -38,23 +37,30 @@ block style
 block append content
   .container
     div#nameplate
-      img(src='../../images/logo.png' style='width:50px; height:50px;')  
+      div(style='text-align:center;')
+        img(src='../../images/logo.png' style='width:40%; horizontal-align:center;')  
+        br
+        br
+        h4 My Profile
+        br
+        p #{diner.name}
       br
       br
-      h4 My Profile
+      hr
+      h7 <b>Links</b>
       br
-      p #{diner.name}
+      img(src='../../images/reservation.png' style='width:10%; margin-left:10px; margin-right:10px;')  
+      a(href='/diners/reservations' class='button' style='font-size: 15px; margin-right: 10px; color:maroon;') My reservations
       br
-      if user.uname === diner.uname
-        a.btn.btn-primary(href='/diners/vouchers') View my Vouchers
-        br
-        br
-        a.btn.btn-primary(href='/logout') Log Out
-        br
-        br
-        p Do not use! Buggy delete.
-        a.btn.btn-danger.delete-diner(href="#" usr=diner.uname) Delete Account
-        br
+      img(src='../../images/voucher.png' style='width:10%; margin-left:10px; margin-right:10px;') 
+      a(href='/diners/vouchers' class='button' style='font-size: 15px; margin-top:5px; color:maroon;') My vouchers
+      br
+      img(src='../../images/view-rating.png' style='width:10%; margin-left:10px; margin-right:10px;') 
+      a(href='/diners/reviews' class='button' style='font-size: 15px; margin-top: 5px; color:maroon;') My reviews
+      br
+      hr
+      br
+      a.btn.btn-primary.btn-danger(href='/logout' style='font-size: 15px;') Log Out
     div.clearfix
       div#information
         h2 Hello, #{diner.uname}!
@@ -67,12 +73,21 @@ block append content
         if visited.length === 0
           p No reservations yet.
         else
-          div.clearfix
-            each visit in visited
-              <divider>
-              img(src='../../images/restaurant1.jpeg' style='width:180px; height:115px; margin-right: 10px;')
-              p #{visit.rname}, #{visit.raddress}
-              </divider>   
+            div.row(style='text-align:center; font-size: 14px;')
+              - var index = 0
+              each visit in visited
+                div.col-sm-4(style='margin:0px;')
+                  if index == 0
+                    img(src='../../images/restaurant1.jpeg' style='border-radius:4px; width:100%;')
+                  if index == 1
+                    img(src='../../images/restaurant2.jpg' style='border-radius:4px; width:100%;')
+                  if index == 2
+                    img(src='../../images/restaurant3.jpg' style='border-radius:4px; width:100%;')
+                  h7
+                    | #{visit.rname} 
+                    br
+                    | #{visit.raddress}
+                - index++
         br
         hr
         img(src='../../images/review_icon.png' style='width:25px; height:25px; float:left; margin-right: 10px;')
@@ -96,6 +111,7 @@ block append content
               p No review for this experience.
             else
               p #{review.review}
+          br
           a.btn.btn-primary(href='/diners/reviews' style='border-color: #FECA1D; background-color: #FECA1D;') View all my reviews
         br
         br
@@ -112,4 +128,3 @@ block append content
             h10(style='font-size: 85%;') #{reservation.date}, #{reservation.time}
             br
             br
-          a.btn.btn-primary(href='/diners/reservations' style='border-color: #FECA1D; background-color: #FECA1D;') View all reservations
