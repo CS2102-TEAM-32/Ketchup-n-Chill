@@ -64,22 +64,27 @@ exports.showRestaurantAddPage = async (req, res, next) => {
 }
 
 exports.showRestaurantProfile = async (req, res, next) => {
-  console.log(req.params);
   try {
-    const restaurant = await db.one(
+    const restaurant = db.one(
       'SELECT * FROM OwnedRestaurants WHERE rname=$1 AND raddress=$2',
       [req.params.rname, req.params.raddress],
     );
-
-    res.render('restaurant', {
-      userIsDiner: req.user,
-      restName: restaurant.rname,
-      restAddr: restaurant.raddress,
-      restaurantOwner: restaurant.uname,
-      phoneNum: restaurant.phone_num,
-      cuis: restaurant.cuisine,
-      openinghr: restaurant.opening_hr,
-      closinghr: restaurant.closing_hr
+    const reviews = db.any(
+      "SELECT rating, review, r_date, to_char(r_date, 'DD MON YYYY') AS date, r_time, to_char(r_time, 'HH12.MIPM') AS time FROM ReserveTimeslots WHERE rname=$1 AND raddress=$2 AND ((rating IS NOT NULL) OR (review IS NOT NULL)) ORDER BY r_date ASC, r_time ASC LIMIT 3",
+        [req.params.rname, req.params.raddress],
+      );
+    Promise.all([restaurant, reviews]).then(values => {
+      res.render('restaurant', {
+        userIsDiner: req.user,
+        restName: values[0].rname,
+        restAddr: values[0].raddress,
+        restaurantOwner: values[0].uname,
+        phoneNum: values[0].phone_num,
+        cuis: values[0].cuisine,
+        openinghr: values[0].opening_hr,
+        closinghr: values[0].closing_hr,
+        reviews: values[1]
+      });
     });
   } catch (e) {
     next(e);
