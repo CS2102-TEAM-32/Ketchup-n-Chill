@@ -399,6 +399,7 @@ block append content
         br
       a.btn.btn-danger(href='/restaurants/' + restName + '/' + encodeURIComponent(restAddr) + '/menus' style='margin-right: 30px; font-size:18px;') View menus
       a.btn.btn-danger(href='/restaurants/' + restName + '/' + encodeURIComponent(restAddr) + '/timeslots' style='font-size:18px;') View Available Timeslots
+    br
     hr
     if userIsDiner!= null && userIsDiner.type == 'diner'
       h1(style="color:#fa5a5a; text-align:center; font-size:20px; font-weight:bold" ) Book Restaurant Now!

@@ -112,12 +112,9 @@ block append content
             else
               p #{review.review}
           br
-          a.btn.btn-primary(href='/diners/reviews' style='border-color: #FECA1D; background-color: #FECA1D;') View all my reviews
-        br
-        br
         hr
         img(src='../../images/history_icon.png' style='width:22px; height:22px; float:left; margin-right: 10px;')
-        p <b>Reservation History</b>
+        p <b>Reservations</b>
         if history.length === 0
           p No reservations yet.
         else
