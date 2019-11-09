@@ -113,22 +113,20 @@ exports.showRestaurantTimeslot = async (req, res, next) => {
         );
 
         var dateNow = moment().format("YYYY-MM-DD");
-        console.log(dateNow);
-
         var length = timeslotDates.length;
         var count = 0;
+        var actualDates = [];
         while (count < length) {
             var currDate = timeslotDates[count].date; 
-            if (moment(dateNow).isAfter(moment(currDate))) {
-                timeslotDates.splice(count, 1);
+            if (moment(dateNow).isSameOrBefore(moment(currDate))) {
+                actualDates.push(timeslotDates[count]);
             }
             count += 1;
         }
-        console.log(timeslotDates.length);
 
         return res.render('timeslots', {
             timeslotDict: timeslotList,
-            timeslotDates: timeslotDates,
+            timeslotDates: actualDates,
             restName: req.params.rname,
             restAddress: req.params.raddress
         });
