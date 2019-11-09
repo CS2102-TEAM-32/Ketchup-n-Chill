@@ -1,12 +1,12 @@
 mixin restaurant-card(rname, rating, cuisine, address)
   div.card(style='width: 18rem; display: table-cell;')
-    img.card-img-top(src='/images/restaurant1.jpeg')
+    img.card-img-top(src='/images/restaurant2.jpg' style='padding-top:20px;')
     div.card-body
       - rname = rname || 'No restaurant to display at the moment'
       h5.card-title #{rname}
-      h7.information 
-        |Rating: #{rating + '/5'|| 'NIL'}
+      h7.information(style='font-size:14.5px;')
+        |<b>Rating:</b> #{rating + '/5'|| 'NIL'}
         br
-        |Cuisine: #{cuisine || 'NIL'}
+        |<b>Cuisine:</b> #{cuisine || 'NIL'}
         br
-        |Address: #{address || 'NIL'}
+        |<b>Address:</b> #{address || 'NIL'}
