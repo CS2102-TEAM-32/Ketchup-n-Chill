@@ -107,7 +107,7 @@ showDinerProfile = async (req, res, next) => {
 
 showRestaurantOwnerHomePage = async (req, res, next) => {
     try {
-        const topRestaurants = await db.any('SELECT rname, cuisine, raddress, round(AVG(rating)) AS avg FROM ReserveTimeSlots NATURAL JOIN OwnedRestaurants WHERE uname=$1 GROUP BY rname, cuisine, raddress ORDER BY AVG(rating) DESC, rname LIMIT 3', [req.user.uname]);
+        const topRestaurants = await db.any('SELECT rname, cuisine, raddress, round(AVG(rating)) AS avg FROM ReserveTimeSlots NATURAL JOIN OwnedRestaurants WHERE uname=$1 AND (rating IS NOT NULL) GROUP BY rname, cuisine, raddress ORDER BY AVG(rating) DESC, rname LIMIT 3', [req.user.uname]);
         const allRestaurants = await db.any('SELECT * FROM OwnedRestaurants WHERE uname=$1', [req.user.uname]);
         res.render('restaurantowners', {
             title: 'Welcome ' + [req.user.uname] +'!',

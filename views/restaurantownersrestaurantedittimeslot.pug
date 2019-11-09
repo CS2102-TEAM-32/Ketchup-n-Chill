@@ -197,6 +197,6 @@ block append content
                             td(style="padding-right:20px; padding-right:20px")= moment(timeslot.time, 'HH:mm:ss').format('hh:mm A')
                             td(style="padding:15px") #{timeslot.num_available}
                             td  
-                                button.btn.delete-timeslot(style='float:right; border: 1px solid #1c1500; background-color:#dc143c' raddress=encoded rname=values.rname date=timeslot.date time=timeslot.time) Delete
+                                button.btn.delete-timeslot(style='float:right; background-color:#dc143c' raddress=encoded rname=values.rname date=timeslot.date time=timeslot.time) Delete
         else 
             p(style='text-align:center') No timeslots for #{values.rname} yet, please add a new timeslot above!
