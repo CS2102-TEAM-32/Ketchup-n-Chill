@@ -92,9 +92,13 @@ block style
             display: none;
         }
 
-        tr:nth-child(even) {
-            background-color: #FECA1D;
+        tr:nth-child(odd) {
+            background-color: white;
             //border: 2px solid #FECA1D
+        }
+        
+        thead {
+            background-color: whitesmoke;
         }
 
 
@@ -181,7 +185,7 @@ block append content
                 div.checkbox-inline
                     input.checkbox-input#create-shift-sun(type='checkbox', name='days', value=0)
                     label(for='create-shift-sun') Sunday
-            button.btn.btn-danger(type='submit' value='Submit' style='background-color:red') Add Timeslots
+            button.btn.btn-danger(type='submit' value='Submit' style='background-color:#dc143c') Add Timeslots
             </information>
 
     </restplate>
@@ -190,7 +194,7 @@ block append content
         h1(align="center") Current Timeslots:
         if timeslots.length != 0 
             table(id="currtimes", align="center", width: "100%", font-size: "30px" style: "display:flex;")
-                thead 
+                thead
                     tr
                         th No.
                         th Date
@@ -205,6 +209,6 @@ block append content
                             td(style="padding-right:20px; padding-right:20px")= moment(timeslot.time, 'HH:mm:ss').format('hh:mm A')
                             td(style="padding:15px") #{timeslot.num_available}
                             td  
-                                button.btn.delete-timeslot(style='float:right; background-color:#dc143c' raddress=encoded rname=values.rname date=timeslot.date time=timeslot.time) Delete
+                                button.btn.delete-timeslot(style='float:right; background-color:#dc143c; color:white' raddress=encoded rname=values.rname date=timeslot.date time=timeslot.time) Delete
         else 
             p(style='text-align:center') No timeslots for #{values.rname} yet, please add a new timeslot above!
