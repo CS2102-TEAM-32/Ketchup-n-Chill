@@ -400,7 +400,7 @@ function queryDbFromReqQueryForRedemption(frontPortion, reqQuery, f) {
     .map((key, index) => `${partials[key]} $${index + 1}`) // pgp uses base-1 index
     .reduce((acc, curr) => `${acc} AND ${curr}`);
 
-  //console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
+  // console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
 
   // make the function call and return the promise
   return f(

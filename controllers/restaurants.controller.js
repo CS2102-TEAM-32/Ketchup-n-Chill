@@ -4,14 +4,18 @@ const moment = require('moment');
 exports.showRestaurants = async (req, res, next) => {
   try {
     let restaurants;
-    if (Object.entries(req.query).length === 0) { // no query
-      restaurants = await db.many('SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants ORDER BY rname');
-    } else {
-      restaurants = await queryDbFromReqQuery(
-        'SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants NATURAL JOIN HasTimeslots',
-        req.query,
-        db.any
+    if (Object.entries(req.query).length === 0) {
+      // no query
+      restaurants = await db.many(
+        'SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants ORDER BY rname'
       );
+    } else {
+      // restaurants = await queryDbFromReqQuery(
+      //   'SELECT DISTINCT rname, raddress, cuisine FROM OwnedRestaurants NATURAL JOIN HasTimeslots',
+      //   req.query,
+      //   db.any
+      // );
+      restaurants = await makeSearchQuery(req.query, db.any);
     }
 
     res.render('restaurants', {
@@ -37,15 +41,18 @@ exports.addRestaurant = async (req, res, next) => {
   }
 
   try {
-    await db.one('INSERT INTO OwnedRestaurants VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [
-      req.user.uname,
-      req.body.address,
-      req.body.name,
-      req.body.cuisine,
-      req.body.phone_num,
-      req.body.opening_hr,
-      req.body.closing_hr
-    ]);
+    await db.one(
+      'INSERT INTO OwnedRestaurants VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [
+        req.user.uname,
+        req.body.address,
+        req.body.name,
+        req.body.cuisine,
+        req.body.phone_num,
+        req.body.opening_hr,
+        req.body.closing_hr
+      ]
+    );
 
     // no errors thrown
     req.flash('success', 'Your restaurant has been added!');
@@ -54,21 +61,24 @@ exports.addRestaurant = async (req, res, next) => {
     // errors thrown
     // insert failed due to duplicate primary keys...
     console.log(e);
-    req.flash('danger', 'Something went wrong; please try again. Perhaps your restaurant has been registered already?');
+    req.flash(
+      'danger',
+      'Something went wrong; please try again. Perhaps your restaurant has been registered already?'
+    );
     return res.redirect('/restaurants/add');
   }
 };
 
 exports.showRestaurantAddPage = async (req, res, next) => {
   res.render('restaurantowners-add-restaurant');
-}
+};
 
 exports.showRestaurantProfile = async (req, res, next) => {
   console.log(req.params);
   try {
     const restaurant = await db.one(
       'SELECT * FROM OwnedRestaurants WHERE rname=$1 AND raddress=$2',
-      [req.params.rname, req.params.raddress],
+      [req.params.rname, req.params.raddress]
     );
 
     res.render('restaurant', {
@@ -87,26 +97,28 @@ exports.showRestaurantProfile = async (req, res, next) => {
 };
 
 exports.showRestaurantTimeslot = async (req, res, next) => {
-    console.log(req.params);
-    try {
-        const timeslotDates = await db.any(
-            'SELECT DISTINCT date FROM HasTimeslots WHERE rname=$1 AND raddress =$2 ORDER BY date',
-            [req.params.rname, req.params.raddress]
-        );
-        const timeslotList = await db.any(
-            'SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress =$2',
-            [req.params.rname, req.params.raddress]
-        );
+  console.log(req.params);
+  try {
+    const timeslotDates = await db.any(
+      'SELECT DISTINCT date FROM HasTimeslots WHERE rname=$1 AND raddress =$2 ORDER BY date',
+      [req.params.rname, req.params.raddress]
+    );
+    const timeslotList = await db.any(
+      'SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress =$2',
+      [req.params.rname, req.params.raddress]
+    );
 
-        return res.render('timeslots', {
-            timeslotDict: timeslotList,
-            timeslotDates: timeslotDates,
-            restName: req.params.rname,
-            restAddress: req.params.raddress
-        });
-    } catch (e) {
-        return res.redirect('/restaurants/' + req.params.rname + '/' + req.params(raddress));
-    }
+    return res.render('timeslots', {
+      timeslotDict: timeslotList,
+      timeslotDates: timeslotDates,
+      restName: req.params.rname,
+      restAddress: req.params.raddress
+    });
+  } catch (e) {
+    return res.redirect(
+      '/restaurants/' + req.params.rname + '/' + req.params(raddress)
+    );
+  }
 };
 
 exports.showRestaurantMenus = async (req, res, next) => {
@@ -130,6 +142,42 @@ exports.showRestaurantMenus = async (req, res, next) => {
   }
 };
 
+function makeSearchQuery(reqQuery, f) {
+  const partials = {
+    date: 'date =',
+    time: 'time =',
+    cuisine: 'upper(cuisine) LIKE',
+    rname: 'upper(rname) LIKE'
+  };
+
+  const keys = Object.keys(reqQuery);
+  const usedKeys = Object.keys(reqQuery).filter(
+    key => key !== 'pax' && reqQuery[key] !== '' // don't include in the WHERE clause if empty OR it is pax
+  );
+  const conditions = usedKeys
+    .map((key, index) => `${partials[key]} $${index + 1}`) // pgp uses base-1 index
+    .reduce((acc, curr) => `${acc} AND ${curr}`);
+
+  const cte1 = `(SELECT DISTINCT rname, raddress, cuisine, num_available FROM OwnedRestaurants NATURAL JOIN HasTimeslots WHERE ${conditions})`;
+
+  const cte2 = `(SELECT COALESCE (SUM(num_diners), 0), rname, raddress FROM CTE_1 NATURAL LEFT JOIN ReserveTimeslots GROUP BY rname, raddress)`;
+
+  const remaining = `SELECT DISTINCT rname, raddress, cuisine FROM CTE_1 NATURAL LEFT JOIN CTE_2 WHERE (num_available - coalesce - $${usedKeys.length +
+    1}) >= 0`;
+
+  const pgpArray = Object.keys(reqQuery)
+    .filter(key => reqQuery[key] !== '' && key !== 'pax')
+    .map(key => reqQuery[key]);
+  pgpArray.push(reqQuery.pax || 1);
+
+  const final = `WITH CTE_1 AS ${cte1}, CTE_2 AS ${cte2} ${remaining}`;
+
+  console.log(final);
+  console.log(pgpArray);
+
+  return f(final, pgpArray);
+}
+
 /*
  helper function to form the query then query the db with it.
  takes in a string 'select ... from ...' as the first parameter.
@@ -149,6 +197,8 @@ function queryDbFromReqQuery(frontPortion, reqQuery, f) {
     rname: 'rname ='
   };
 
+  console.log(reqQuery);
+
   const keys = Object.keys(reqQuery);
   if (keys.length === 0) {
     // the req.query object is empty, we will query without a where clause.
@@ -160,7 +210,7 @@ function queryDbFromReqQuery(frontPortion, reqQuery, f) {
     .map((key, index) => `${partials[key]} $${index + 1}`) // pgp uses base-1 index
     .reduce((acc, curr) => `${acc} AND ${curr}`);
 
-  // console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
+  console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
 
   // make the function call and return the promise
   return f(
@@ -176,10 +226,10 @@ exports.bookRestaurant = async (req, res, next) => {
     // date, time, rname, raddress, duname, review, rating, num_diners
     var dateNow = Date.now();
     var bookingDate = req.query.date;
-    var dateNowFormat = moment(dateNow).format("YYYY-MM-DD");
-    var bookingDateFormat = moment(bookingDate).format("YYYY-MM-DD");
+    var dateNowFormat = moment(dateNow).format('YYYY-MM-DD');
+    var bookingDateFormat = moment(bookingDate).format('YYYY-MM-DD');
     console.log("Today's date is " + dateNowFormat);
-    console.log("Booking date is " + bookingDateFormat);
+    console.log('Booking date is ' + bookingDateFormat);
     if (bookingDateFormat < dateNowFormat) {
       // Reject booking if booking date already passed
       res.json(3);
@@ -192,16 +242,19 @@ exports.bookRestaurant = async (req, res, next) => {
       return;
     }
 
-    const update = await db.oneOrNone('INSERT INTO ReserveTimeslots VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [
-      req.query.date,
-      req.query.time,
-      req.query.rname,
-      req.query.raddr,
-      req.user.uname,
-      null,
-      null,
-      req.query.pax
-    ]);
+    const update = await db.oneOrNone(
+      'INSERT INTO ReserveTimeslots VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [
+        req.query.date,
+        req.query.time,
+        req.query.rname,
+        req.query.raddr,
+        req.user.uname,
+        null,
+        null,
+        req.query.pax
+      ]
+    );
     console.log(update);
     if (update != null) {
       // If successful, then give confirmation message
