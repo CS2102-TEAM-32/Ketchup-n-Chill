@@ -2,7 +2,6 @@ const db = require('../db/index');
 
 var bcrypt = require('bcryptjs');
 var { check, validationResult } = require('express-validator');
-var passport = require('passport');
 
 exports.showReservations = async (req, res, next) => {
   try {
@@ -37,7 +36,7 @@ exports.cancelReservation = async (req, res, next) => {
     );
     res.sendStatus(200);
   } catch (e) {
-    console.log(e);
+    res.sendStatus(500);
   }
 };
 
@@ -401,7 +400,7 @@ function queryDbFromReqQueryForRedemption(frontPortion, reqQuery, f) {
     .map((key, index) => `${partials[key]} $${index + 1}`) // pgp uses base-1 index
     .reduce((acc, curr) => `${acc} AND ${curr}`);
 
-  //console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
+  // console.log('formed query:', `${frontPortion} WHERE ${conditions}`);
 
   // make the function call and return the promise
   return f(
@@ -515,18 +514,6 @@ exports.createDiner = async (req, res, next) => {
         prevUname: req.body.uname
       });
     }
-  } catch (e) {
-    next(e);
-  }
-};
-
-exports.deleteDiner = async (req, res, next) => {
-  // TODO: PROCEDURE TO DELETE!!! The following is not correct
-  try {
-    await db.one('DELETE FROM Diners WHERE uname=$1 RETURNING *', [
-      req.user.uname
-    ]);
-    return res.sendStatus(200);
   } catch (e) {
     next(e);
   }

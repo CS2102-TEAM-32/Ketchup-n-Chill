@@ -1,19 +1,4 @@
 $(document).ready(() => {
-  $('.delete-diner').on('click', e => {
-    $.ajax({
-      type: 'DELETE',
-      url: '/diners/',
-      success: () => {
-        window.location.href = '/diners';
-      },
-      error: err => {
-        console.log(err);
-      }
-    });
-  });
-});
-
-$(document).ready(() => {
   $('.mark-reservation-complete').on('click', e => {
     const rname = $(e.target).attr('rname');
     const r_date = moment($(e.target).attr('r_date')).format('YYYY-MM-DD');
@@ -26,9 +11,9 @@ $(document).ready(() => {
       url: '/reservations/',
       success: () => window.location.reload(),
       error: err => console.log(err)
-    })
-  })
-})
+    });
+  });
+});
 
 $(document).ready(() => {
   $('#delete-menu').on('click', e => {
@@ -50,7 +35,7 @@ $(document).ready(() => {
 
 $(document).ready(() => {
   $('.delete-item').on('click', e => {
-    console.log("click");
+    console.log('click');
     const fname = $(e.target).attr('fname');
     const title = $(e.target).attr('title');
     const raddress = $(e.target).attr('raddress');
@@ -69,22 +54,23 @@ $(document).ready(() => {
 });
 
 $(document).ready(() => {
-    $('.delete-timeslot').on('click', e => {
-        const rname = $(e.target).attr('rname');
-        const raddress = $(e.target).attr('raddress');
-        const date = moment($(e.target).attr('date')).format('YYYY-MM-DD');
-        const time = $(e.target).attr('time');
-        $.ajax({
-            type: 'DELETE',
-            url: '/restaurantowners/' + rname + '/' + raddress + '/' + date + '/' + time,
-            success: () => {
-                window.location.reload();
-            },
-            error: err => {
-                console.log(err);
-            }
-        });
+  $('.delete-timeslot').on('click', e => {
+    const rname = $(e.target).attr('rname');
+    const raddress = $(e.target).attr('raddress');
+    const date = moment($(e.target).attr('date')).format('YYYY-MM-DD');
+    const time = $(e.target).attr('time');
+    $.ajax({
+      type: 'DELETE',
+      url:
+        '/restaurantowners/' + rname + '/' + raddress + '/' + date + '/' + time,
+      success: () => {
+        window.location.reload();
+      },
+      error: err => {
+        console.log(err);
+      }
     });
+  });
 });
 
 $('.date-input')
@@ -106,4 +92,8 @@ $(document).ready(() => {
       '<li><input type="text" name="item" placeholder="item" /><input type="text" name="price" placeholder="price" /></li>'
     );
   });
+});
+
+$(document).ready(() => {
+  setTimeout(() => $('#alert').hide(1000), 1500);
 });
