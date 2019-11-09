@@ -1,19 +1,4 @@
 $(document).ready(() => {
-  $('.delete-diner').on('click', e => {
-    $.ajax({
-      type: 'DELETE',
-      url: '/diners/',
-      success: () => {
-        window.location.href = '/diners';
-      },
-      error: err => {
-        console.log(err);
-      }
-    });
-  });
-});
-
-$(document).ready(() => {
   $('.mark-reservation-complete').on('click', e => {
     const rname = $(e.target).attr('rname');
     const r_date = moment($(e.target).attr('r_date')).format('YYYY-MM-DD');

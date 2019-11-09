@@ -520,18 +520,6 @@ exports.createDiner = async (req, res, next) => {
   }
 };
 
-exports.deleteDiner = async (req, res, next) => {
-  // TODO: PROCEDURE TO DELETE!!! The following is not correct
-  try {
-    await db.one('DELETE FROM Diners WHERE uname=$1 RETURNING *', [
-      req.user.uname
-    ]);
-    return res.sendStatus(200);
-  } catch (e) {
-    next(e);
-  }
-};
-
 exports.registerValidations = [
   check('name', 'Name must not be empty.')
     .not()

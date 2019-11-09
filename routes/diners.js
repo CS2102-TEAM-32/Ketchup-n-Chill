@@ -51,9 +51,5 @@ router.get(
   '/cancelreservation',
   controller.cancelReservation
 );
-router.delete(
-  common.ensureAuthenticatedDiner,
-  controller.deleteDiner
-);
 
 module.exports = router;
