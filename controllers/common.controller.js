@@ -100,25 +100,6 @@ showDinerProfile = async (req, res, next) => {
 };
 
 showRestaurantOwnerHomePage = async (req, res, next) => {
-<<<<<<< HEAD
-  try {
-    const topRestaurants = await db.any(
-      'SELECT rname, cuisine, raddress, round(AVG(rating)) AS avg FROM ReserveTimeSlots NATURAL JOIN OwnedRestaurants WHERE uname=$1 GROUP BY rname, cuisine, raddress ORDER BY AVG(rating) DESC, rname LIMIT 3',
-      [req.user.uname]
-    );
-    const allRestaurants = await db.any(
-      'SELECT * FROM OwnedRestaurants WHERE uname=$1',
-      [req.user.uname]
-    );
-    res.render('restaurantowners', {
-      title: 'Welcome ' + [req.user.uname] + '!',
-      topRestaurants: topRestaurants,
-      allRestaurants: allRestaurants
-    });
-  } catch (e) {
-    res.sendStatus(404);
-  }
-=======
     try {
         const topRestaurants = await db.any('SELECT rname, cuisine, raddress, round(AVG(rating)) AS avg FROM ReserveTimeSlots NATURAL JOIN OwnedRestaurants WHERE uname=$1 AND (rating IS NOT NULL) GROUP BY rname, cuisine, raddress ORDER BY AVG(rating) DESC, rname LIMIT 3', [req.user.uname]);
         const allRestaurants = await db.any('SELECT * FROM OwnedRestaurants WHERE uname=$1', [req.user.uname]);
@@ -130,7 +111,6 @@ showRestaurantOwnerHomePage = async (req, res, next) => {
     } catch (e) {
         next(e);
     }
->>>>>>> 9592f5e2662a31eeb0ca1156c19b80f4ec37cb73
 };
 
 showGenericHomePage = async (req, res, next) => {
