@@ -77,7 +77,7 @@ block append content
   .restplate
     form(method='POST' action='/menus/' + rname + '/' + encodeURIComponent(raddress))
       .information
-        .form-group(style='text-align:center; width:80%;')
+        .form-group(style='text-align:center; width:100%;')
           label(style='padding-bottom:0;margin-bottom:0;') Menu
           p(style='font-size:13px;padding:0;margin:0;') Select the menu to add an item to, or create a menu using a unique menu name.
           input.form-control(type=text name='title' list='menu-names' placeholder='menu title')
@@ -87,8 +87,8 @@ block append content
         br
         ul#fieldList(style='text-align:center;')
           li
-            input.form-control.col-md-3(type=text name='item' placeholder='item')
-            input.form-control.col-md-3(type=text name='price' placeholder='price')
+            input.form-control(type=text name='item' placeholder='item')
+            input.form-control(type=text name='price' placeholder='price')
         br
   div(style='text-align:center; margin-top:10px;')
     button.btn.btn-primary#addMore(style='margin-right:10px;') Add another item
