@@ -12,7 +12,7 @@ block content
         each rest in topRestaurants
           +restaurant-card(rest.rname, rest.avg, rest.cuisine, rest.raddress)
         else 
-          p(style="color:white;padding:20%;" align="center") Currently, there are no restaurants under you! Scroll down to create your own restaurant! 
+          p(style="color:white;padding:20%;" align="center") Currently, your restaurants have not been rated. Create a new restaurant above or check back in a few days for your reviews!
     div#rest
       h1 #[strong All My Restaurants]
       div.row
@@ -22,12 +22,13 @@ block content
               img.card-img-top(src='/images/restaurant-icon.png')
               .card-body(style='padding:0;')
                 h5.card-title(style='text-align:center;') #{restaurant.rname}
-                p.card-text(style='padding:0px;color:green;height:40px;overflow:auto;') #{restaurant.raddress}
+                p.card-text(style='padding:0px;color:green;height:50px; text-align:center;') #{restaurant.raddress}
               .card-body(style='padding:0;text-align:center;')
                 div
-                  a.card-link(href='/restaurantowners/' +  restaurant.rname +'/' + encodeURIComponent(restaurant.raddress)) Edit
+                  a.card-link(href='/restaurantowners/' +  restaurant.rname +'/' + encodeURIComponent(restaurant.raddress)) Edit Restaurant
                   a.card-link(href='/menus/' + restaurant.rname + '/' + encodeURIComponent(restaurant.raddress) + '/add') Add Menu
                 a.card-link(href='/restaurants/' + restaurant.rname + '/' + encodeURIComponent(restaurant.raddress) style='padding:5px;') View Listing
+                a.card-link(href='/reservations/') View Reservations
 
 block style
   link(rel='stylesheet' href='/stylesheets/home.css')

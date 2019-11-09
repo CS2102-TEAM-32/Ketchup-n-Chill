@@ -54,9 +54,20 @@ exports.editTimeslots = async (req, res, next) => {
 exports.updateRestaurant = async (req, res, next) => {
     console.log(req.body.address + "end");
     console.log(req.params.raddress + "end");
+
+    var unacceptable = /^[_A-z0-9]*((-|\s|,|')*[_A-z0-9])*$/;
+
     if (!req.body.name || !req.body.address || !req.body.cuisine || !req.body.opening_hr || !req.body.closing_hr || !req.body.phone_num) {
         // perhaps we could do this front end, but good to check?
         req.flash('danger', "Cannot leave any entry blank.");
+        let encoded = encodeURIComponent(req.params.raddress);
+        res.redirect('/restaurantowners/' + req.params.rname + '/' + encoded + '/edit');
+    } else if (req.body.name.match(unacceptable) == null || req.body.cuisine.match(unacceptable) == null || req.body.phone_num.match(unacceptable) == null) {;
+        req.flash('danger', "Name, cuisine and phone number cannot contain any unacceptable characters such as: ;,\/ ?:@&=+$#");
+        let encoded = encodeURIComponent(req.params.raddress);
+        res.redirect('/restaurantowners/' + req.params.rname + '/' + encoded + '/edit');
+    } else if ((moment(req.body.opening_hr, "HH:mm")).isSameOrAfter(moment(req.body.closing_hr, "HH:mm"))) {
+        req.flash('danger', 'Closing hours must be after opening hours!');
         let encoded = encodeURIComponent(req.params.raddress);
         res.redirect('/restaurantowners/' + req.params.rname + '/' + encoded + '/edit');
     } else {
@@ -121,9 +132,12 @@ exports.updateTimeslot = async (req, res, next) => {
             let encoded = encodeURIComponent(req.params.raddress);
             res.redirect('/restaurantowners/' + '/' + req.params.rname + '/' + encoded + '/edittimeslot');
         } else {
-            var errors = validationResult(req);
-            if (!errors.isEmpty()) {
-
+            var stime = moment(req.body.stime, "HH:mm");
+            var etime = moment(req.body.etime, "HH:mm");
+            if (stime.isSameOrAfter(etime)) {
+                req.flash('danger', 'End time must be after start time!');
+                let encoded = encodeURIComponent(req.params.raddress);
+                res.redirect('/restaurantowners/' + '/' + req.params.rname + '/' + encoded + '/edittimeslot');
             } else {
                 var sdate = new Date(req.body.sdate);
                 var edate = new Date(req.body.edate);
@@ -143,7 +157,7 @@ exports.updateTimeslot = async (req, res, next) => {
                     //console.log(d.day());
                     if (req.body.days.includes(d.day().toString())) {
                         //console.log(d.day() + " is in the array");
-                        for (var t = moment(stime, "HH:mm"); t.diff(etime, 'hours') <= 0; t.add(1, 'hours')) {
+                        for (var t = moment(stime, "HH:mm"); t.diff(etime, 'hours') < 0; t.add(1, 'hours')) {
                             //console.log(t.format("HH:mm"));
                             var arr = [d.format('YYYY-MM-DD'), t.format("HH:mm"), req.params.rname, req.params.raddress, numpax];
                             const check = await db.any('SELECT 1 FROM HasTimeslots WHERE rname=$3 AND raddress=$4 AND date=$1 AND time=$2', arr);
