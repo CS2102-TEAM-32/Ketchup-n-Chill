@@ -28,7 +28,8 @@ exports.setComplete = async (req, res, next) => {
         req.body.r_date,
         req.body.r_time,
         req.body.raddress,
-        req.body.duname
+        req.body.duname,
+        req.user.uname
       ]
     );
     await db.one(
