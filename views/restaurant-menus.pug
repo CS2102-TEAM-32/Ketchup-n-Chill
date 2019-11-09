@@ -6,7 +6,7 @@ block append content
     div(style='display:flex;justify-content:center;')
       if menus.length !== 0
         each menu in menus
-          a.btn.btn-link(style='text-align:center;font-size:32px;margin:1%;' href='/menus/' + restaurant.rname + '/' + encodeURIComponent(restaurant.raddress) + '/' + menu.title) #{menu.title}
+          a.btn.btn-danger(style='text-align:center;font-size:32px;margin:1%;' href='/menus/' + restaurant.rname + '/' + encodeURIComponent(restaurant.raddress) + '/' + menu.title) #{menu.title}
       else
         p No menus to display for now... Check back again in a few days!
         br
