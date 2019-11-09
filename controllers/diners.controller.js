@@ -2,7 +2,6 @@ const db = require('../db/index');
 
 var bcrypt = require('bcryptjs');
 var { check, validationResult } = require('express-validator');
-var passport = require('passport');
 
 exports.showReservations = async (req, res, next) => {
   try {
@@ -37,7 +36,7 @@ exports.cancelReservation = async (req, res, next) => {
     );
     res.sendStatus(200);
   } catch (e) {
-    console.log(e);
+    res.sendStatus(500);
   }
 };
 

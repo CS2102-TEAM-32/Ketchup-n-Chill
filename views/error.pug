@@ -1,6 +1,42 @@
 extends layout
 
 block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+  .center
+    div(style='text-align:center;margin:auto;')
+      img(src='images/cutesauce.png' style='height:400px;')
+      h1 oops
+      if error.status === 404
+        h2 404 - THE PAGE YOU'RE LOOKING FOR CAN'T BE FOUND :(
+      else
+        h2 500 - OUR SERVER IS ON A BREAK :(
+      a(href='/home') go back
+
+block append style
+  link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat:200,400,700')
+  style(type='text/css').
+    .center {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: 100%;
+    }
+
+    img {
+      margin-bottom: -100px;
+    }
+
+    h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 236px;
+      text-transform: uppercase;
+      margin: -50px;
+      color: #211b19;
+    }
+
+   h2 {
+     font-family: 'Montserrat', sans-serif;
+     text-transform: uppercase;
+   }
+
+   a {
+   }
