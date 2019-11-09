@@ -62,8 +62,9 @@ block append content
         div.form-group
           label(for='phone_num') Contact Number:
           input#phone_num.form-control(type='text' name='phone_num')
+        button.btn.btn-danger(type='submit' value='Submit' style='background-color:#dc143c') Submit
       </information>
-      a.btn.btn-danger(type='submit' value='Submit') Submit
+      
   </restplate> 
   div.wrapper
     
@@ -113,15 +114,4 @@ block style
 
     .time-input::-webkit-inner-spin-button {
       display: none;
-    }
-
-    a.button {
-      -webkit-appearance: button;
-      -moz-appearance: button;
-      appearance: button;
-      text-decoration: none;
-      background: #fa5a5a;
-    }
-    a {
-      text-color: white;
     }
