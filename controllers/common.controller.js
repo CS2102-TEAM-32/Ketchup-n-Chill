@@ -122,7 +122,7 @@ showRestaurantOwnerHomePage = async (req, res, next) => {
 showGenericHomePage = async (req, res, next) => {
   try {
     const restaurants = await db.any(
-      'SELECT rname, cuisine, raddress, round(AVG(rating)) AS avg FROM ReserveTimeSlots NATURAL JOIN OwnedRestaurants GROUP BY rname, cuisine, raddress ORDER BY AVG(rating) DESC, rname LIMIT 3'
+      'SELECT rname, cuisine, raddress, round(AVG(rating)) AS avg FROM ReserveTimeSlots NATURAL JOIN OwnedRestaurants WHERE (rating IS NOT NULL) GROUP BY rname, cuisine, raddress ORDER BY AVG(rating) DESC, rname LIMIT 3'
     );
     res.render('home', {
       title: 'Ketchup and Chill!',
