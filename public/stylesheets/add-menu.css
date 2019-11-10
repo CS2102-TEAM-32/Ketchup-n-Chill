@@ -1,11 +1,10 @@
 .information {
-  text-align: left;
   font-size: 25px;
+  text-align:center;
 }
 
 .restplate {
   padding: 20px;
-  float: top;
   width: 50%;
   text-align: center;
   border-style: solid;

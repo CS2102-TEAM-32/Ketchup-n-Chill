@@ -79,13 +79,14 @@ mixin past-reservation-card(duname, date, time, rname, raddress, review, rating,
   div.modal(id = index)
     div.modal-content
       div.modal-body
-        p Review your experience at #{rname}, #{raddress} on #{date} #{time} for #{num_diners} pax.
+        h7 Review your experience at <b>#{rname}, #{raddress}</b> on <b>#{date} #{time}</b> for <b>#{num_diners}</b> pax.
+        br
         br
         h7 Rating: 
-          input(name='rating' type='number' placeholder='/5' min=1 max=5 id='rating-' + index)
+          input.form-control(name='rating' type='number' placeholder='/5' min=1 max=5 id='rating-' + index)
           br
         h7 Review: 
-          input(name='review' type='text' placeholder='Type your review here' id='review-' + index)
+          input.form-control(name='review' type='text' placeholder='Type your review here' id='review-' + index)
       div.modal-footer
         a.btn.btn-primary(card-id=index duname=duname rname=rname raddress=raddress date=date time=time num_diners=num_diners onclick='confirmReview(event)', type='button', class="btn") Confirm review
         a.btn.btn-primary(card-id=index onclick='cancel(event)', type='button', class="btn") Cancel

@@ -13,7 +13,6 @@ block append content
   .container
     h1 #{name}'s Reviews
     br
-    h4(style='margin-left: 25px;') All Reviews
     div#reviews
       include ./components/review-card.pug
       each review in reviews

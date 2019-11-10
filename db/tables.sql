@@ -69,7 +69,7 @@ CREATE TABLE Menu (
 	rname  VARCHAR(100),
 	raddress  TEXT,
 	PRIMARY KEY (title, rname, raddress),
-	FOREIGN KEY (rname, raddress) REFERENCES OwnedRestaurants (rname, raddress) ON DELETE CASCADE	
+	FOREIGN KEY (rname, raddress) REFERENCES OwnedRestaurants (rname, raddress) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE FoodItems (
@@ -79,7 +79,7 @@ CREATE TABLE FoodItems (
 	rname VARCHAR(100),
 	raddress TEXT,
 	PRIMARY KEY (fname, title, rname, raddress),
-	FOREIGN KEY (title, rname, raddress) REFERENCES Menu (title, rname, raddress) ON DELETE CASCADE
+	FOREIGN KEY (title, rname, raddress) REFERENCES Menu (title, rname, raddress) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Incentives (
@@ -218,7 +218,7 @@ BEGIN
 	-- Checks if the voucher is an existing voucher
 	SELECT COUNT(*) into exists FROM Vouchers WHERE (duname IS NOT NULL) AND duname=NEW.duname AND code=NEW.code AND title=NEW.title AND organisation=NEW.organisation;
 	RAISE NOTICE 'this is %', exists;
-	IF (exists = 0) THEN
+	IF (exists <> 0) THEN
 		RETURN NEW; -- allow because it's not a new voucher
 	END IF;
 

@@ -9,7 +9,6 @@ const moment = require('moment');
 
 exports.showRestaurant = async (req, res, next) => {
     try {
-        console.log(req.params.raddress);
         const restaurantDetails = await db.one('SELECT * FROM OwnedRestaurants WHERE uname=$1 AND rname=$2 AND raddress=$3', [req.user.uname, req.params.rname, req.params.raddress]);
         const timeslots = await db.any('SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress=$2 ORDER BY date DESC, time', [req.params.rname, req.params.raddress]);
         res.render('restaurantownersrestaurant', {
@@ -52,8 +51,6 @@ exports.editTimeslots = async (req, res, next) => {
 };
 
 exports.updateRestaurant = async (req, res, next) => {
-    console.log(req.body.address + "end");
-    console.log(req.params.raddress + "end");
 
     var unacceptable = /^[_A-z0-9]*((-|\s|,|')*[_A-z0-9])*$/;
 
@@ -112,21 +109,18 @@ exports.updateRestaurant = async (req, res, next) => {
                 await db.none('UPDATE OwnedRestaurants SET rname=$1, raddress=$2, cuisine=$3, opening_hr=$4, closing_hr=$5, phone_num=$6 WHERE uname=$7 AND rname=$8', temp);
                 req.flash('success', "Restaurant successfully updated!");
                 // render the restaurant page with the updated details. 
-                //console.log(encodeURIComponent('/restaurantowners/' + req.user.uname + '/' + req.body.name + '/' + req.body.address));
-                // should use encodeuricomponent for restaurant address. 
                 let encoded = encodeURIComponent(req.body.address);
                 res.redirect('/restaurantowners/' + req.body.name + '/' + encoded);
             }
 
         } catch (e) {
-            next(e);
+          next(e);
         }
     }
 };
 
 exports.updateTimeslot = async (req, res, next) => {
     try {
-        console.log(req.body);
         if (!req.body.sdate || !req.body.edate || !req.body.stime || !req.body.etime || !req.body.pax || !req.body.days) {
             req.flash('danger', "Cannot leave any entry blank.");
             let encoded = encodeURIComponent(req.params.raddress);
@@ -144,36 +138,23 @@ exports.updateTimeslot = async (req, res, next) => {
 
                 var stime = moment(req.body.stime, "HH:mm");
                 var etime = moment(req.body.etime, "HH:mm");
-                //console.log(stime.format("HH:mm"));
-                //console.log(etime.format("HH:mm"));
 
                 var numpax = parseInt(req.body.pax, 10);
                 const values = [];
                 const col = new pgp.helpers.ColumnSet(['date', 'time', 'rname', 'raddress', 'num_available'], { table: 'hastimeslots' });
-                //var original = 'INSERT INTO HasTimeslots (date, time, rname, raddress, num_available) VALUES ';
 
                 for (var d = moment(sdate); d.diff(edate, 'days') <= 0; d.add(1, 'days')) {
-                    //console.log(d.format('YYYY-MM-DD'));
-                    //console.log(d.day());
                     if (req.body.days.includes(d.day().toString())) {
-                        //console.log(d.day() + " is in the array");
                         for (var t = moment(stime, "HH:mm"); t.diff(etime, 'hours') < 0; t.add(1, 'hours')) {
-                            //console.log(t.format("HH:mm"));
                             var arr = [d.format('YYYY-MM-DD'), t.format("HH:mm"), req.params.rname, req.params.raddress, numpax];
                             const check = await db.any('SELECT 1 FROM HasTimeslots WHERE rname=$3 AND raddress=$4 AND date=$1 AND time=$2', arr);
                             if (check.length == 0) {
                                 var temp = { date: d.format('YYYY-MM-DD'), time: t.format("HH:mm"), rname: req.params.rname, raddress: req.params.raddress, num_available: numpax };
                                 values.push(temp);
                             }
-                            //db.none('INSERT INTO HasTimeslots (date, time, rname, raddress, num_available) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (rname, raddress, date, time) DO NOTHING', arr);
-                            //original = original + '(' + d.format('YYYY-MM-DD') + ', ' + t.format("HH:mm") + ', ' + req.params.rname + ', ' + req.params.raddress + ', ' + req.body.pax + ')';
-                            //if (t.diff(etime, 'hours') < 0) {
-                             //   original = original + ',';
-                            //}
                         }
                     }  
                 }
-                //console.log(values);
                 if (values.length == 0) {
                     req.flash('danger', "No entries were added because incompatible timeslots were provided.");
                 } else {
@@ -208,7 +189,6 @@ exports.deleteTimeslots = async (req, res, next) => {
         });      
     } catch (e) {
         console.log(e);
-        //next(e);
     }
 };
 
@@ -218,7 +198,6 @@ exports.registerRestaurantOwner = (req, res, next) => {
     });
 };
 
-// TODO: validations move to somewhere common
 exports.registerValidations = [
     check('name', 'Name must not be empty.')
         .not()

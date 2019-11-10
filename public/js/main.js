@@ -89,7 +89,7 @@ $(document).ready(() => {
     e.preventDefault();
     $('#fieldList').append('<li>&nbsp;</li>');
     $('#fieldList').append(
-      '<li><input type="text" name="item" placeholder="item" /><input type="text" name="price" placeholder="price" /></li>'
+      '<li><input class="form-control" type="text" name="item" placeholder="item" /><input class="form-control" type="text" name="price" placeholder="price" /></li>'
     );
   });
 });
