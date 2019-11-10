@@ -131,20 +131,25 @@ mixin upcoming-reservation-card(duname, date, time, rname, raddress, review, rat
   div.modal(id = 'edit' + index)
     div.modal-content
       div.modal-body
-        p Make changes to reservation for: 
-        p #{rname}, #{raddress}: #{date}, #{time} for #{num_diners} pax
-        h7 Date:
-        input.date-input(name='date' type='date' min=date data-date='' data-date-format='DD MMM YYYY' id=index+'-date')
+        h7 Edits your reservation: 
         br
-        h7 Time:
-        input(name='time' type='time' id=index+'-time')
+        h7 <b>#{rname}, #{raddress}: #{date}, #{time} for #{num_diners} pax</b>
         br
-        h7 Number of pax:
-        input(name='pax' type='number', min=1, max=100 id=index+'-pax')
         br
-        h7(style='font-size: 80%') Please leave blank if no changes
+        div.form-row
+          div.form-group.col-md-3 
+            label Date
+            input.date-input.form-control(name='date' type='date' min=date data-date='' data-date-format='DD MMM YYYY' id=index+'-date')
+          div.form-group.col-md-3
+            label Time
+            input.form-control(name='time' type='time' id=index+'-time')
+          div.form-group.col-md-2
+            label Number of pax
+            input.form-control(name='pax' type='number', min=1, max=100 id=index+'-pax')
+        h7(style='font-size: 80%; margin-left:20px;') Please leave blank if no changes
         br
-        h7 If you'd like to book another restaurant instead, please cancel this reservation and book again.
+        br
+        h7 If you'd like to reserve at another restaurant instead, please cancel this reservation and book again.
       div.modal-footer
         a.btn.btn-primary(card-id=index rname=rname raddress=raddress date=date time=time pax=num_diners duname=duname onclick='editReservation(event)' type='button' class="btn") Confirm
         a.btn.btn-primary(card-id=index onclick='cancelModal(event)' type='button' class="btn") Cancel
