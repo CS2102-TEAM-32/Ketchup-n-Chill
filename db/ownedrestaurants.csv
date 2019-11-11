@@ -1,7 +1,5 @@
 uname,raddress,rname,cuisine,phone_num,opening_hr,closing_hr
 Stephani,290 Dovetail Street,Lonesome Dove,Chinese ,304 643 3048,900,2200
-Fabio,2 Bonner Point,Bobby’s,Chinese ,243 384 6776,900,2200
-Caroline,0961 Huxley Junction,Melting Pot,Chinese ,986 305 6329,900,2200
 Kellby,88437 Artisan Point,Daytime Place,Chinese ,439 489 2938,900,2200
 Shellie,0 Darwin Circle,Easy Eats,Chinese ,196 978 7083,900,2200
 Terese,900 Mandrake Road,Macro Bites,Chinese ,198 235 7887,900,2200
@@ -33,7 +31,7 @@ Nalani,51478 Cherokee Center,Sweet Delectable,Mexican,999 586 7266,900,2200
 Sorcha,4855 Lillian Point,Appetizing As Heck,Mexican,913 822 3494,900,2200
 Shelley,39942 Rigney Plaza,Appetizing Bird,Mexican,134 871 9420,900,2200
 Dredi,20 Farmco Avenue,Scrumptious Temptations,Mexican,212 581 5554,900,2200
-Clementina,8654 Ridgeway Point,Smile N’ Delight,Mexican,914 527 4134,900,2200
+Clementina,8654 Ridgeway Point,Smile Nâ€™ Delight,Mexican,914 527 4134,900,2200
 Ferdinanda,291 Ridge Oak Court,Choice Foods,Mexican,377 615 1828,900,2200
 Romy,82494 Lunder Avenue,Dainty Dog,Thai,171 300 2242,900,2200
 Tawnya,726 Miller Park,Hungry Dog,Thai,764 513 3511,900,2200
@@ -41,13 +39,13 @@ Stephani,977 Orin Terrace,Heavenly Creations,Thai,330 199 6873,900,2200
 Fabio,9032 American Hill,Food For Thought,Thai,755 534 4784,900,2200
 Caroline,7045 East Hill,Food In My Tummy,Thai,853 862 8878,900,2200
 Kellby,7263 Straubel Junction,Tum Tum Express,Thai,369 845 1294,900,2200
-Shellie,8 Waxwing Trail,Lil Johnny’s,Western,430 824 6339,900,2200
-Terese,40 Claremont Hill,Bill’s Burgers,Western,297 832 4937,900,2200
+Shellie,8 Waxwing Trail,Lil Johnnyâ€™s,Western,430 824 6339,900,2200
+Terese,40 Claremont Hill,Billâ€™s Burgers,Western,297 832 4937,900,2200
 Roanne,554 Cambridge Crossing,A Night In Paris,Western,683 359 0773,900,2200
 Jakob,26818 Talmadge Court,Distinctive Creations,Western,548 956 1144,900,2200
 Siana,5911 Marquette Park,Spicy Heat,Western,163 105 2619,900,2200
-Maureen,014 Hazelcrest Court,Spicy Jack’s,Western,481 899 2614,900,2200
-Emelda,353 Village Green Avenue,Pepper Jack’s,Western,362 995 0367,900,2200
+Maureen,014 Hazelcrest Court,Spicy Jackâ€™s,Western,481 899 2614,900,2200
+Emelda,353 Village Green Avenue,Pepper Jackâ€™s,Western,362 995 0367,900,2200
 Ricard,22 Victoria Hill,Rich Meat,Western,217 136 1987,900,2200
 Hersh,551 Oneill Plaza,Fit For A King,Western,525 876 7184,900,2200
 Mychal,82 Hauk Plaza,King of Meat,Western,364 472 6857,900,2200
@@ -66,7 +64,7 @@ Theodoric,5086 Sachtjen Place,Infatuated Creations,Korean,627 873 9771,900,2200
 Perrine,6 Delaware Pass,Smack Dab,Korean,579 292 8591,900,2200
 Hortense,48 Spaight Pass,Frozen Yogurt,Korean,750 337 8181,900,2200
 Malcolm,01 Mitchell Terrace,Sherbet,Indian ,331 988 8348,900,2200
-Ollie,6083 Judy Way,Mickey’s Foodstuff,Indian ,402 888 2340,900,2200
+Ollie,6083 Judy Way,Mickeyâ€™s Foodstuff,Indian ,402 888 2340,900,2200
 Nalani,65183 Sachtjen Junction,Pick & Go,Indian ,169 643 7139,900,2200
 Sorcha,0687 Laurel Crossing,The Satiated Drink,Indian ,278 623 5760,900,2200
 Shelley,01 Jana Plaza,Pearl,Indian ,263 941 5013,900,2200
@@ -74,10 +72,10 @@ Dredi,83 Granby Terrace,Bless This Mess Hall,Indian ,635 892 8763,900,2200
 Clementina,30511 Macpherson Terrace,Grits & Gravy,Indian ,747 527 7437,900,2200
 Ferdinanda,7 Redwing Way,Cheerful Hippo,Indian ,503 674 6654,900,2200
 Romy,7 Stephen Hill,Mealtime,Indian ,781 285 0653,900,2200
-Tawnya,649 Granby Place,Summer’s End,Malay,266 643 5828,900,2200
+Tawnya,649 Granby Place,Summerâ€™s End,Malay,266 643 5828,900,2200
 Stephani,9 Spaight Park,Winter Comes,Malay,564 236 4392,900,2200
 Fabio,54404 Stang Road,Nightcap,Malay,803 985 4222,900,2200
-Caroline,14 Buena Vista Pass,It’s Good Food,Malay,378 530 2456,900,2200
+Caroline,14 Buena Vista Pass,Itâ€™s Good Food,Malay,378 530 2456,900,2200
 Kellby,20 Pleasure Alley,Leggo My Wagyu,Malay,372 794 0879,900,2200
 Shellie,40515 Upham Way,Tokyo Beat,Malay,247 809 4668,900,2200
 Terese,48 Vahlen Junction,New York Pulse,Malay,485 307 1577,900,2200
@@ -92,36 +90,36 @@ Mychal,759 Darwin Point,Broiler,Malay,293 878 6491,900,2200
 Ruby,64 3rd Terrace,Broiled Duck,Malay,277 144 6096,900,2200
 Otis,3509 Garrison Crossing,Prancing Pig,Malay,316 411 7723,900,2200
 Ladonna,10 Everett Circle,Sweet Duck,Malay,294 887 9136,900,2200
-Talbot,28989 Moland Plaza,Aaron’s,Malay,320 924 7856,900,2200
+Talbot,28989 Moland Plaza,Aaronâ€™s,Malay,320 924 7856,900,2200
 Marrilee,8229 Doe Crossing Center,Salt & Snow,Japanese,308 793 2764,900,2200
 Saleem,32775 Morning Street,Roaring Tiger,Japanese,181 342 0264,900,2200
-Ellerey,386 Dahle Plaza,Fig’s BBQ,Japanese,410 561 8824,900,2200
+Ellerey,386 Dahle Plaza,Figâ€™s BBQ,Japanese,410 561 8824,900,2200
 Kelsi,8 Jay Lane,Odd Pig,Japanese,696 971 8441,900,2200
 Marve,374 Lakeland Trail,Southside,Japanese,270 304 6071,900,2200
 Nate,5 Straubel Court,Northend,Japanese,876 357 9715,900,2200
 Marcellina,0 Morningstar Hill,Roaring Ridgemont,Japanese,918 849 7630,900,2200
-Theodoric,4737 Messerschmidt Point,Tia’s Mexican Hut,Japanese,287 630 9614,900,2200
+Theodoric,4737 Messerschmidt Point,Tiaâ€™s Mexican Hut,Japanese,287 630 9614,900,2200
 Perrine,30600 Bartillon Trail,Atomic Good,Japanese,298 257 1096,900,2200
-Hortense,6 Armistice Court,L’Gran,Japanese,131 137 7309,900,2200
+Hortense,6 Armistice Court,Lâ€™Gran,Japanese,131 137 7309,900,2200
 Malcolm,8093 Gale Crossing,Casa Del Rio,Japanese,918 549 4938,900,2200
 Ollie,82809 Knutson Trail,Clio,Japanese,688 566 3740,900,2200
-Nalani,913 Waubesa Point,Bartholomew’s,Japanese,763 741 5879,900,2200
+Nalani,913 Waubesa Point,Bartholomewâ€™s,Japanese,763 741 5879,900,2200
 Sorcha,8 Golf Trail,Villa,Japanese,176 755 0143,900,2200
 Shelley,01397 International Alley,Sushi Roll,Japanese,486 344 4179,900,2200
 Dredi,5 Mcbride Court,Hand Roll,Japanese,685 696 5365,900,2200
 Clementina,4 Gateway Parkway,By Hand,Japanese,148 308 4354,900,2200
 Ferdinanda,06 Killdeer Point,Made by Hand,Japanese,542 169 8711,900,2200
 Romy,3 Tony Pass,Scratch House,Taiwanese,255 915 4565,900,2200
-Tawnya,3857 Londonderry Park,Los Alma’s,Taiwanese,542 349 3311,900,2200
+Tawnya,3857 Londonderry Park,Los Almaâ€™s,Taiwanese,542 349 3311,900,2200
 Stephani,9 Prairie Rose Alley,Upstate,Taiwanese,627 377 8827,900,2200
-Fabio,08 Scofield Park,Fatty’s,Taiwanese,749 608 4695,900,2200
+Fabio,08 Scofield Park,Fattyâ€™s,Taiwanese,749 608 4695,900,2200
 Caroline,9658 John Wall Center,Halal Meats,Taiwanese,703 931 3751,900,2200
 Kellby,2 Fulton Pass,Shake It Up,German,360 872 0847,900,2200
 Shellie,12182 Helena Circle,Bridge,German,486 410 6330,900,2200
 Terese,360 Portage Terrace,Uptown Park,German,251 798 6636,900,2200
 Roanne,992 Welch Circle,Parrots,German,347 681 6440,900,2200
 Jakob,1093 Mitchell Pass,No Way,German,326 304 8486,900,2200
-Siana,2453 Fieldstone Parkway,Prince’s,German,614 193 8108,900,2200
+Siana,2453 Fieldstone Parkway,Princeâ€™s,German,614 193 8108,900,2200
 Maureen,265 Montana Crossing,Ramen & Rolls,German,415 869 5386,900,2200
 Emelda,8 Crowley Junction,Flavor Town,German,750 469 4056,900,2200
 Ricard,1 Fuller Circle,Madison,German,573 699 8036,900,2200
