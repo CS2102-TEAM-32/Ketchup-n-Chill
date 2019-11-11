@@ -9,12 +9,15 @@ const moment = require('moment');
 
 exports.showRestaurant = async (req, res, next) => {
     try {
-        const restaurantDetails = await db.one('SELECT * FROM OwnedRestaurants WHERE uname=$1 AND rname=$2 AND raddress=$3', [req.user.uname, req.params.rname, req.params.raddress]);
-        const timeslots = await db.any('SELECT * FROM HasTimeslots WHERE rname=$1 AND raddress=$2 ORDER BY date DESC, time', [req.params.rname, req.params.raddress]);
+        const queries = pgp.helpers.concat([
+            {query: 'SELECT * FROM OwnedRestaurants WHERE uname = ${user.uname} AND rname = ${params.rname} AND raddress = ${params.raddress}', values: req},
+            {query: 'SELECT * FROM HasTimeslots WHERE rname = ${rname} AND raddress = ${raddress} ORDER BY date DESC, time', values: req.params}
+        ]);
+        const [details, timeslots] = await db.multi(queries);
         res.render('restaurantownersrestaurant', {
             title: [req.user.uname] + "'s " + [req.params.rname],
-            details: restaurantDetails,
-            timeslots: timeslots,
+            details,
+            timeslots,
             length: timeslots.length
         });
     } catch (e) {
