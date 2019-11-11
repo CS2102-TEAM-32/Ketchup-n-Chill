@@ -10,7 +10,7 @@ const moment = require('moment');
 exports.showRestaurant = async (req, res, next) => {
     try {
         const queries = pgp.helpers.concat([
-            {query: 'SELECT * FROM OwnedRestaurants WHERE uname = ${user.name} AND rname = ${params.rname} AND raddress = ${params.raddress}', values: req},
+            {query: 'SELECT * FROM OwnedRestaurants WHERE uname = ${user.uname} AND rname = ${params.rname} AND raddress = ${params.raddress}', values: req},
             {query: 'SELECT * FROM HasTimeslots WHERE rname = ${rname} AND raddress = ${raddress} ORDER BY date DESC, time', values: req.params}
         ]);
         const [details, timeslots] = await db.multi(queries);
